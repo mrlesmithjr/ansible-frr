@@ -1,0 +1,45 @@
+---
+- name: config | Configuring daemons
+  template:
+    src: etc/frr/daemons.j2
+    dest: /etc/frr/daemons
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  become: true
+  notify:
+    - restart frr
+
+- name: config | Configuring debian.conf
+  template:
+    src: etc/frr/debian.conf.j2
+    dest: /etc/frr/debian.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  become: true
+  notify:
+    - restart frr
+  when: ansible_os_family == "Debian"
+
+- name: config | Configuring zebra.conf
+  template:
+    src: etc/frr/zebra.conf.j2
+    dest: /etc/frr/zebra.conf
+    owner: frr
+    group: frr
+    mode: u=rw,g=r,o=
+  become: true
+  notify:
+    - restart frr
+
+- name: config | Configuring ospfd.conf
+  template:
+    src: etc/frr/ospfd.conf.j2
+    dest: /etc/frr/ospfd.conf
+    owner: frr
+    group: frr
+    mode: u=rw,g=r,o=
+  become: true
+  notify:
+    - restart frr

@@ -1,0 +1,8 @@
+---
+# tasks file for ansible-frr
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- include_tasks: system_tuning.yml
+
+- include_tasks: config.yml

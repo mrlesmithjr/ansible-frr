@@ -1,0 +1,33 @@
+{{ ansible_managed|comment }}
+
+hostname {{ ansible_hostname }}
+password {{ frr_password }}
+log {{ frr_logging }}
+!
+{% if frr_daemons['ospfd'] %}
+router ospf
+  router-id {{ frr_router_id }}
+{%   if frr_ospf is defined %}
+{%     if frr_ospf['areas'] is defined %}
+{%       for key, value in frr_ospf['areas'].iteritems() %}
+{%         for _network in value['networks'] %}
+  network {{ _network }} area {{ key }}
+{%         endfor %}
+{%       endfor %}
+{%     endif %}
+{%     if frr_ospf['log_adjacency_changes'] %}
+  log-adjacency-changes
+{%     endif %}
+{%     if frr_ospf['passive_interfaces'] is defined %}
+{%       for _passive_interface in frr_ospf['passive_interfaces'] %}
+  passive-interface {{ _passive_interface }}
+{%       endfor %}
+{%     endif %}
+{%     if frr_ospf['redistribute'] is defined %}
+{%       for _redistribute in frr_ospf['redistribute'] %}
+  redistribute {{ _redistribute }}
+{%       endfor %}
+{%     endif %}
+{%   endif %}
+{% endif %}
+!
