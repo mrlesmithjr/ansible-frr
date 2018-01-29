@@ -30,6 +30,28 @@
     group: frr
     mode: u=rw,g=r,o=
   become: true
+  register: _frr_zebra_configured
+  notify:
+    - restart frr
+
+# We need to flush here in case interfaces are configured in zebra.conf
+- name: config | Flusing Handlers
+  meta: flush_handlers
+  when: _frr_zebra_configured['changed']
+
+# We need to rediscover facts if interfaces are initially configured in zebra.conf
+- name: config | Rediscovering Facts
+  setup:
+  when: _frr_zebra_configured['changed']
+
+- name: config | Configuring bgpd.conf
+  template:
+    src: etc/frr/bgpd.conf.j2
+    dest: /etc/frr/bgpd.conf
+    owner: frr
+    group: frr
+    mode: u=rw,g=r,o=
+  become: true
   notify:
     - restart frr
 

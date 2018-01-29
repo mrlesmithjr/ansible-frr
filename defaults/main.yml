@@ -12,6 +12,31 @@ frr_daemons:
   ripngd: false
   zebra: true
 
+frr_bgp: []
+  # asns:
+  #   65000:
+  #     log_neighbor_changes: true
+  #     neighbors:
+  #       192.168.250.11:
+  #         asn: 65000
+  #         default_originate: false
+  #         description: node1
+  #         next_hop_self: true
+  #       192.168.250.12:
+  #         asn: 65000
+  #         default_originate: false
+  #         description: node2
+  #         next_hop_self: true
+  #     networks:
+  #       - "{{ frr_router_id }}/32"
+  #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
+  #     redistribute: []
+  #       # - bgp
+  #       # - connected
+  #       # - kernel
+  #       # - ospf
+  #       # - static
+
 frr_enable_vtysh: true
 
 # Define any interfaces which you would like IP addresses configured on
