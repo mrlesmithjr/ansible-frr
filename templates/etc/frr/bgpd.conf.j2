@@ -5,7 +5,7 @@ password {{ frr_password }}
 log {{ frr_logging }}
 !
 {% if frr_daemons['bgpd'] %}
-{%   if frr_bgp is defined %}
+{%   if frr_bgp is defined and frr_bgp != [] %}
 {%     for key, value in frr_bgp['asns'].iteritems() %}
 router bgp {{ key }}
   bgp router-id {{ frr_router_id }}
