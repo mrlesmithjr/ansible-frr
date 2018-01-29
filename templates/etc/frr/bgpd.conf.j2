@@ -27,15 +27,25 @@ router bgp {{ key }}
 {%         endfor %}
 {%       endif %}
 {%       if value['networks'] is defined %}
+  address-family ipv4 unicast
 {%         for network in value['networks'] %}
-  network {{ network }}
+    network {{ network }}
 {%         endfor %}
 {%       endif %}
 {%       if value['redistribute'] is defined %}
+{%         if value['networks'] is not defined %}
+  address-family ipv4 unicast
+{%         endif %}
 {%         for _redistribute in value['redistribute'] %}
-  redistribute {{ _redistribute }}
+    redistribute {{ _redistribute }}
 {%         endfor %}
 {%       endif %}
+{%       if value['networks'] is defined or value['redistribute'] is defined %}
+  exit-address-family
+{%       endif %}
+  vnc defaults
+    response-lifetime 3600
+    exit-vnc
 {%     endfor %}
 {%   endif %}
 {% endif %}
