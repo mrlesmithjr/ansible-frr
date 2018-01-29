@@ -1,22 +1,24 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [ansible-frr](#ansible-frr)
-  - [Requirements](#requirements)
-  - [Role Variables](#role-variables)
-  - [Dependencies](#dependencies)
-  - [Example Playbook](#example-playbook)
-  - [Supported Routing Protocols](#supported-routing-protocols)
-    - [BGP](#bgp)
-      - [Enable BGP](#enable-bgp)
-      - [Configuring BGP](#configuring-bgp)
-      - [Example BGP](#example-bgp)
-    - [OSPF](#ospf)
-      - [Enable OSPF](#enable-ospf)
-      - [Configuring OSPF](#configuring-ospf)
-  - [License](#license)
-  - [Author Information](#author-information)
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+-   [ansible-frr](#ansible-frr)
+    -   [Requirements](#requirements)
+    -   [Role Variables](#role-variables)
+    -   [Dependencies](#dependencies)
+    -   [Example Playbook](#example-playbook)
+    -   [Supported Routing Protocols](#supported-routing-protocols)
+        -   [BGP](#bgp)
+            -   [Enable BGP](#enable-bgp)
+            -   [Configuring BGP](#configuring-bgp)
+            -   [Example BGP](#example-bgp)
+        -   [OSPF](#ospf)
+            -   [Enable OSPF](#enable-ospf)
+            -   [Configuring OSPF](#configuring-ospf)
+    -   [License](#license)
+    -   [Author Information](#author-information)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -39,10 +41,10 @@ An [Ansible](https://www.ansible.com) role to install/configure [FRR](https://fr
 
 ## Supported Routing Protocols
 
-| Protocol | Implemented | Notes               |
-| -------- | ----------- | ------------------- |
-| BGP      | X           | Only initial config |
-| OSPF     | X           | Only initial config |
+| Protocol      | Implemented | Notes               |
+| ------------- | ----------- | ------------------- |
+| [BGP](#bgp)   | X           | Only initial config |
+| [OSPF](#ospf) | X           | Only initial config |
 
 ### BGP
 
