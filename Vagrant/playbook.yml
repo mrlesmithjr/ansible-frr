@@ -1,0 +1,27 @@
+---
+- hosts: routers:compute
+  vars:
+    pri_domain_name: vagrant.local
+  roles:
+    - role: ansible-frr
+  tasks:
+    - name: Installing lldpd
+      apt:
+        name: lldpd
+        state: present
+      become: true
+      when: ansible_os_family == "Debian"
+
+    - name: Ensuring lldpd Is Started and Enabled On Boot
+      service:
+       name: lldpd
+       state: started
+       enabled: true
+      become: true
+
+    - name: Installing traceroute
+      apt:
+        name: traceroute
+        state: present
+      become: true
+      when: ansible_os_family == "Debian"
