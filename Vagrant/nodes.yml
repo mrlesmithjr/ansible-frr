@@ -172,14 +172,35 @@
     - ip: 192.168.250.31
       auto_config: true
       method: static
-    - ip: 192.168.10.31
+    - ip: 192.168.10.1
       auto_config: false
       method: static
       network_name: leaf-1-compute
-    - ip: 192.168.10.41
+    - ip: 192.168.10.3
       auto_config: false
       method: static
       network_name: leaf-2-compute
+  mem: 512
+  provision: true
+  vcpu: 1
+  windows: false
+- name: compute2
+  ansible_groups:
+    - compute
+  box: mrlesmithjr/xenial64
+  desktop: false
+  interfaces:
+    - ip: 192.168.250.32
+      auto_config: true
+      method: static
+    - ip: 192.168.20.1
+      auto_config: false
+      method: static
+      network_name: leaf-3-compute
+    - ip: 192.168.20.3
+      auto_config: false
+      method: static
+      network_name: leaf-4-compute
   mem: 512
   provision: true
   vcpu: 1

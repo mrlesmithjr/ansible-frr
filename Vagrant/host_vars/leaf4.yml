@@ -18,6 +18,11 @@ frr_bgp:
           default_originate: false
           description: spine2
           next_hop_self: "{{ frr_next_hop_self }}"
+        192.168.20.3:
+          asn: 65032
+          default_originate: false
+          description: compute2
+          next_hop_self: "{{ frr_next_hop_self }}"
       networks: []
         # - "{{ frr_router_id }}/32"
         # - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['netmask']}}"
