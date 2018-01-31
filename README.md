@@ -1,24 +1,25 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
--   [ansible-frr](#ansible-frr)
-    -   [Requirements](#requirements)
-    -   [Role Variables](#role-variables)
-    -   [Dependencies](#dependencies)
-    -   [Example Playbook](#example-playbook)
-    -   [Supported Routing Protocols](#supported-routing-protocols)
-        -   [BGP](#bgp)
-            -   [Enable BGP](#enable-bgp)
-            -   [Configuring BGP](#configuring-bgp)
-            -   [Example BGP](#example-bgp)
-        -   [OSPF](#ospf)
-            -   [Enable OSPF](#enable-ospf)
-            -   [Configuring OSPF](#configuring-ospf)
-    -   [License](#license)
-    -   [Author Information](#author-information)
+- [ansible-frr](#ansible-frr)
+  - [Requirements](#requirements)
+  - [Role Variables](#role-variables)
+  - [Dependencies](#dependencies)
+  - [Example Playbook](#example-playbook)
+  - [Supported Routing Protocols](#supported-routing-protocols)
+    - [BGP](#bgp)
+      - [Enable BGP](#enable-bgp)
+      - [Configuring BGP](#configuring-bgp)
+      - [Example BGP](#example-bgp)
+    - [OSPF](#ospf)
+      - [Enable OSPF](#enable-ospf)
+      - [Configuring OSPF](#configuring-ospf)
+  - [Vagrant](#vagrant)
+    - [Spinning Up](#spinning-up)
+    - [Tearing down](#tearing-down)
+  - [License](#license)
+  - [Author Information](#author-information)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -198,6 +199,57 @@ frr_ospf: []
   #   # - kernel
   #   # - ospf
   #   # - static
+```
+
+## Vagrant
+
+Included is a ready to go BGP CLOS fabric based on the below diagram. Ready to
+be spun up in Vagrant.
+
+![FRR-BGP-Routing](https://github.com/mrlesmithjr/diagrams/blob/master/FRR-BGP-Routing.png?raw=true)
+
+### Spinning Up
+
+In order to spin up this environment simply do the following:
+
+```bash
+cd Vagrant
+vagrant up
+```
+
+Once all of the nodes are spun up your routing topology should be similar to
+below:
+
+```bash
+sh ip route bgp
+Codes: K - kernel route, C - connected, S - static, R - RIP,
+       O - OSPF, I - IS-IS, B - BGP, P - PIM, N - NHRP, T - Table,
+       v - VNC, V - VNC-Direct,
+       > - selected route, * - FIB route
+
+B>* 10.0.10.2/32 [20/0] via 192.168.1.1, enp0s9, 00:29:27
+B>* 10.0.20.3/32 [20/0] via 192.168.1.1, enp0s9, 00:29:27
+B>* 10.0.20.4/32 [20/0] via 192.168.1.3, enp0s10, 00:29:27
+B>* 10.0.20.5/32 [20/0] via 192.168.1.5, enp0s16, 00:16:02
+B>* 10.0.20.6/32 [20/0] via 192.168.1.7, enp0s17, 00:16:02
+B>* 10.0.30.1/32 [20/0] via 192.168.1.1, enp0s9, 00:10:54
+B>* 10.0.30.2/32 [20/0] via 192.168.1.5, enp0s16, 00:10:31
+B>* 192.168.2.0/31 [20/0] via 192.168.1.5, enp0s16, 00:16:02
+B>* 192.168.2.2/31 [20/0] via 192.168.1.7, enp0s17, 00:16:02
+B>* 192.168.2.4/31 [20/0] via 192.168.1.1, enp0s9, 00:29:27
+B>* 192.168.2.6/31 [20/0] via 192.168.1.3, enp0s10, 00:29:27
+B>* 192.168.10.0/31 [20/0] via 192.168.1.1, enp0s9, 00:29:27
+B>* 192.168.10.2/31 [20/0] via 192.168.1.3, enp0s10, 00:29:27
+B>* 192.168.20.0/31 [20/0] via 192.168.1.5, enp0s16, 00:16:02
+B>* 192.168.20.2/31 [20/0] via 192.168.1.7, enp0s17, 00:16:02
+```
+
+### Tearing down
+
+When you are done testing you can simply tear everything down by:
+
+```bash
+scripts/cleanup.sh
 ```
 
 ## License
