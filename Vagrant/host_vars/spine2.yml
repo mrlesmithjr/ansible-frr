@@ -23,15 +23,15 @@ frr_bgp:
           default_originate: false
           description: leaf2
           next_hop_self: "{{ frr_next_hop_self }}"
-      networks:
-        - "{{ frr_router_id }}/32"
-        - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}"
-        - "{{ hostvars[inventory_hostname]['ansible_enp0s10']['ipv4']['address'] }}"
-        - "{{ hostvars[inventory_hostname]['ansible_enp0s16']['ipv4']['address'] }}"
-        - "{{ hostvars[inventory_hostname]['ansible_enp0s17']['ipv4']['address'] }}"
-      redistribute: []
+      networks: []
+        # - "{{ frr_router_id }}/32"
+        # - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['netmask']}}"
+        # - "{{ hostvars[inventory_hostname]['ansible_enp0s10']['ipv4']['address'] }}/{{ hostvars[inventory_hostname]['ansible_enp0s10']['ipv4']['netmask'] }}"
+        # - "{{ hostvars[inventory_hostname]['ansible_enp0s16']['ipv4']['address'] }}/{{ hostvars[inventory_hostname]['ansible_enp0s16']['ipv4']['netmask'] }}"
+        # - "{{ hostvars[inventory_hostname]['ansible_enp0s17']['ipv4']['address'] }}/{{ hostvars[inventory_hostname]['ansible_enp0s17']['ipv4']['netmask'] }}"
+      redistribute:
         # - bgp
-        # - connected
+        - connected
         # - kernel
         # - ospf
         # - static
