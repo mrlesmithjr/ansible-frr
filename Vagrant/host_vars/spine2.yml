@@ -13,6 +13,11 @@ frr_bgp:
           default_originate: false
           description: leaf3
           next_hop_self: "{{ frr_next_hop_self }}"
+        192.168.2.3:
+          asn: 65024
+          default_originate: false
+          description: leaf4
+          next_hop_self: "{{ frr_next_hop_self }}"
         192.168.2.5:
           asn: 65021
           default_originate: false

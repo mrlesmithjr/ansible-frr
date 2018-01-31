@@ -21,6 +21,10 @@
       auto_config: false
       method: static
       network_name: spine-1-leaf-3
+    - ip: 192.168.1.6
+      auto_config: false
+      method: static
+      network_name: spine-1-leaf-4
   mem: 512
   provision: true
   vcpu: 1
@@ -129,6 +133,32 @@
       auto_config: false
       method: static
       network_name: spine-1-leaf-3
+  mem: 512
+  provision: true
+  vcpu: 1
+  windows: false
+- name: leaf4
+  ansible_groups:
+    - leafs
+    - routers
+  box: mrlesmithjr/xenial64
+  desktop: false
+  interfaces:
+    - ip: 192.168.250.24
+      auto_config: true
+      method: static
+    - ip: 192.168.2.3
+      auto_config: false
+      method: static
+      network_name: spine-2-leaf-4
+    - ip: 192.168.20.2
+      auto_config: false
+      method: static
+      network_name: leaf-4-compute
+    - ip: 192.168.1.7
+      auto_config: false
+      method: static
+      network_name: spine-1-leaf-4
   mem: 512
   provision: true
   vcpu: 1
