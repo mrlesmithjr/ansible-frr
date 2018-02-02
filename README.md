@@ -1,30 +1,32 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [ansible-frr](#ansible-frr)
-  - [Requirements](#requirements)
-  - [Role Variables](#role-variables)
-  - [Dependencies](#dependencies)
-  - [Example Playbook](#example-playbook)
-  - [Supported Routing Protocols](#supported-routing-protocols)
-    - [BGP](#bgp)
-      - [Enable BGP](#enable-bgp)
-      - [Configuring BGP](#configuring-bgp)
-      - [Example BGP](#example-bgp)
-    - [OSPF](#ospf)
-      - [Enable OSPF](#enable-ospf)
-      - [Configuring OSPF](#configuring-ospf)
-  - [Vagrant](#vagrant)
-    - [Spinning Up](#spinning-up)
-    - [Monitoring](#monitoring)
-    - [Grafana](#grafana)
-      - [Accessing Grafana](#accessing-grafana)
-      - [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
-    - [Grafana Dashboards](#grafana-dashboards)
-    - [Tearing down](#tearing-down)
-  - [License](#license)
-  - [Author Information](#author-information)
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+-   [ansible-frr](#ansible-frr)
+    -   [Requirements](#requirements)
+    -   [Role Variables](#role-variables)
+    -   [Dependencies](#dependencies)
+    -   [Example Playbook](#example-playbook)
+    -   [Supported Routing Protocols](#supported-routing-protocols)
+        -   [BGP](#bgp)
+            -   [Enable BGP](#enable-bgp)
+            -   [Configuring BGP](#configuring-bgp)
+            -   [Example BGP](#example-bgp)
+        -   [OSPF](#ospf)
+            -   [Enable OSPF](#enable-ospf)
+            -   [Configuring OSPF](#configuring-ospf)
+    -   [Vagrant](#vagrant)
+        -   [Spinning Up](#spinning-up)
+        -   [Monitoring](#monitoring)
+        -   [Grafana](#grafana)
+            -   [Accessing Grafana](#accessing-grafana)
+            -   [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
+        -   [Grafana Dashboards](#grafana-dashboards)
+        -   [Tearing down](#tearing-down)
+    -   [License](#license)
+    -   [Author Information](#author-information)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -221,8 +223,8 @@ be spun up in Vagrant.
 | Leaf2    | Leaf     | 65022 | 10.0.20.4/32 | 192.168.250.22/24 | 192.168.1.3/31  | 192.168.10.2/31 | 192.168.2.7/31 |                |
 | Leaf3    | Leaf     | 65023 | 10.0.20.5/32 | 192.168.250.23/24 | 192.168.1.5/31  | 192.168.20.0/31 | 192.168.2.1/31 |                |
 | Leaf4    | Leaf     | 65024 | 10.0.20.6/32 | 192.168.250.24/24 | 192.168.1.7/31  | 192.168.20.2/31 | 192.168.2.3/31 |                |
-| Compute1 | Compute  | 65031 | 10.0.30.1    | 192.168.250.31/24 | 192.168.10.1/31 | 192.168.10.3/31 |                |                |
-| Compute2 | Compute  | 65032 | 10.0.30.2    | 192.168.250.32/24 | 192.168.20.1/31 | 192.168.20.3/31 |                |                |
+| Compute1 | Compute  | 65031 | 10.0.30.1/32 | 192.168.250.31/24 | 192.168.10.1/31 | 192.168.10.3/31 |                |                |
+| Compute2 | Compute  | 65032 | 10.0.30.2/32 | 192.168.250.32/24 | 192.168.20.1/31 | 192.168.20.3/31 |                |                |
 
 ### Spinning Up
 
@@ -289,6 +291,8 @@ Add InfluxDB as a data source by providing the following in the config:
 
 We have included some `Grafana` dashboards which can be imported in the
 [Vagrant/dashboards](Vagrant/dashboards) folder.
+
+![BGP Stats](images/2018/02/bgp-stats.png)
 
 ### Tearing down
 
