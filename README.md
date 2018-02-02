@@ -17,6 +17,11 @@
       - [Configuring OSPF](#configuring-ospf)
   - [Vagrant](#vagrant)
     - [Spinning Up](#spinning-up)
+    - [Monitoring](#monitoring)
+    - [Grafana](#grafana)
+      - [Accessing Grafana](#accessing-grafana)
+      - [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
+    - [Grafana Dashboards](#grafana-dashboards)
     - [Tearing down](#tearing-down)
   - [License](#license)
   - [Author Information](#author-information)
@@ -208,6 +213,17 @@ be spun up in Vagrant.
 
 ![FRR-BGP-Routing](https://github.com/mrlesmithjr/diagrams/blob/master/FRR-BGP-Routing.png?raw=true)
 
+| Node     | Function | ASN   | Loopback     | enp0s8            | enp0s9          | enp0s10         | enp0s16        | enp0s17        |
+| -------- | -------- | ----- | ------------ | ----------------- | --------------- | --------------- | -------------- | -------------- |
+| Spine1   | Spine    | 65011 | 10.0.10.1/32 | 192.168.250.11/24 | 192.168.1.0/31  | 192.168.1.2/31  | 192.168.1.4/31 | 192.168.1.6/31 |
+| Spine2   | Spine    | 65012 | 10.0.10.2/32 | 192.168.250.12/24 | 192.168.2.0/31  | 192.168.2.2/31  | 192.168.2.4/31 | 192.168.2.6/31 |
+| Leaf1    | Leaf     | 65021 | 10.0.20.3/32 | 192.168.250.21/24 | 192.168.1.1/31  | 192.168.10.0/31 | 192.168.2.5/31 |                |
+| Leaf2    | Leaf     | 65022 | 10.0.20.4/32 | 192.168.250.22/24 | 192.168.1.3/31  | 192.168.10.2/31 | 192.168.2.7/31 |                |
+| Leaf3    | Leaf     | 65023 | 10.0.20.5/32 | 192.168.250.23/24 | 192.168.1.5/31  | 192.168.20.0/31 | 192.168.2.1/31 |                |
+| Leaf4    | Leaf     | 65024 | 10.0.20.6/32 | 192.168.250.24/24 | 192.168.1.7/31  | 192.168.20.2/31 | 192.168.2.3/31 |                |
+| Compute1 | Compute  | 65031 | 10.0.30.1    | 192.168.250.31/24 | 192.168.10.1/31 | 192.168.10.3/31 |                |                |
+| Compute2 | Compute  | 65032 | 10.0.30.2    | 192.168.250.32/24 | 192.168.20.1/31 | 192.168.20.3/31 |                |                |
+
 ### Spinning Up
 
 In order to spin up this environment simply do the following:
@@ -227,22 +243,52 @@ Codes: K - kernel route, C - connected, S - static, R - RIP,
        v - VNC, V - VNC-Direct,
        > - selected route, * - FIB route
 
-B>* 10.0.10.2/32 [20/0] via 192.168.1.1, enp0s9, 00:29:27
-B>* 10.0.20.3/32 [20/0] via 192.168.1.1, enp0s9, 00:29:27
-B>* 10.0.20.4/32 [20/0] via 192.168.1.3, enp0s10, 00:29:27
-B>* 10.0.20.5/32 [20/0] via 192.168.1.5, enp0s16, 00:16:02
-B>* 10.0.20.6/32 [20/0] via 192.168.1.7, enp0s17, 00:16:02
-B>* 10.0.30.1/32 [20/0] via 192.168.1.1, enp0s9, 00:10:54
-B>* 10.0.30.2/32 [20/0] via 192.168.1.5, enp0s16, 00:10:31
-B>* 192.168.2.0/31 [20/0] via 192.168.1.5, enp0s16, 00:16:02
-B>* 192.168.2.2/31 [20/0] via 192.168.1.7, enp0s17, 00:16:02
-B>* 192.168.2.4/31 [20/0] via 192.168.1.1, enp0s9, 00:29:27
-B>* 192.168.2.6/31 [20/0] via 192.168.1.3, enp0s10, 00:29:27
-B>* 192.168.10.0/31 [20/0] via 192.168.1.1, enp0s9, 00:29:27
-B>* 192.168.10.2/31 [20/0] via 192.168.1.3, enp0s10, 00:29:27
-B>* 192.168.20.0/31 [20/0] via 192.168.1.5, enp0s16, 00:16:02
-B>* 192.168.20.2/31 [20/0] via 192.168.1.7, enp0s17, 00:16:02
+B>* 10.0.10.2/32 [20/0] via 192.168.1.3, enp0s10, 02:53:22
+B>* 10.0.20.3/32 [20/0] via 192.168.1.1, enp0s9, 02:43:37
+B>* 10.0.20.4/32 [20/0] via 192.168.1.3, enp0s10, 02:53:22
+B>* 10.0.20.5/32 [20/0] via 192.168.1.5, enp0s16, 02:53:22
+B>* 10.0.20.6/32 [20/0] via 192.168.1.7, enp0s17, 02:53:22
+B>* 10.0.30.1/32 [20/0] via 192.168.1.3, enp0s10, 02:53:22
+B>* 10.0.30.2/32 [20/0] via 192.168.1.7, enp0s17, 02:53:22
+B>* 192.168.2.0/31 [20/0] via 192.168.1.5, enp0s16, 02:53:22
+B>* 192.168.2.2/31 [20/0] via 192.168.1.7, enp0s17, 02:53:22
+B>* 192.168.2.4/31 [20/0] via 192.168.1.1, enp0s9, 02:43:37
+B>* 192.168.2.6/31 [20/0] via 192.168.1.3, enp0s10, 02:53:22
+B>* 192.168.10.0/31 [20/0] via 192.168.1.1, enp0s9, 02:43:37
+B>* 192.168.10.2/31 [20/0] via 192.168.1.3, enp0s10, 02:53:22
+B>* 192.168.20.0/31 [20/0] via 192.168.1.5, enp0s16, 02:53:22
+B>* 192.168.20.2/31 [20/0] via 192.168.1.7, enp0s17, 02:53:22
 ```
+
+### Monitoring
+
+We have included some basic monitoring of BGP stats. There is a VM which is
+spun up called `monitoring` which is running `InfluxDB`, `Chronograf`,
+and `Grafana`. All of the VMs excluding the `monitoring` one are running
+`Telegraf` which is running some scripts to capture BGP stats and then sending
+to `InfluxDB`. We can then visualize the status using `Grafana` by connecting to
+the [Grafana Web UI](http://192.168.250.101:3000).
+
+### Grafana
+
+#### Accessing Grafana
+
+Using your browser of choice connect to the [Grafana Web UI](http://192.168.250.101:3000)
+and use `admin:admin` to login.
+
+#### Configuring InfluxDB Data Source
+
+Add InfluxDB as a data source by providing the following in the config:
+
+-   `Name:` influxdb
+-   `Type:` InfluxDB
+-   `URL:` <http://192.168.250.101:8086>
+-   `Database:` telegraf
+
+### Grafana Dashboards
+
+We have included some `Grafana` dashboards which can be imported in the
+[Vagrant/dashboards](Vagrant/dashboards) folder.
 
 ### Tearing down
 

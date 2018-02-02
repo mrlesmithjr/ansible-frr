@@ -29,3 +29,25 @@
 - hosts: compute
   roles:
     - role: ansible-docker
+
+- hosts: routers:compute
+  roles:
+    - role: ansible-telegraf
+      tags:
+        - telegraf
+  tasks:
+    - name: Add telegraph to sudo users for vtysh fping lldpctl cl-netstat smonctl
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: ^telegraf
+        line: "telegraf ALL=(root) NOPASSWD: /usr/bin/vtysh,/var/log/syslog"
+        validate: visudo -cf %s
+      become: true
+      tags:
+        - telegraf
+
+- hosts: monitoring
+  roles:
+    - role: ansible-influxdb
+    - role: ansible-chronograf
+    - role: ansible-grafana

@@ -205,3 +205,16 @@
   provision: true
   vcpu: 1
   windows: false
+- name: monitoring
+  ansible_groups:
+    - monitoring
+  box: mrlesmithjr/xenial64
+  desktop: false
+  interfaces:
+    - ip: 192.168.250.101
+      auto_config: true
+      method: static
+  mem: 1024
+  provision: true
+  vcpu: 1
+  windows: false

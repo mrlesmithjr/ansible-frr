@@ -9,3 +9,7 @@
 - include_tasks: system_tuning.yml
 
 - include_tasks: config.yml
+
+- include_tasks: monitor.yml
+  tags:
+    - frr-monitoring
