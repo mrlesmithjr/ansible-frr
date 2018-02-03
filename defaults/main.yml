@@ -16,6 +16,7 @@ frr_bgp: []
   # asns:
   #   65000:
   #     log_neighbor_changes: true
+  #     maximum_paths: 64
   #     neighbors:
   #       192.168.250.11:
   #         asn: 65000

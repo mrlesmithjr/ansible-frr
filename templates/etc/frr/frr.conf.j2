@@ -12,6 +12,9 @@ router bgp {{ key }}
 {%       if value['log_neighbor_changes']|default(False) %}
   bgp log-neighbor-changes
 {%       endif %}
+{%       if value['maximum_paths'] is defined and value['maximum_paths'] != [] %}
+  maximum-paths {{ value['maximum_paths'] }}
+{%       endif %}
 {%       if value['neighbors'] is defined %}
 {%         for neighbor, values in value['neighbors'].iteritems() %}
   neighbor {{ neighbor }} remote-as {{ values['asn'] }}
