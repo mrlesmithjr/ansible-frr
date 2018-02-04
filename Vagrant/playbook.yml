@@ -29,6 +29,24 @@
 - hosts: compute
   roles:
     - role: ansible-docker
+  tasks:
+    - name: Spinning Up InfluxDB Container
+      docker_container:
+        name: InfluxDB
+        image: influxdb
+        published_ports:
+          - 8086:8086
+      become: true
+      when: inventory_hostname == "compute1"
+
+    - name: Spinning Up Grafana Container
+      docker_container:
+        name: Grafana
+        image: grafana/grafana
+        published_ports:
+          - 3000:3000
+      become: true
+      when: inventory_hostname == "compute2"
 
 - hosts: routers:compute
   roles:
@@ -45,9 +63,9 @@
       become: true
       tags:
         - telegraf
-
-- hosts: monitoring
-  roles:
-    - role: ansible-influxdb
-    - role: ansible-chronograf
-    - role: ansible-grafana
+#
+# - hosts: monitoring
+#   roles:
+#     - role: ansible-influxdb
+#     - role: ansible-chronograf
+#     - role: ansible-grafana

@@ -132,6 +132,15 @@ telegraf_inputs:
     #   - enp0s3
     #   - eth0
     #   - eth1
+  ping:
+    count: 1
+    enabled: false
+    interface: []
+    interval: 1.0
+    timeout: 1.0
+    urls:
+      - 8.8.8.8
+      - 8.8.4.4
   powerdns:
     enabled: false
     unix_sockets:

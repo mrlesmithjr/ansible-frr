@@ -264,18 +264,19 @@ B>* 192.168.20.2/31 [20/0] via 192.168.1.7, enp0s17, 02:53:22
 
 ### Monitoring
 
-We have included some basic monitoring of BGP stats. There is a VM which is
-spun up called `monitoring` which is running `InfluxDB`, `Chronograf`,
-and `Grafana`. All of the VMs excluding the `monitoring` one are running
+We have included some basic monitoring of BGP stats and system stats. We are
+spinning up an `InfluxDB` container on `compute1` and a `Grafana` container on
+`compute2` as part of the provisioning. All of the VMs are running
 `Telegraf` which is running some scripts to capture BGP stats and then sending
 to `InfluxDB`. We can then visualize the status using `Grafana` by connecting to
-the [Grafana Web UI](http://192.168.250.101:3000).
+the [Grafana Web UI](http://192.168.250.32:3000) which again, is a Docker
+container running on `compute2`.
 
 ### Grafana
 
 #### Accessing Grafana
 
-Using your browser of choice connect to the [Grafana Web UI](http://192.168.250.101:3000)
+Using your browser of choice connect to the [Grafana Web UI](http://192.168.250.32:3000)
 and use `admin:admin` to login.
 
 #### Configuring InfluxDB Data Source
@@ -284,7 +285,7 @@ Add InfluxDB as a data source by providing the following in the config:
 
 -   `Name:` influxdb
 -   `Type:` InfluxDB
--   `URL:` <http://192.168.250.101:8086>
+-   `URL:` <http://192.168.250.31:8086>
 -   `Database:` telegraf
 
 ### Grafana Dashboards

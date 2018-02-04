@@ -1,7 +1,7 @@
 ---
 telagraf_config: true
 
-telegraf_influxdb_host: 192.168.250.101
+telegraf_influxdb_host: "{{ hostvars['compute1']['ansible_enp0s8']['ipv4']['address'] }}"
 
 telegraf_inputs:
   cpu:
@@ -33,7 +33,7 @@ telegraf_inputs:
     ## Only collect metrics for these containers, collect all if empty
     container_names:
       - ""
-    enabled: false
+    enabled: true
     endpoint: unix:///var/run/docker.sock
     ## Whether to report for each container per-device blkio (8:0, 8:1...) and
     ## network (eth0, eth1, ...) stats or not
@@ -85,6 +85,21 @@ telegraf_inputs:
     #   - enp0s3
     #   - eth0
     #   - eth1
+  ping:
+    count: 1
+    enabled: true
+    interface: []
+    interval: 1.0
+    timeout: 1.0
+    urls:
+      - "{{ hostvars['spine1']['frr_router_id'] }}"
+      - "{{ hostvars['spine2']['frr_router_id'] }}"
+      - "{{ hostvars['leaf1']['frr_router_id'] }}"
+      - "{{ hostvars['leaf2']['frr_router_id'] }}"
+      - "{{ hostvars['leaf3']['frr_router_id'] }}"
+      - "{{ hostvars['leaf4']['frr_router_id'] }}"
+      - "{{ hostvars['compute1']['frr_router_id'] }}"
+      - "{{ hostvars['compute2']['frr_router_id'] }}"
   powerdns:
     enabled: false
     unix_sockets:

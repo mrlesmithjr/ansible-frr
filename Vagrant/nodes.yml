@@ -180,7 +180,7 @@
       auto_config: false
       method: static
       network_name: leaf-2-compute
-  mem: 512
+  mem: 1024
   provision: true
   vcpu: 1
   windows: false
@@ -201,20 +201,20 @@
       auto_config: false
       method: static
       network_name: leaf-4-compute
-  mem: 512
-  provision: true
-  vcpu: 1
-  windows: false
-- name: monitoring
-  ansible_groups:
-    - monitoring
-  box: mrlesmithjr/xenial64
-  desktop: false
-  interfaces:
-    - ip: 192.168.250.101
-      auto_config: true
-      method: static
   mem: 1024
   provision: true
   vcpu: 1
   windows: false
+# - name: monitoring
+#   ansible_groups:
+#     - monitoring
+#   box: mrlesmithjr/xenial64
+#   desktop: false
+#   interfaces:
+#     - ip: 192.168.250.101
+#       auto_config: true
+#       method: static
+#   mem: 1024
+#   provision: true
+#   vcpu: 1
+#   windows: false

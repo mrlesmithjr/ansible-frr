@@ -144,6 +144,16 @@
   interfaces = ["{{ telegraf_inputs.net.interfaces|join ('", "')}}"]
 {%   endif %}
 {% endif %}
+{% if telegraf_inputs['ping']['enabled'] %}
+[[inputs.ping]]
+  urls = ["{{ telegraf_inputs['ping']['urls']|join('", "') }}"]
+  count = {{ telegraf_inputs['ping']['count']|default('1') }}
+  ping_interval = {{ telegraf_inputs['ping']['interval']|default('1.0') }}
+  timeout = {{ telegraf_inputs['ping']['timeout']|default('1.0') }}
+{%   if telegraf_inputs['ping']['interface'] is defined and telegraf_inputs['ping']['interface'] != [] %}
+  interface = {{ telegraf_inputs['ping']['interface'] }}
+{%   endif %}
+{% endif %}
 {% if telegraf_inputs.powerdns.enabled %}
 [[inputs.powerdns]]
   unix_sockets = ["{{ telegraf_inputs.powerdns.unix_sockets|join ('", "')}}"]
