@@ -65,3 +65,9 @@
         ansible_distribution == "Ubuntu" and
         ansible_machine == 'armv7l'
 
+- name: install python frr tools
+  apt:
+    deb: "{{ frr_package_url }}/frr-pythontools_{{ frr_version }}-1.{{ ansible_distribution|lower }}{{ ansible_distribution_version }}+1_all.deb"
+    state: present
+  become: true
+  when: frr_reload == true
