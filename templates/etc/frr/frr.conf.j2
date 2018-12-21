@@ -8,7 +8,9 @@ log {{ frr_logging }}
 {%   if frr_bgp is defined and frr_bgp != [] %}
 {%     for key, value in frr_bgp['asns'].iteritems() %}
 router bgp {{ key }}
+{%       if frr_router_id != [] %}
   bgp router-id {{ frr_router_id }}
+{%       endif %}
 {%       if value['log_neighbor_changes']|default(False) %}
   bgp log-neighbor-changes
 {%       endif %}
