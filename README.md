@@ -1,32 +1,30 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
--   [ansible-frr](#ansible-frr)
-    -   [Requirements](#requirements)
-    -   [Role Variables](#role-variables)
-    -   [Dependencies](#dependencies)
-    -   [Example Playbook](#example-playbook)
-    -   [Supported Routing Protocols](#supported-routing-protocols)
-        -   [BGP](#bgp)
-            -   [Enable BGP](#enable-bgp)
-            -   [Configuring BGP](#configuring-bgp)
-            -   [Example BGP](#example-bgp)
-        -   [OSPF](#ospf)
-            -   [Enable OSPF](#enable-ospf)
-            -   [Configuring OSPF](#configuring-ospf)
-    -   [Vagrant](#vagrant)
-        -   [Spinning Up](#spinning-up)
-        -   [Monitoring](#monitoring)
-        -   [Grafana](#grafana)
-            -   [Accessing Grafana](#accessing-grafana)
-            -   [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
-        -   [Grafana Dashboards](#grafana-dashboards)
-        -   [Tearing down](#tearing-down)
-    -   [License](#license)
-    -   [Author Information](#author-information)
+- [ansible-frr](#ansible-frr)
+  - [Requirements](#requirements)
+  - [Role Variables](#role-variables)
+  - [Dependencies](#dependencies)
+  - [Example Playbook](#example-playbook)
+  - [Supported Routing Protocols](#supported-routing-protocols)
+    - [BGP](#bgp)
+      - [Enable BGP](#enable-bgp)
+      - [Configuring BGP](#configuring-bgp)
+      - [Example BGP](#example-bgp)
+    - [OSPF](#ospf)
+      - [Enable OSPF](#enable-ospf)
+      - [Configuring OSPF](#configuring-ospf)
+  - [Vagrant](#vagrant)
+    - [Spinning Up](#spinning-up)
+    - [Monitoring](#monitoring)
+    - [Grafana](#grafana)
+      - [Accessing Grafana](#accessing-grafana)
+      - [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
+    - [Grafana Dashboards](#grafana-dashboards)
+    - [Tearing down](#tearing-down)
+  - [License](#license)
+  - [Author Information](#author-information)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -79,7 +77,8 @@ frr_daemons:
 In order to configure BGP, define the following based on your requirements:
 
 ```yaml
-frr_bgp: []
+frr_bgp:
+  []
   # asns:
   #   65000:
   #     log_neighbor_changes: true
@@ -186,7 +185,8 @@ frr_daemons:
 In order to configure OSPF, define the following based on your requirements:
 
 ```yaml
-frr_ospf: []
+frr_ospf:
+  []
   # areas:
   #   0:
   #     networks:
@@ -283,10 +283,10 @@ and use `admin:admin` to login.
 
 Add InfluxDB as a data source by providing the following in the config:
 
--   `Name:` influxdb
--   `Type:` InfluxDB
--   `URL:` <http://192.168.250.31:8086>
--   `Database:` telegraf
+- `Name:` influxdb
+- `Type:` InfluxDB
+- `URL:` <http://192.168.250.31:8086>
+- `Database:` telegraf
 
 ### Grafana Dashboards
 
@@ -311,6 +311,6 @@ MIT
 
 Larry Smith Jr.
 
--   [EverythingShouldBeVirtual](http://everythingshouldbevirtual.com)
--   [@mrlesmithjr](https://www.twitter.com/mrlesmithjr)
--   <mailto:mrlesmithjr@gmail.com>
+- [EverythingShouldBeVirtual](http://everythingshouldbevirtual.com)
+- [@mrlesmithjr](https://www.twitter.com/mrlesmithjr)
+- [mrlesmithjr@gmail.com](mailto:mrlesmithjr@gmail.com)
