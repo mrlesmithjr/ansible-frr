@@ -1,17 +1,19 @@
 ---
 - name: redhat | Installing Pre-Reqs
   yum:
-    name: "{{ item }}"
+    name: ['iproute']
     state: present
   become: true
-  with_items:
-    - iproute
+  register: result
+  until: result is successful
   when: ansible_distribution != "Fedora"
 
 - name: redhat | Installing FRR {{ frr_version }}
   yum:
     name: "{{ frr_package_url }}/frr-{{ frr_version }}-{{ frr_release_date }}.el7.centos.x86_64.rpm"
   become: true
+  register: result
+  until: result is successful
   when: >
         ansible_distribution == "CentOS" and
         ansible_distribution_major_version == "7"

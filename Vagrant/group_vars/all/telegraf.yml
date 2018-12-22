@@ -17,18 +17,18 @@ telegraf_inputs:
     totalcpu: true
   disk:
     enabled: true
-    ## Ignore some mountpoints by filesystem type
+    # Ignore some mountpoints by filesystem type
     ignore_fs:
       - devtmpfs
       - tmpfs
-    ## Setting mountpoints will restrict the stats to the specified mountpoints
+    # Setting mountpoints will restrict the stats to the specified mountpoints
     mount_points:
       - /
       # - /var
-    ## Define any specific tags you would like
-    # tags:
-    #   tag1: foo
-    #   tag2: bar
+      # Define any specific tags you would like
+      # tags:
+      #   tag1: foo
+      #   tag2: bar
   docker:
     ## Only collect metrics for these containers, collect all if empty
     container_names:
@@ -160,11 +160,11 @@ telegraf_outputs:
     ## The target index for metrics (Elasticsearch will create if it not exists).
     ## You can use the date specifiers below to create indexes per time frame.
     ## The metric timestamp will be used to decide the destination index name
-      # %Y - year (2016)
-      # %y - last two digits of year (00..99)
-      # %m - month (01..12)
-      # %d - day of month (e.g., 01)
-      # %H - hour (00..23)
+    # %Y - year (2016)
+    # %y - last two digits of year (00..99)
+    # %m - month (01..12)
+    # %d - day of month (e.g., 01)
+    # %H - hour (00..23)
     index_name: telegraf-%Y.%m.%d
     ## Template Config
     ## Set to true if you want telegraf to manage its index template.

@@ -40,7 +40,7 @@
         _frr_service_status['status']['SubState'] == "running"
 
 - debug: var=_frr_bgp_summary['stdout']
-  when: _frr_bgp_summary['stdout'] != ""
+  when: _frr_bgp_summary['stdout'] is not None
 
 # - name: monitoring | Caputuring BGP Peer Info
 #   command: vtysh -c "sh ip bgp {{ item }} json"
