@@ -1,7 +1,0 @@
----
-- name: service | Ensuring Chronograf Service Is Started and Enabled On Boot
-  service:
-    name: chronograf
-    state: started
-    enabled: true
-  become: true

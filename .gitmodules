@@ -1,0 +1,15 @@
+[submodule "Vagrant/roles/ansible-chronograf"]
+	path = Vagrant/roles/ansible-chronograf
+	url = https://github.com/mrlesmithjr/ansible-chronograf.git
+[submodule "Vagrant/roles/ansible-docker"]
+	path = Vagrant/roles/ansible-docker
+	url = https://github.com/mrlesmithjr/ansible-docker.git
+[submodule "Vagrant/roles/ansible-grafana"]
+	path = Vagrant/roles/ansible-grafana
+	url = https://github.com/mrlesmithjr/ansible-grafana.git
+[submodule "Vagrant/roles/ansible-influxdb"]
+	path = Vagrant/roles/ansible-influxdb
+	url = https://github.com/mrlesmithjr/ansible-influxdb.git
+[submodule "Vagrant/roles/ansible-telegraf"]
+	path = Vagrant/roles/ansible-telegraf
+	url = https://github.com/mrlesmithjr/ansible-telegraf.git
