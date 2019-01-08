@@ -78,6 +78,16 @@ frr_ospf: []
   #   # - kernel
   #   # - ospf
   #   # - static
+  #
+
+# Defines Static Routes
+frr_static: []
+  # destination:
+  #   "next hop"
+  # 1.1.1.1:
+  #   blackhole
+  # 2.2.2.2:
+  #   192.168.0.1
 
 frr_package_url: "https://github.com/FRRouting/frr/releases/download/frr-{{ frr_version }}"
 
