@@ -251,6 +251,7 @@ frr_ospf: []
 ```
 
 ### STATIC
+
 #### Configuring STATIC routes
 
 In order to configure static routes, define the following based on your requirements:
