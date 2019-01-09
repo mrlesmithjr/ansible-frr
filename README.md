@@ -1,32 +1,37 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
--   [ansible-frr](#ansible-frr)
-    -   [Requirements](#requirements)
-    -   [Role Variables](#role-variables)
-    -   [Dependencies](#dependencies)
-    -   [Example Playbook](#example-playbook)
-    -   [Supported Routing Protocols](#supported-routing-protocols)
-        -   [BGP](#bgp)
-            -   [Enable BGP](#enable-bgp)
-            -   [Configuring BGP](#configuring-bgp)
-            -   [Example BGP](#example-bgp)
-        -   [OSPF](#ospf)
-            -   [Enable OSPF](#enable-ospf)
-            -   [Configuring OSPF](#configuring-ospf)
-    -   [Vagrant](#vagrant)
-        -   [Spinning Up](#spinning-up)
-        -   [Monitoring](#monitoring)
-        -   [Grafana](#grafana)
-            -   [Accessing Grafana](#accessing-grafana)
-            -   [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
-        -   [Grafana Dashboards](#grafana-dashboards)
-        -   [Tearing down](#tearing-down)
-    -   [License](#license)
-    -   [Author Information](#author-information)
+- [ansible-frr](#ansible-frr)
+  - [Requirements](#requirements)
+  - [Role Variables](#role-variables)
+  - [Dependencies](#dependencies)
+  - [Example Playbook](#example-playbook)
+  - [Route Maps and Prefix Lists](#route-maps-and-prefix-lists)
+    - [Route Maps](#route-maps)
+      - [Configuring Route Maps](#configuring-route-maps)
+    - [Prefix Lists](#prefix-lists)
+      - [Configuring Prefix Lists](#configuring-prefix-lists)
+  - [Supported Routing Protocols](#supported-routing-protocols)
+    - [BGP](#bgp)
+      - [Enable BGP](#enable-bgp)
+      - [Configuring BGP](#configuring-bgp)
+      - [Example BGP](#example-bgp)
+    - [OSPF](#ospf)
+      - [Enable OSPF](#enable-ospf)
+      - [Configuring OSPF](#configuring-ospf)
+    - [STATIC routes](#static-routes)
+      - [Configuring STATIC routes](#configuring-static-routes)
+  - [Vagrant](#vagrant)
+    - [Spinning Up](#spinning-up)
+    - [Monitoring](#monitoring)
+    - [Grafana](#grafana)
+      - [Accessing Grafana](#accessing-grafana)
+      - [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
+    - [Grafana Dashboards](#grafana-dashboards)
+    - [Tearing down](#tearing-down)
+  - [License](#license)
+  - [Author Information](#author-information)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -47,12 +52,49 @@ An [Ansible](https://www.ansible.com) role to install/configure [FRR](https://fr
 
 ## Example Playbook
 
+## Route Maps and Prefix Lists
+
+### Route Maps
+
+#### Configuring Route Maps
+Below is an example of Route Maps Configuration:
+
+```yaml
+frr_route_map:
+  RTBH:
+    permit 10:
+      interface: blackhole
+      prefix_list: Bad_IPs
+      origin: igp
+      community: '12345:100'
+  RTBH_IN:
+    deny 10: []
+
+```
+
+### Prefix Lists
+
+#### Configuring Prefix Lists
+Below is an example of Prefix List Configuration:
+
+```yaml
+frr_prefix_list:
+  Bad_IPs:
+    05 permit:
+      prefix: 192.168.88.0/24
+      match: ge 32
+    10 permit:
+      prefix: 172.16.0.0/16
+      match: le 32
+```
+
 ## Supported Routing Protocols
 
 | Protocol      | Implemented | Notes               |
 | ------------- | ----------- | ------------------- |
 | [BGP](#bgp)   | X           | Only initial config |
 | [OSPF](#ospf) | X           | Only initial config |
+| [STATIC](#static) | X       | Only initial config |
 
 ### BGP
 
@@ -206,6 +248,19 @@ frr_ospf: []
   #   # - kernel
   #   # - ospf
   #   # - static
+```
+
+### STATIC
+
+#### Configuring STATIC routes
+
+In order to configure static routes, define the following based on your requirements:
+
+```yaml
+frr_static: []
+  # destination: nexthop
+  # 1.1.1.1: 192.168.1.1
+  # 1.1.1.2: blackhole
 ```
 
 ## Vagrant

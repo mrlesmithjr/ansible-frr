@@ -4,6 +4,12 @@ hostname {{ ansible_hostname }}
 password {{ frr_password }}
 log {{ frr_logging }}
 !
+{% if frr_static is defined and frr_static != [] %}
+{%   for _static_dest, _static_next_hop in frr_static.iteritems() %}
+ip route {{ _static_dest }} {{ _static_next_hop }}
+{%   endfor %}
+!
+{% endif %}
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != [] %}
 {%     for key, value in frr_bgp['asns'].iteritems() %}
@@ -80,5 +86,41 @@ router ospf
 {%       endfor %}
 {%     endif %}
 {%   endif %}
+{% endif %}
+!
+{% if frr_prefix_list is defined and frr_prefix_list != [] %}
+{%   for _frr_prefix_list_name, _frr_prefix_list_seq in frr_prefix_list.iteritems() %}
+{%     for key, value in _frr_prefix_list_seq.iteritems() %}
+{%       if value['prefix'] is defined %}
+{%         if value['match'] is defined %}
+ip prefix-list {{ _frr_prefix_list_name }} seq {{ key }} {{ value['prefix'] }} {{ value['match'] }}
+{%         else %}
+ip prefix-list {{ key }} seq {{ value['prefix'] }}
+{%         endif %}
+{%       endif %}
+{%     endfor %}
+{%   endfor %}
+!
+{% endif %}
+!
+{% if frr_route_map is defined and frr_route_map != [] %}
+{%   for _frr_route_map_name, _frr_route_map_seq in frr_route_map.iteritems() %}
+{%     for key, value in _frr_route_map_seq.iteritems() %}
+route-map {{ _frr_route_map_name }} {{ key }}
+{%       if value['interface'] is defined %}
+  match interface {{ value['interface'] }}
+{%       endif %}
+{%       if value['prefix_list'] is defined %}
+  match ip address prefix-list {{ value['prefix_list'] }}
+{%       endif %}
+{%       if value['community'] is defined %}
+  set community {{ value['community'] }} additive
+{%       endif %}
+{%       if value['origin'] is defined %}
+  set origin {{ value['origin'] }}
+{%       endif %}
+!
+{%     endfor %}
+{%   endfor %}
 {% endif %}
 !
