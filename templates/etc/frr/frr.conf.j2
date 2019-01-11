@@ -8,8 +8,8 @@ log {{ frr_logging }}
 {%   for _static_dest, _static_next_hop in frr_static.iteritems() %}
 ip route {{ _static_dest }} {{ _static_next_hop }}
 {%   endfor %}
-!
 {% endif %}
+!
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != [] %}
 {%     for key, value in frr_bgp['asns'].iteritems() %}
@@ -20,12 +20,23 @@ router bgp {{ key }}
 {%       if value['log_neighbor_changes']|default(False) %}
   bgp log-neighbor-changes
 {%       endif %}
+{%       if value['graceful_restart']|default(False) %}
+  bgp graceful-restart
+{%       endif %}
 {%       if value['maximum_paths'] is defined and value['maximum_paths'] != [] %}
   maximum-paths {{ value['maximum_paths'] }}
 {%       endif %}
 {%       if value['neighbors'] is defined %}
 {%         for neighbor, values in value['neighbors'].iteritems() %}
+{%           if values['is_peer_group']|default(False) %}
+  neighbor {{ neighbor }} peer-group
+{%           endif %}
+{%           if values['peer_group']|default(False) %}
+  neighbor {{ neighbor }} peer-group {{ values['peer_group'] }}
+{%           endif %}
+{%           if values['asn']|default(False) %}
   neighbor {{ neighbor }} remote-as {{ values['asn'] }}
+{%           endif %}
 {%           if values['default_originate']|default(False) %}
   neighbor {{ neighbor }} default-originate
 {%           endif %}
@@ -34,6 +45,21 @@ router bgp {{ key }}
 {%           endif %}
 {%           if values['next_hop_self']|default(False) %}
   neighbor {{ neighbor }} next-hop-self
+{%           endif %}
+{%           if values['v4_route_reflector_client']|default(False) or
+                values['v4_route_map']|default(False) %}
+!
+  address-family ipv4 unicast
+{%             if values['v4_route_reflector_client']|default(False) %}
+    neighbor {{ neighbor }} route-reflector-client
+{%             endif %}
+{%             if values['v4_route_map']|default(False) %}
+{%               for _route_map in values['v4_route_map'] %}
+    neighbor {{ neighbor }} route-map {{ _route_map }}
+{%               endfor %}
+{%             endif %}
+  exit-address-family
+!
 {%           endif %}
 {%         endfor %}
 {%       endif %}
@@ -45,6 +71,7 @@ router bgp {{ key }}
 {%       endif %}
 {%       if value['redistribute'] is defined %}
 {%         if value['networks'] is not defined %}
+!
   address-family ipv4 unicast
 {%         endif %}
 {%         for _redistribute in value['redistribute'] %}
