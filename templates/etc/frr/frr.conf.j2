@@ -90,7 +90,9 @@ router bgp {{ key }}
 !
 {% if frr_daemons['ospfd'] %}
 router ospf
+{%       if frr_router_id != [] %}
   router-id {{ frr_router_id }}
+{%       endif %}
 {%   if frr_ospf is defined and frr_ospf != [] %}
 {%     if frr_ospf['areas'] is defined %}
 {%       for key, value in frr_ospf['areas'].iteritems() %}
@@ -99,7 +101,7 @@ router ospf
 {%         endfor %}
 {%       endfor %}
 {%     endif %}
-{%     if frr_ospf['log_adjacency_changes'] %}
+{%     if frr_ospf['log_adjacency_changes']|default(False) %}
   log-adjacency-changes
 {%     endif %}
 {%     if frr_ospf['passive_interfaces'] is defined %}
