@@ -11,7 +11,7 @@
      ansible_lsb.release is version ('18.04', '<') or
      ansible_distribution != "Ubuntu"
 
-- name: debian | Installing Pre-Reqs
+- name: debian | Installing Pre-Reqs Ubuntu 18+
   apt:
     name: "{{ item }}"
     state: present
@@ -20,6 +20,13 @@
     - iproute2
     - libc-ares2
   when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_lsb.release is version ('18.04', '>=')
+
+- name: ubuntu | setting version if not set
+  set_fact: frr_version="6.0"
+  when:
+    - frr_version == "3.0.3"
     - ansible_distribution == "Ubuntu"
     - ansible_lsb.release is version ('18.04', '>=')
 
