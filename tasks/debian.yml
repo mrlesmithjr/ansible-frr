@@ -24,57 +24,74 @@
     - ansible_lsb.release is version ('18.04', '>=')
 
 - name: ubuntu | setting version if not set
-  set_fact: frr_version="6.0"
+  set_fact: frr_version="6.0.2"
   when:
     - frr_version == "3.0.3"
     - ansible_distribution == "Ubuntu"
     - ansible_lsb.release is version ('18.04', '>=')
 
-- name: set url on frr greater than version 4
+- name: set url on frr between version 4 and 6.0.0
   set_fact:
     frr_url_part: '-1.'
     frr_url_part_2: '+1_'
-  when: frr_version|int > 4
+  when:
+    - frr_version > 4
+    - frr_version <= 6.0
+
+- name: set url on frr greater than version 6.0.0
+  set_fact:
+    frr_url_part: '-0.'
+    frr_url_part_2: '.1_'
+    frr_url_part_3: '.1'
+  when:
+    - frr_version > 6.0
 
 - name: debian | Installing FRR {{ frr_version }}
   apt:
-    deb: "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_major_version }}{{frr_url_part_2|default('.1_')}}amd64.deb"
+    deb: [ "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_major_version }}{{frr_url_part_2|default('.1_')}}amd64.deb" ]
     state: present
   become: true
-  when: >
-        ansible_distribution == "Debian" and
-        ansible_machine == 'x86_64'
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_machine == 'x86_64'
 
-- name: debian | Installing FRR {{ frr_version }} (Arm)
-  apt:
-    deb: "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_major_version }}{{frr_url_part_2|default('.1_')}}armhf.deb"
+- name: debian | Add FRR {{ frr_version }} (Arm)
+  set_fact:
+    frr_debs: [ "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_major_version }}{{frr_url_part_2|default('.1_')}}armhf.deb" ]
     state: present
   become: true
-  when: >
-        ansible_distribution == "Debian" and
-        ansible_machine == 'armv7l'
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_machine == 'armv7l'
 
-- name: debian | Installing FRR {{ frr_version }}
-  apt:
-    deb: "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{frr_url_part_2|default('.1_')}}amd64.deb"
-    state: present
-  become: true
-  when: >
-        ansible_distribution == "Ubuntu" and
-        ansible_machine == 'x86_64'
+- name: Ubuntu | Add FRR {{ frr_version }}
+  set_fact:
+    frr_debs: [ "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{frr_url_part_2|default('.1_')}}amd64.deb" ]
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_machine == 'x86_64'
 
-- name: debian | Installing FRR {{ frr_version }} (Arm)
-  apt:
-    deb: "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{frr_url_part_2|default('.1_')}}armhf.deb"
-    state: present
-  become: true
-  when: >
-        ansible_distribution == "Ubuntu" and
-        ansible_machine == 'armv7l'
+- name: Ubuntu | Add FRR {{ frr_version }} (Arm)
+  set_fact:
+    frr_debs: [ "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{frr_url_part_2|default('.1_')}}armhf.deb" ]
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_machine == 'armv7l'
 
-- name: install python frr tools
-  apt:
-    deb: "{{ frr_package_url }}/frr-pythontools_{{ frr_version }}-1.{{ ansible_distribution|lower }}{{ ansible_distribution_version }}+1_all.deb"
-    state: present
-  become: true
+- name: add python frr tools to install list
+  set_fact:
+    frr_package_deb: "{{ frr_package_url }}/frr-pythontools_{{ frr_version }}{{ frr_url_part }}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{ frr_url_part_3 | default('+1') }}_all.deb"
   when: frr_reload == true
+
+- name: add python frr tools to install list
+  set_fact:
+    frr_debs: "{{ frr_debs }} + [ '{{ frr_package_deb }}' ]"
+  when: frr_reload == true
+
+- name: Installing FRR {{ frr_version }}
+  apt: 
+    deb: "{{ item }}"
+    state: present
+    force: true
+  become: true
+  with_items: "{{ frr_debs }}"
