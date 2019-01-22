@@ -81,9 +81,11 @@ router bgp {{ key }}
 {%       if value['networks'] is defined or value['redistribute'] is defined %}
   exit-address-family
 {%       endif %}
+{%       if frr_vnc_defaults|default(False) %}
   vnc defaults
     response-lifetime 3600
     exit-vnc
+{%       endif %}
 {%     endfor %}
 {%   endif %}
 {% endif %}

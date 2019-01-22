@@ -23,13 +23,6 @@
     - ansible_distribution == "Ubuntu"
     - ansible_lsb.release is version ('18.04', '>=')
 
-- name: ubuntu | setting version if not set
-  set_fact: frr_version="6.0.2"
-  when:
-    - frr_version == "3.0.3"
-    - ansible_distribution == "Ubuntu"
-    - ansible_lsb.release is version ('18.04', '>=')
-
 - name: set url on frr between version 4 and 6.0.0
   set_fact:
     frr_url_part: '-1.'
