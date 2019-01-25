@@ -103,4 +103,7 @@ frr_router_id: []
 
 # Defines FRR version to install
 # https://github.com/FRRouting/frr/releases
-frr_version: 3.0.3
+frr_version: 6.0.2
+
+_frr_bgp_summary:
+  stdout: ""
