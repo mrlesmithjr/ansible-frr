@@ -20,8 +20,10 @@
     - [OSPF](#ospf)
       - [Enable OSPF](#enable-ospf)
       - [Configuring OSPF](#configuring-ospf)
-    - [STATIC routes](#static-routes)
+    - [STATIC](#static)
       - [Configuring STATIC routes](#configuring-static-routes)
+  - [Interface Configuration](#interface-configuration)
+    - [Interfaces](#interfaces)
   - [Vagrant](#vagrant)
     - [Spinning Up](#spinning-up)
     - [Monitoring](#monitoring)
@@ -236,9 +238,13 @@ frr_ospf: []
   #   1:
   #     networks:
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
+  #     auth: true
+  #
   #   2:
   #     networks:
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/24"
+  #     type: nssa
+  #
   # log_adjacency_changes: true
   # passive_interfaces: []
   #   # - default
@@ -261,6 +267,21 @@ frr_static: []
   # destination: nexthop
   # 1.1.1.1: 192.168.1.1
   # 1.1.1.2: blackhole
+```
+
+## Interface Configuration
+
+### Interfaces
+
+```yaml
+frr_interfaces: []
+  # lo:
+  #   ip: 10.0.0.0/32
+  #   description: loopback
+  # eth0:
+  #   auth:
+  #     id: 1
+  #     key: supersecret
 ```
 
 ## Vagrant
