@@ -4,6 +4,22 @@ hostname {{ ansible_hostname }}
 password {{ frr_password }}
 log {{ frr_logging }}
 !
+{% if frr_interfaces is defined and frr_interfaces != [] %}
+{%   for key, value in frr_interfaces.iteritems() %}
+interface {{ key }}
+{%     if value['description'] is defined %}
+  description {{ value['description'] }}
+{%     endif %}
+{%     if value['ip'] is defined %}
+  ip address {{ value['ip'] }}
+{%     endif %}
+{%     if value['auth'] is defined %}
+  ip ospf authentication message-digest
+  ip ospf message-digest-key {{ value['auth']['id'] }} md5 {{ value['auth']['key'] }}
+{%     endif %}
+{%   endfor %}
+{% endif %}
+!
 {% if frr_static is defined and frr_static != [] %}
 {%   for _static_dest, _static_next_hop in frr_static.iteritems() %}
 ip route {{ _static_dest }} {{ _static_next_hop }}
@@ -101,6 +117,12 @@ router ospf
 {%         for _network in value['networks'] %}
   network {{ _network }} area {{ key }}
 {%         endfor %}
+{%         if value['auth'] is defined %}
+  area {{ key }} authentication message-digest
+{%         endif %}
+{%         if value['type'] is defined %}
+  area {{ key }} {{ value['type'] }}
+{%         endif %}
 {%       endfor %}
 {%     endif %}
 {%     if frr_ospf['log_adjacency_changes']|default(False) %}
