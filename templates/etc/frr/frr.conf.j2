@@ -53,6 +53,12 @@ router bgp {{ key }}
 {%           if values['asn']|default(False) %}
   neighbor {{ neighbor }} remote-as {{ values['asn'] }}
 {%           endif %}
+{%           if values['password']|default(False) %}
+  neighbor {{ neighbor }} password {{ values['password'] }}
+{%           endif %}
+{%           if values['multihop']|default(False) %}
+  neighbor {{ neighbor }} ebgp-multihop {{ values['multihop'] }}
+{%           endif %}
 {%           if values['default_originate']|default(False) %}
   neighbor {{ neighbor }} default-originate
 {%           endif %}
