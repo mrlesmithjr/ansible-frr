@@ -138,6 +138,11 @@ frr_bgp: []
   #         default_originate: false
   #         description: node2
   #         next_hop_self: true
+  #         password: secret
+  #       192.168.250.12:
+  #         asn: 66000
+  #         description: far_away
+  #         multihop: 255
   #     networks:
   #       - "{{ frr_router_id }}/32"
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
