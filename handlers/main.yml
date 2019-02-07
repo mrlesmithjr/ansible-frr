@@ -6,7 +6,7 @@
     state: restarted
     enabled: true
   become: true
-  when: frr_reload != true
+  when: frr_reload != true or frrdownload.changed
   listen: "restart frr"
 
 - name: reload frr
@@ -15,5 +15,5 @@
     state: reloaded
     enabled: true
   become: true
-  when: frr_reload == true
+  when: frr_reload == true and not frrdownload.changed
   listen: "restart frr"
