@@ -98,14 +98,14 @@
         url: "{{ item }}"
         dest: /tmp/frr/{{ frr_version }}/
       with_items: "{{ frr_debs }}"
-      register: frrdownload
+      register: _frrdownload
 
     - name: Installing FRR {{ frr_version }} and netplan apply to fix connectivity
       shell: |
         dpkg --force-confnew -i /tmp/frr/{{ frr_version }}/frr*.deb
         netplan apply
       become: true
-      when: frrdownload.changed
+      when: _frrdownload.changed
       notify: restart frr
   when: ansible_lsb.release is version ('18.04', '>=')
 
@@ -118,7 +118,7 @@
         force: true
       become: true
       with_items: "{{ frr_debs }}"
-      register: frrdownload
+      register: _frrdownload
   when: ansible_lsb.release is version ('18.04', '<')
 
 - name: Backup old /etc/frr/daemons.conf and /etc/default/frr
