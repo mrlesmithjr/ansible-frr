@@ -32,6 +32,7 @@
       - [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
     - [Grafana Dashboards](#grafana-dashboards)
     - [Tearing down](#tearing-down)
+  - [Upgrade/Downgrade](#upgradedowngrade)
   - [License](#license)
   - [Author Information](#author-information)
 
@@ -383,6 +384,13 @@ When you are done testing you can simply tear everything down by:
 ```bash
 scripts/cleanup.sh
 ```
+## Upgrade/Downgrade
+> NOTE: FRR is unable to be downgraded from 6.0.2 using this role.
+
+You can upgrade or downgrade FRR by setting the following variable:
+
+`frr_version: 6.0.2` from `frr_version: 6.0`
+
 
 ## License
 
