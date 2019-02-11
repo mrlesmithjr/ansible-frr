@@ -107,3 +107,8 @@ frr_version: 6.0.2
 
 _frr_bgp_summary:
   stdout: ""
+
+# Installs and configured FRR python tools for reload
+# If you make a change to your routing configuration, you need to reload so your changes take place. FRR reload enables you to apply only the modifications you make to your FRR configuration, synchronizing its running state with the configuration in /etc/frr/frr.conf. This is useful for optimizing the automation of FRR in your environment or to apply changes made at runtime.
+
+frr_reload: false
