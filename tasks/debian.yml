@@ -85,6 +85,7 @@
   package:
     name: python-ipaddr
     state: present
+  become: true
 
 - name: Doing things for Ubuntu-18.04
   block:
