@@ -128,12 +128,14 @@ frr_bgp: []
   # asns:
   #   65000:
   #     log_neighbor_changes: true
+  #     timers: '3 9'
   #     neighbors:
   #       192.168.250.11:
   #         asn: 65000
   #         default_originate: false
   #         description: node1
   #         next_hop_self: true
+  #         timers_connect: 5
   #       192.168.250.12:
   #         asn: 65000
   #         default_originate: false
