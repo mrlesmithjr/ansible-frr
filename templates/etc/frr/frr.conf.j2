@@ -68,6 +68,9 @@ router bgp {{ key }}
 {%           if values['next_hop_self']|default(False) %}
   neighbor {{ neighbor }} next-hop-self
 {%           endif %}
+{%           if values['timers_connect']|default(False) %}
+  neighbor {{ neighbor }} timers connect {{ values['timers_connect'] }}
+{%           endif %}
 {%           if values['v4_route_reflector_client']|default(False) or
                 values['v4_route_map']|default(False) %}
 !
