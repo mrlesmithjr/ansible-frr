@@ -99,6 +99,7 @@
         url: "{{ item }}"
         dest: /tmp/frr/{{ frr_version }}/
       with_items: "{{ frr_debs }}"
+      changed_when: false
       register: _frrdownload
 
     - name: Installing FRR {{ frr_version }} and netplan apply to fix connectivity
