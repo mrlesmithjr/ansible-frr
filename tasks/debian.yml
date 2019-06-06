@@ -108,7 +108,9 @@
         netplan apply
       become: true
       when: _frrdownload.changed
-      notify: restart frr
+      notify:
+        - restart frr
+        - start frr
   when: ansible_lsb.release is version ('18.04', '>=')
 
 - name: Do things for not Ubuntu-18.04
@@ -123,6 +125,12 @@
       register: _frrdownload
   when: ansible_lsb.release is version ('18.04', '<')
 
+- name: stat config
+  stat: path=/etc/default/frr
+  register: conf_stat
+  when:
+    - frr_version > 6.0
+
 - name: Backup old /etc/frr/daemons.conf and /etc/default/frr
   copy:
     remote_src: True
@@ -131,6 +139,7 @@
   ignore_errors: true
   when:
     - frr_version > 6.0
+    - conf_stat.stat.exists
   with_items:
     - /etc/frr/daemons.conf
     - /etc/default/frr
@@ -139,7 +148,9 @@
   file:
     path: "{{ item }}"
     state: absent
-  notify: restart frr
+  notify:
+    - restart frr
+    - start frr
   when:
     - frr_version > 6.0
   with_items:
