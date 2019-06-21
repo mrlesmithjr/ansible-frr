@@ -1,24 +1,18 @@
 ---
 - name: debian | Installing Pre-Reqs non-ubuntu
   apt:
-    name: "{{ item }}"
+    name: ['iproute', 'libc-ares2']
     state: present
   become: true
-  with_items:
-    - iproute
-    - libc-ares2
   when: >
      ansible_lsb.release is version ('18.04', '<') or
      ansible_distribution != "Ubuntu"
 
 - name: debian | Installing Pre-Reqs Ubuntu 18+
   apt:
-    name: "{{ item }}"
+    name: ['iproute', 'libc-ares2']
     state: present
   become: true
-  with_items:
-    - iproute2
-    - libc-ares2
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_lsb.release is version ('18.04', '>=')
@@ -87,27 +81,40 @@
     state: present
   become: true
 
+- name: Remove Quagga
+  package:
+    name: quagga
+    state: absent
+  become: true
+
+- name: Stat FRR
+  package:
+    name: frr
+    state: present
+  become: true
+  register: _frr_installed
+  failed_when: false
+
 - name: Doing things for Ubuntu-18.04
   block:
     - name: Create our download directory
       file:
         path: /tmp/frr/{{ frr_version }}/
         state: directory
+      changed_when: false
 
     - name: Download FRR package
       get_url:
         url: "{{ item }}"
         dest: /tmp/frr/{{ frr_version }}/
       with_items: "{{ frr_debs }}"
-      changed_when: false
-      register: _frrdownload
 
     - name: Installing FRR {{ frr_version }} and netplan apply to fix connectivity
       shell: |
         dpkg --force-confnew -i /tmp/frr/{{ frr_version }}/frr*.deb
-        netplan apply
+        netplan apply 2> /dev/null || { echo >&2 "no netplan installed";}
       become: true
-      when: _frrdownload.changed
+      when: (_frr_installed.stderr is defined) or (_frr_installed.msg is defined)
       notify:
         - restart frr
         - start frr
