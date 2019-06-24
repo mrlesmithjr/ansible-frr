@@ -10,7 +10,7 @@
 
 - name: debian | Installing Pre-Reqs Ubuntu 18+
   apt:
-    name: ['iproute', 'libc-ares2']
+    name: ['iproute2', 'libc-ares2']
     state: present
   become: true
   when:
