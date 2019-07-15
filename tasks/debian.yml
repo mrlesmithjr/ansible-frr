@@ -88,7 +88,7 @@
   become: true
 
 - name: Fetch FRR version
-  shell: "dpkg -l | grep frr | head -1 | awk '{print $3}' | sed 's/~.*//' | sed -r 's/-/./g'"
+  shell: "dpkg -l | grep frr | head -1 | awk '{print $3}' | sed 's/~.*//' | sed -r 's/-/./g' | cut -c1-5"
   ignore_errors: true
   changed_when: false
   register: _frr_version
