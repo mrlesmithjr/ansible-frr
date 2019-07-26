@@ -90,6 +90,7 @@ frr_static: []
   #   blackhole
   # 2.2.2.2:
   #   192.168.0.1
+frr_static_v6: {}
 
 frr_package_url: "https://github.com/FRRouting/frr/releases/download/frr-{{ frr_version }}"
 

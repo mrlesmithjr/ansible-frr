@@ -11,7 +11,22 @@ interface {{ key }}
   description {{ value['description'] }}
 {%     endif %}
 {%     if value['ip'] is defined %}
+{%       if value['ip'] is string %}
   ip address {{ value['ip'] }}
+{%       elif value['ip'] is iterable %}
+{%         for ip in value['ip'].iteritems() %}
+  ip address {{ ip }}
+{%         endfor %}
+{%       endif %}
+{%     endif %}
+{%     if value['ipv6'] is defined %}
+{%       if value['ipv6'] is string %}
+  ipv6 address {{ value['ipv6'] }}
+{%       elif value['ipv6'] is iterable %}
+{%         for ipv6 in value['ipv6'].iteritems() %}
+  ipv6 address {{ ipv6 }}
+{%         endfor %}
+{%       endif %}
 {%     endif %}
 {%     if value['auth'] is defined %}
   ip ospf authentication message-digest
@@ -23,6 +38,11 @@ interface {{ key }}
 {% if frr_static is defined and frr_static != [] %}
 {%   for _static_dest, _static_next_hop in frr_static.iteritems() %}
 ip route {{ _static_dest }} {{ _static_next_hop }}
+{%   endfor %}
+{% endif %}
+{% if frr_static_v6 is defined and frr_static_v6 != {} %}
+{%   for dest, next_hop in frr_static_v6.iteritems() %}
+ip route {{ dest }} {{ next_hop }}
 {%   endfor %}
 {% endif %}
 !
