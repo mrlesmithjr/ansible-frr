@@ -271,10 +271,12 @@ frr_ospf: []
 In order to configure static routes, define the following based on your requirements:
 
 ```yaml
-frr_static: []
-  # destination: nexthop
-  # 1.1.1.1: 192.168.1.1
-  # 1.1.1.2: blackhole
+frr_static: # A dict. key = destination, value = nexthop
+  10.0.0.0/8: 192.168.1.1
+  1.1.1.1: 192.168.1.1
+  1.1.1.2: blackhole
+frr_static_v6: # A dict. key = destination, value = nexthop
+  2001:0db8:85a3:8a2e::/64 2001::1
 ```
 
 ## Interface Configuration
@@ -282,14 +284,21 @@ frr_static: []
 ### Interfaces
 
 ```yaml
-frr_interfaces: []
-  # lo:
-  #   ip: 10.0.0.0/32
-  #   description: loopback
-  # eth0:
-  #   auth:
-  #     id: 1
-  #     key: supersecret
+frr_interfaces: # A dict. key = iface name, value = iface data
+  lo:
+    ip: 10.0.0.0/32 # ip can be a single value or list
+    ipv6: 2001:0db8:85a3:8a2e::1/64 # ipv6 can be a single value or list
+    description: loopback
+  eth0:
+    ip: # ip can be a single value or list
+      - 10.0.0.0/32
+      - 172.16.0.0/32
+    ipv6: # ipv6 can be a single value or list
+      - 2001:0db8:85a3:8a2e::1/64
+      - 2001:0db8:85a3:8a2e::2/64
+    auth:
+      id: 1
+      key: supersecret
 ```
 
 ## Vagrant
