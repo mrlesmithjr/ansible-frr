@@ -124,37 +124,37 @@ frr_daemons:
 In order to configure BGP, define the following based on your requirements:
 
 ```yaml
-frr_bgp: []
-  # asns:
-  #   65000:
-  #     log_neighbor_changes: true
-  #     timers: '3 9'
-  #     neighbors:
-  #       192.168.250.11:
-  #         asn: 65000
-  #         default_originate: false
-  #         description: node1
-  #         next_hop_self: true
-  #         timers_connect: 5
-  #       192.168.250.12:
-  #         asn: 65000
-  #         default_originate: false
-  #         description: node2
-  #         next_hop_self: true
-  #         password: secret
-  #       192.168.250.12:
-  #         asn: 66000
-  #         description: far_away
-  #         multihop: 255
-  #     networks:
-  #       - "{{ frr_router_id }}/32"
-  #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
-  #     redistribute: []
-  #       # - bgp
-  #       # - connected
-  #       # - kernel
-  #       # - ospf
-  #       # - static
+frr_bgp:
+  asns:
+    65000:
+      log_neighbor_changes: true
+      timers: '3 9'
+      neighbors:
+        192.168.250.11:
+          asn: 65000
+          default_originate: false
+          description: node1
+          next_hop_self: true
+          timers_connect: 5
+        192.168.250.12:
+          asn: 65000
+          default_originate: false
+          description: node2
+          next_hop_self: true
+          password: secret
+        192.168.250.12:
+          asn: 66000
+          description: far_away
+          multihop: 255
+      networks:
+        - "{{ frr_router_id }}/32"
+        - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
+      redistribute:
+        - bgp
+        - connected
+        - kernel
+        - ospf
+        - static
 ```
 
 #### Example BGP
@@ -238,30 +238,30 @@ frr_daemons:
 In order to configure OSPF, define the following based on your requirements:
 
 ```yaml
-frr_ospf: []
-  # areas:
-  #   0:
-  #     networks:
-  #       - "{{ frr_router_id }}/32"
-  #   1:
-  #     networks:
-  #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
-  #     auth: true
-  #
-  #   2:
-  #     networks:
-  #       - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/24"
-  #     type: nssa
-  #
-  # log_adjacency_changes: true
-  # passive_interfaces: []
-  #   # - default
-  # redistribute: []
-  #   # - bgp
-  #   # - connected
-  #   # - kernel
-  #   # - ospf
-  #   # - static
+frr_ospf:
+  areas:
+    0:
+      networks:
+        - "{{ frr_router_id }}/32"
+    1:
+      networks:
+        - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
+      auth: true
+
+    2:
+      networks:
+        - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/24"
+      type: nssa
+
+  log_adjacency_changes: true
+  passive_interfaces: # A list of interfaces to set passive
+    - default
+  redistribute: # A list of protocols to redistribute
+    - bgp
+    - connected
+    - kernel
+    - ospf
+    - static
 ```
 
 ### STATIC
