@@ -1,7 +1,6 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [ansible-frr](#ansible-frr)
   - [Requirements](#requirements)
   - [Role Variables](#role-variables)
@@ -254,9 +253,9 @@ frr_ospf:
       type: nssa
 
   log_adjacency_changes: true
-  passive_interfaces:
+  passive_interfaces: # A list of interfaces to set passive
     - default
-  redistribute:
+  redistribute: # A list of protocols to redistribute
     - bgp
     - connected
     - kernel
@@ -271,10 +270,12 @@ frr_ospf:
 In order to configure static routes, define the following based on your requirements:
 
 ```yaml
-frr_static:
-  destination: nexthop
+frr_static: # A dict. key = destination, value = nexthop
+  10.0.0.0/8: 192.168.1.1
   1.1.1.1: 192.168.1.1
   1.1.1.2: blackhole
+frr_static_v6: # A dict. key = destination, value = nexthop
+  2001:0db8:85a3:8a2e::/64 2001::1
 ```
 
 ## Interface Configuration
@@ -282,11 +283,18 @@ frr_static:
 ### Interfaces
 
 ```yaml
-frr_interfaces:
+frr_interfaces: # A dict. key = iface name, value = iface data
   lo:
-    ip: 10.0.0.0/32
+    ip: 10.0.0.0/32 # ip can be a single value or list
+    ipv6: 2001:0db8:85a3:8a2e::1/64 # ipv6 can be a single value or list
     description: loopback
   eth0:
+    ip: # ip can be a single value or list
+      - 10.0.0.0/32
+      - 172.16.0.0/32
+    ipv6: # ipv6 can be a single value or list
+      - 2001:0db8:85a3:8a2e::1/64
+      - 2001:0db8:85a3:8a2e::2/64
     auth:
       id: 1
       key: supersecret
