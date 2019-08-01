@@ -9,6 +9,7 @@
   become: true
   notify:
     - restart frr
+    - start frr
 
 - name: config | Configuring debian.conf
   template:
@@ -20,6 +21,7 @@
   become: true
   notify:
     - restart frr
+    - start frr
   when: ansible_os_family == "Debian"
 
 - name: config | Configuring zebra.conf
@@ -33,6 +35,7 @@
   register: _frr_zebra_configured
   notify:
     - restart frr
+    - start frr
 
 # We need to flush here in case interfaces are configured in zebra.conf
 - name: config | Flusing Handlers
@@ -50,7 +53,8 @@
     dest: /etc/frr/frr.conf
     owner: frr
     group: frr
-    mode: u=rw,g=r,o=
+    mode: u=rw,g=r,o=r
   become: true
   notify:
     - restart frr
+    - start frr

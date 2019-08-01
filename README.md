@@ -7,6 +7,11 @@
   - [Role Variables](#role-variables)
   - [Dependencies](#dependencies)
   - [Example Playbook](#example-playbook)
+  - [Route Maps and Prefix Lists](#route-maps-and-prefix-lists)
+    - [Route Maps](#route-maps)
+      - [Configuring Route Maps](#configuring-route-maps)
+    - [Prefix Lists](#prefix-lists)
+      - [Configuring Prefix Lists](#configuring-prefix-lists)
   - [Supported Routing Protocols](#supported-routing-protocols)
     - [BGP](#bgp)
       - [Enable BGP](#enable-bgp)
@@ -15,6 +20,10 @@
     - [OSPF](#ospf)
       - [Enable OSPF](#enable-ospf)
       - [Configuring OSPF](#configuring-ospf)
+    - [STATIC](#static)
+      - [Configuring STATIC routes](#configuring-static-routes)
+  - [Interface Configuration](#interface-configuration)
+    - [Interfaces](#interfaces)
   - [Vagrant](#vagrant)
     - [Spinning Up](#spinning-up)
     - [Monitoring](#monitoring)
@@ -23,6 +32,7 @@
       - [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
     - [Grafana Dashboards](#grafana-dashboards)
     - [Tearing down](#tearing-down)
+  - [Upgrade/Downgrade](#upgradedowngrade)
   - [License](#license)
   - [Author Information](#author-information)
 
@@ -45,12 +55,50 @@ An [Ansible](https://www.ansible.com) role to install/configure [FRR](https://fr
 
 ## Example Playbook
 
+## Route Maps and Prefix Lists
+
+### Route Maps
+
+#### Configuring Route Maps
+
+Below is an example of Route Maps Configuration:
+
+```yaml
+frr_route_map:
+  RTBH:
+    permit 10:
+      interface: blackhole
+      prefix_list: Bad_IPs
+      origin: igp
+      community: "12345:100"
+  RTBH_IN:
+    deny 10: []
+```
+
+### Prefix Lists
+
+#### Configuring Prefix Lists
+
+Below is an example of Prefix List Configuration:
+
+```yaml
+frr_prefix_list:
+  Bad_IPs:
+    05 permit:
+      prefix: 192.168.88.0/24
+      match: ge 32
+    10 permit:
+      prefix: 172.16.0.0/16
+      match: le 32
+```
+
 ## Supported Routing Protocols
 
-| Protocol      | Implemented | Notes               |
-| ------------- | ----------- | ------------------- |
-| [BGP](#bgp)   | X           | Only initial config |
-| [OSPF](#ospf) | X           | Only initial config |
+| Protocol          | Implemented | Notes               |
+| ----------------- | ----------- | ------------------- |
+| [BGP](#bgp)       | X           | Only initial config |
+| [OSPF](#ospf)     | X           | Only initial config |
+| [STATIC](#static) | X           | Only initial config |
 
 ### BGP
 
@@ -82,17 +130,24 @@ frr_bgp:
   # asns:
   #   65000:
   #     log_neighbor_changes: true
+  #     timers: '3 9'
   #     neighbors:
   #       192.168.250.11:
   #         asn: 65000
   #         default_originate: false
   #         description: node1
   #         next_hop_self: true
+  #         timers_connect: 5
   #       192.168.250.12:
   #         asn: 65000
   #         default_originate: false
   #         description: node2
   #         next_hop_self: true
+  #         password: secret
+  #       192.168.250.12:
+  #         asn: 66000
+  #         description: far_away
+  #         multihop: 255
   #     networks:
   #       - "{{ frr_router_id }}/32"
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
@@ -194,9 +249,13 @@ frr_ospf:
   #   1:
   #     networks:
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
+  #     auth: true
+  #
   #   2:
   #     networks:
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/24"
+  #     type: nssa
+  #
   # log_adjacency_changes: true
   # passive_interfaces: []
   #   # - default
@@ -206,6 +265,36 @@ frr_ospf:
   #   # - kernel
   #   # - ospf
   #   # - static
+```
+
+### STATIC
+
+#### Configuring STATIC routes
+
+In order to configure static routes, define the following based on your requirements:
+
+```yaml
+frr_static:
+  []
+  # destination: nexthop
+  # 1.1.1.1: 192.168.1.1
+  # 1.1.1.2: blackhole
+```
+
+## Interface Configuration
+
+### Interfaces
+
+```yaml
+frr_interfaces:
+  []
+  # lo:
+  #   ip: 10.0.0.0/32
+  #   description: loopback
+  # eth0:
+  #   auth:
+  #     id: 1
+  #     key: supersecret
 ```
 
 ## Vagrant
@@ -302,6 +391,14 @@ When you are done testing you can simply tear everything down by:
 ```bash
 scripts/cleanup.sh
 ```
+
+## Upgrade/Downgrade
+
+> NOTE: FRR is unable to be downgraded from 6.0.2 using this role.
+
+You can upgrade or downgrade FRR by setting the following variable:
+
+`frr_version: 6.0.2` from `frr_version: 6.0`
 
 ## License
 
