@@ -87,13 +87,11 @@
     state: absent
   become: true
 
-- name: Stat FRR
-  package:
-    name: frr
-    state: present
-  become: true
-  register: _frr_installed
-  failed_when: false
+- name: Fetch FRR version
+  shell: "dpkg -l | grep frr | head -1 | awk '{print $3}' | sed 's/~.*//' | sed -r 's/-/./g' | cut -c1-5"
+  ignore_errors: true
+  changed_when: false
+  register: _frr_version
 
 - name: Doing things for Ubuntu-18.04
   block:
@@ -114,7 +112,7 @@
         dpkg --force-confnew -i /tmp/frr/{{ frr_version }}/frr*.deb
         netplan apply 2> /dev/null || { echo >&2 "no netplan installed";}
       become: true
-      when: (_frr_installed.stderr is defined) or (_frr_installed.msg is defined)
+      when: _frr_version.stdout != frr_version
       notify:
         - restart frr
         - start frr
@@ -130,6 +128,7 @@
       become: true
       with_items: "{{ frr_debs }}"
       register: _frrdownload
+      when: _frr_version.stdout != frr_version
   when: ansible_lsb.release is version ('18.04', '<')
 
 - name: stat config
