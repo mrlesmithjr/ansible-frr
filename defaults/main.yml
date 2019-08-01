@@ -13,7 +13,7 @@ frr_daemons:
   zebra: true
 
 frr_bgp:
-  []
+  {}
   # asns:
   #   65000:
   #     log_neighbor_changes: true
@@ -44,25 +44,26 @@ frr_bgp:
 frr_enable_vtysh: true
 
 # Define any interfaces which you would like IP addresses configured on
-frr_interfaces: []
-# enp0s9:
-#   description: network-1
-#   ip: 192.168.1.10/24
-# enp0s10:
-#   description: network-2
-#   ip: 192.168.2.10/24
-# enp0s16:
-#   description: network-3
-#   ip: 192.168.3.10/24
-# lo:
-#   description: router-id
-#   ip: "{{ frr_router_id }}/32"
+frr_interfaces:
+  {}
+  # enp0s9:
+  #   description: network-1
+  #   ip: 192.168.1.10/24
+  # enp0s10:
+  #   description: network-2
+  #   ip: 192.168.2.10/24
+  # enp0s16:
+  #   description: network-3
+  #   ip: 192.168.3.10/24
+  # lo:
+  #   description: router-id
+  #   ip: "{{ frr_router_id }}/32"
 
 frr_logging: syslog
 
 # Defines OSPF configuration
 frr_ospf:
-  []
+  {}
   # areas:
   #   0:
   #     networks:
@@ -86,13 +87,14 @@ frr_ospf:
 
 # Defines Static Routes
 frr_static:
-  []
+  {}
   # destination:
   #   "next hop"
   # 1.1.1.1:
   #   blackhole
   # 2.2.2.2:
   #   192.168.0.1
+frr_static_v6: {}
 
 frr_package_url: "https://github.com/FRRouting/frr/releases/download/frr-{{ frr_version }}"
 
@@ -103,8 +105,8 @@ frr_password: zebra
 frr_release_date: 2018010901
 
 # Defines router-id
-# ex. 1.1.1.1
-frr_router_id: []
+#
+# frr_router_id: 1.1.1.1
 
 # Defines FRR version to install
 # https://github.com/FRRouting/frr/releases

@@ -4,14 +4,14 @@ hostname {{ ansible_hostname }}
 password {{ frr_password }}
 log {{ frr_logging }}
 !
-{% if frr_interfaces is defined and frr_interfaces != [] %}
-{%   for key, value in frr_interfaces.iteritems() %}
-interface {{ key }}
-{%     if value['description'] is defined %}
-  description {{ value['description'] }}
+{% if frr_interfaces is defined and frr_interfaces != {} %}
+{%   for iface, iface_data in frr_interfaces.iteritems() %}
+interface {{ iface }}
+{%     if iface_data['description'] is defined %}
+  description {{ iface_data['description'] }}
 {%     endif %}
-{%     if value['ip'] is defined %}
-  ip address {{ value['ip'] }}
+{%     if iface_data['ip'] is defined %}
+  ip address {{ iface_data['ip'] }}
 {%     endif %}
 {%   endfor %}
 {% endif %}

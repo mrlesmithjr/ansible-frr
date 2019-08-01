@@ -1,6 +1,7 @@
 ---
 - name: config | Configuring daemons
   template:
+    backup: yes
     src: etc/frr/daemons.j2
     dest: /etc/frr/daemons
     owner: root
@@ -13,6 +14,7 @@
 
 - name: config | Configuring debian.conf
   template:
+    backup: yes
     src: etc/frr/debian.conf.j2
     dest: /etc/frr/debian.conf
     owner: root
@@ -26,6 +28,7 @@
 
 - name: config | Configuring zebra.conf
   template:
+    backup: yes
     src: etc/frr/zebra.conf.j2
     dest: /etc/frr/zebra.conf
     owner: frr
@@ -49,6 +52,7 @@
 
 - name: config | Configuring FRR
   template:
+    backup: yes
     src: etc/frr/frr.conf.j2
     dest: /etc/frr/frr.conf
     owner: frr
