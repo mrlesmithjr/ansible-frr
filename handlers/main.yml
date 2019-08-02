@@ -7,7 +7,7 @@
     enabled: true
   become: true
   ignore_errors: true
-  when: frr_reload != true or _frrdownload.changed
+  when: not frr_reload|bool or _frrdownload.changed
   listen: "restart frr"
 
 - name: reload frr
@@ -17,7 +17,7 @@
     enabled: true
   become: true
   ignore_errors: true
-  when: frr_reload == true and not _frrdownload.changed
+  when: frr_reload|bool and not _frrdownload.changed
   listen: "restart frr"
 
 - name: start frr

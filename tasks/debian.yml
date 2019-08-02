@@ -1,16 +1,18 @@
 ---
-- name: debian | Installing Pre-Reqs non-ubuntu
+- name: debian | Installing Pre-Reqs
   apt:
-    name: ['iproute', 'libc-ares2']
+    name: ["iproute", "libc-ares2"]
     state: present
   become: true
   when: >
-     ansible_lsb.release is version ('18.04', '<') or
-     ansible_distribution != "Ubuntu"
+    (ansible_distribution == "Debian" and
+    ansible_distribution_version|int < 10) or
+    (ansible_distribution == "Ubuntu" and
+    ansible_distribution_version < "18.04")
 
 - name: debian | Installing Pre-Reqs Ubuntu 18+
   apt:
-    name: ['iproute2', 'libc-ares2']
+    name: ["iproute2", "libc-ares2", "libcap2", "libjson-c3", "logrotate"]
     state: present
   become: true
   when:
@@ -19,23 +21,23 @@
 
 - name: set url on frr between version 4 and 6.0.0
   set_fact:
-    frr_url_part: '-1.'
-    frr_url_part_2: '+1_'
+    frr_url_part: "-1."
+    frr_url_part_2: "+1_"
   when:
-    - frr_version > 4
-    - frr_version <= 6.0
+    - frr_version > "4"
+    - frr_version <= "6.0"
 
 - name: set url on frr greater than version 6.0.0
   set_fact:
-    frr_url_part: '-0.'
-    frr_url_part_2: '.1_'
-    frr_url_part_3: '.1'
+    frr_url_part: "-0."
+    frr_url_part_2: ".1_"
+    frr_url_part_3: ".1"
   when:
-    - frr_version > 6.0
+    - frr_version > "6.0"
 
 - name: debian | Installing FRR {{ frr_version }}
   apt:
-    deb: "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{frr_url_part_2|default('.1_')}}amd64.deb"
+    deb: "{{ frr_package_url }}/frr_{{ frr_version }}{{ frr_url_part|default('-1_') }}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{ frr_url_part_2|default('.1_') }}amd64.deb"
     state: present
   become: true
   when:
@@ -44,7 +46,10 @@
 
 - name: debian | Add FRR {{ frr_version }} (Arm)
   set_fact:
-    frr_debs: [ "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_major_version }}{{frr_url_part_2|default('.1_')}}armhf.deb" ]
+    frr_debs:
+      [
+        "{{ frr_package_url }}/frr_{{ frr_version }}{{ frr_url_part|default('-1_') }}{{ ansible_distribution|lower }}{{ ansible_distribution_major_version }}{{ frr_url_part_2|default('.1_') }}armhf.deb",
+      ]
     state: present
   become: true
   when:
@@ -53,14 +58,20 @@
 
 - name: Ubuntu | Add FRR {{ frr_version }}
   set_fact:
-    frr_debs: [ "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{frr_url_part_2|default('.1_')}}amd64.deb" ]
+    frr_debs:
+      [
+        "{{ frr_package_url }}/frr_{{ frr_version }}{{ frr_url_part|default('-1_') }}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{ frr_url_part_2|default('.1_') }}amd64.deb",
+      ]
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_machine == 'x86_64'
 
 - name: Ubuntu | Add FRR {{ frr_version }} (Arm)
   set_fact:
-    frr_debs: [ "{{ frr_package_url }}/frr_{{ frr_version }}{{frr_url_part|default('-1_')}}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{frr_url_part_2|default('.1_')}}armhf.deb" ]
+    frr_debs:
+      [
+        "{{ frr_package_url }}/frr_{{ frr_version }}{{ frr_url_part|default('-1_') }}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{ frr_url_part_2|default('.1_') }}armhf.deb",
+      ]
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_machine == 'armv7l'
@@ -68,12 +79,12 @@
 - name: add python frr tools to install list
   set_fact:
     frr_package_deb: "{{ frr_package_url }}/frr-pythontools_{{ frr_version }}{{ frr_url_part }}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{ frr_url_part_3 | default('+1') }}_all.deb"
-  when: frr_reload == true
+  when: frr_reload|bool
 
 - name: add python frr tools to install list
   set_fact:
     frr_debs: "{{ frr_debs }} + [ '{{ frr_package_deb }}' ]"
-  when: frr_reload == true
+  when: frr_reload|bool
 
 - name: Install python-ipaddr
   package:
@@ -132,10 +143,11 @@
   when: ansible_lsb.release is version ('18.04', '<')
 
 - name: stat config
-  stat: path=/etc/default/frr
+  stat:
+    path: /etc/default/frr
   register: conf_stat
   when:
-    - frr_version > 6.0
+    - frr_version > "6.0"
 
 - name: Backup old /etc/frr/daemons.conf and /etc/default/frr
   copy:
@@ -144,7 +156,7 @@
     dest: "{{ item }}.bak"
   ignore_errors: true
   when:
-    - frr_version > 6.0
+    - frr_version > "6.0"
     - conf_stat.stat.exists
   with_items:
     - /etc/frr/daemons.conf
@@ -158,7 +170,7 @@
     - restart frr
     - start frr
   when:
-    - frr_version > 6.0
+    - frr_version > "6.0"
   with_items:
     - /etc/frr/daemons.conf
     - /etc/default/frr

@@ -1,11 +1,9 @@
 ---
 - name: redhat | Installing Pre-Reqs
   yum:
-    name: "{{ item }}"
+    name: ["iproute", "sudo", "which"]
     state: present
   become: true
-  with_items:
-    - iproute
   when: ansible_distribution != "Fedora"
 
 - name: set url on frr version less than or equal to 4.1
@@ -28,7 +26,10 @@
 
 - name: redhat | Create FRR {{ frr_version }} install
   set_fact:
-    frr_debs: [ "{{ frr_package_url }}/frr-{{ frr_version }}-{{ frr_url_part }}.el7.centos.x86_64.rpm" ]
+    frr_debs:
+      [
+        "{{ frr_package_url }}/frr-{{ frr_version }}-{{ frr_url_part }}.el7.centos.x86_64.rpm",
+      ]
   become: true
 
 - name: redhat | Create Python Tools FRR {{ frr_version }} install
@@ -38,7 +39,7 @@
 - name: redhat | Combine FRR {{ frr_version }} and tools
   set_fact:
     frr_debs: "{{ frr_debs }} + [ '{{ frr_package_deb }}' ]"
-  when: frr_reload == true
+  when: frr_reload|bool
 
 - name: redhat | Installing FRR {{ frr_version }}
   yum:
