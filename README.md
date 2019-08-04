@@ -90,6 +90,18 @@ frr_prefix_list:
       match: le 32
 ```
 
+### Access Lists
+
+#### Configuring Access Lists
+Below is an example
+
+```yaml
+frr_access_list:
+  - '10 permit 10.10.10.21/32'
+  - '10 permit 192.168.0.0/17'
+  - '101 permit ip 10.0.0.0 0.0.0.255 any'
+```
+
 ## Supported Routing Protocols
 
 | Protocol      | Implemented | Notes               |
@@ -261,6 +273,10 @@ frr_ospf:
     - kernel
     - ospf
     - static
+  distribute-list:
+    - name: 10
+      dir: out
+      protocol: connected
 ```
 
 ### STATIC
