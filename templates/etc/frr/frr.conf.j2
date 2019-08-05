@@ -170,6 +170,11 @@ router ospf
   redistribute {{ redist_protocol }}
 {%       endfor %}
 {%     endif %}
+{%     if frr_ospf['distribute_list'] is defined %}
+{%       for acl in frr_ospf['distribute_list'] %}
+  distribute-list {{ acl.name }} {{ acl.dir }} {{ acl.protocol }}
+{%       endfor %}
+{%     endif %}
 {%   endif %}
 {% endif %}
 !
@@ -206,6 +211,12 @@ route-map {{ map_name }} {{ seq }}
 {%       endif %}
 !
 {%     endfor %}
+{%   endfor %}
+{% endif %}
+!
+{% if frr_access_list is defined and frr_access_list != [] %}
+{%   for ace in frr_access_list %}
+access-list {{ ace }}
 {%   endfor %}
 {% endif %}
 !

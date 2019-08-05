@@ -11,6 +11,8 @@
       - [Configuring Route Maps](#configuring-route-maps)
     - [Prefix Lists](#prefix-lists)
       - [Configuring Prefix Lists](#configuring-prefix-lists)
+    - [Access Lists](#access-lists)
+      - [Configuring Access Lists](#configuring-access-lists)
   - [Supported Routing Protocols](#supported-routing-protocols)
     - [BGP](#bgp)
       - [Enable BGP](#enable-bgp)
@@ -88,6 +90,18 @@ frr_prefix_list:
     10 permit:
       prefix: 172.16.0.0/16
       match: le 32
+```
+
+### Access Lists
+
+#### Configuring Access Lists
+Below is an example
+
+```yaml
+frr_access_list:
+  - '10 permit 10.10.10.21/32'
+  - '10 permit 192.168.0.0/17'
+  - '101 permit ip 10.0.0.0 0.0.0.255 any'
 ```
 
 ## Supported Routing Protocols
@@ -261,6 +275,10 @@ frr_ospf:
     - kernel
     - ospf
     - static
+  distribute_list:
+    - name: 10
+      dir: out
+      protocol: connected
 ```
 
 ### STATIC
