@@ -11,6 +11,8 @@
       - [Configuring Route Maps](#configuring-route-maps)
     - [Prefix Lists](#prefix-lists)
       - [Configuring Prefix Lists](#configuring-prefix-lists)
+    - [Access Lists](#access-lists)
+      - [Configuring Access Lists](#configuring-access-lists)
   - [Supported Routing Protocols](#supported-routing-protocols)
     - [BGP](#bgp)
       - [Enable BGP](#enable-bgp)
@@ -273,7 +275,7 @@ frr_ospf:
     - kernel
     - ospf
     - static
-  distribute-list:
+  distribute_list:
     - name: 10
       dir: out
       protocol: connected

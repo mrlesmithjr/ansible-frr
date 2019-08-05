@@ -170,8 +170,8 @@ router ospf
   redistribute {{ redist_protocol }}
 {%       endfor %}
 {%     endif %}
-{%     if frr_ospf['distribute-list'] is defined %}
-{%       for acl in frr_ospf['distribute-list'] %}
+{%     if frr_ospf['distribute_list'] is defined %}
+{%       for acl in frr_ospf['distribute_list'] %}
   distribute-list {{ acl.name }} {{ acl.dir }} {{ acl.protocol }}
 {%       endfor %}
 {%     endif %}
