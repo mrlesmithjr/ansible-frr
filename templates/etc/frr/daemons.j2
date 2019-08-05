@@ -1,10 +1,10 @@
 {{ ansible_managed|comment }}
 
-{% for daemon, enabled in frr_daemons.iteritems() %}
+{% for daemon, enabled in frr_daemons.items() %}
 {{ daemon }}={% if enabled %}yes{% else %}no{% endif %}
 
 {% endfor %}
-{% if frr_version|default('6.0.2') > 6.0 %}
+{% if frr_version|default('6.0.2') > '6.0' %}
 
 # If this option is set the /etc/init.d/frr script automatically loads
 # the config via "vtysh -b" when the servers are started.
