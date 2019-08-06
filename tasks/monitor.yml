@@ -29,6 +29,7 @@
 - name: monitor | Checking If FRR Service Is Running
   service:
     name: frr
+    enabled: true
   register: _frr_service_status
 
 - name: monitor | Capturing BGP Peers
@@ -37,12 +38,13 @@
   register: _frr_bgp_summary
   changed_when: false
   when: >
-        frr_daemons['bgpd'] and
-        _frr_service_status['status']['SubState'] == "running"
+    frr_daemons['bgpd'] and
+    _frr_service_status['status']['SubState'] == "running"
 
 - debug: var=_frr_bgp_summary['stdout']
-  when: _frr_bgp_summary['stdout'] != ""
-
+  when:
+    - _frr_bgp_summary['stdout'] is defined
+    - _frr_bgp_summary['stdout'] != ""
 # - name: monitoring | Caputuring BGP Peer Info
 #   command: vtysh -c "sh ip bgp {{ item }} json"
 #   become: true
