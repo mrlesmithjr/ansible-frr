@@ -224,9 +224,9 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {%     for seq, seq_data in sequences.iteritems() %}
 {%       if seq_data['prefix'] is defined %}
 {%         if seq_data['match'] is defined %}
-ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
+ipv6 prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
 {%         else %}
-ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
+ipv6 prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {%         endif %}
 {%       endif %}
 {%     endfor %}
