@@ -195,12 +195,20 @@ frr_bgp:
           default_originate: false
           description: node2
           next_hop_self: true
+        "::1":
+          asn: 65000
+          default_originate: false
+          description: node1
+          next_hop_self: true
+          adress_family: "ipv6 unicast"
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/24"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s10']['ipv4']['address'] }}/24"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s16']['ipv4']['address'] }}/24"
+      networks_v6:
+        - "1::3/64"
 ```
 
 Below is an example of a BGP summary based on the above configuration:
