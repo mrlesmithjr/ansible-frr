@@ -90,6 +90,11 @@ frr_prefix_list:
     10 permit:
       prefix: 172.16.0.0/16
       match: le 32
+frr_prefix_list_v6:
+  Bad_IPs:
+    05 permit:
+      prefix: 1234:5678::/32
+      match: ge 128
 ```
 
 ### Access Lists
@@ -316,6 +321,9 @@ frr_interfaces: # A dict. key = iface name, value = iface data
     auth:
       id: 1
       key: supersecret
+    other:
+      - "no ipv6 nd suppress-ra"
+      - "link-detect"
 ```
 
 ## Vagrant
