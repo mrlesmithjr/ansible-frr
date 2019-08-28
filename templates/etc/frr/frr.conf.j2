@@ -101,8 +101,12 @@ router bgp {{ asn }}
 {%           endif %}
 !
 {%           if neighbor_data['v4_route_reflector_client'] | default(False) or
-                neighbor_data['v4_route_map'] | default(False) %}
+                neighbor_data['v4_route_map'] | default(False) or 
+                neighbor_data['address_family'] | default(False) %}
   address-family {{ neighbor_data['address_family'] | default('ipv4 unicast') }}
+{%             if neighbor_data['address_family'] | default(False) %}
+  neighbor {{ neighbor }} activate
+{%             endif %}
 {%             if neighbor_data['v4_route_reflector_client'] | default(False) %}
     neighbor {{ neighbor }} route-reflector-client
 {%             endif %}
