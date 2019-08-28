@@ -32,6 +32,11 @@ interface {{ iface }}
   ip ospf authentication message-digest
   ip ospf message-digest-key {{ iface_data['auth']['id'] }} md5 {{ iface_data['auth']['key'] }}
 {%     endif %}
+{%     if iface_data['other'] is defined %}
+{%       for option in iface_data['other'].iteritems() %}
+  {{ option }}
+{%       endfor %}
+{%     endif %}
 {%   endfor %}
 {% endif %}
 !
@@ -203,6 +208,19 @@ router ospf
 !
 {% if frr_prefix_list is defined and frr_prefix_list != {} %}
 {%   for prefix_list_name, sequences in frr_prefix_list.iteritems() %}
+{%     for seq, seq_data in sequences.iteritems() %}
+{%       if seq_data['prefix'] is defined %}
+{%         if seq_data['match'] is defined %}
+ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
+{%         else %}
+ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
+{%         endif %}
+{%       endif %}
+{%     endfor %}
+{%   endfor %}
+!
+{% if frr_prefix_list_v6 is defined and frr_prefix_list_v6 != {} %}
+{%   for prefix_list_name, sequences in frr_prefix_list_v6.iteritems() %}
 {%     for seq, seq_data in sequences.iteritems() %}
 {%       if seq_data['prefix'] is defined %}
 {%         if seq_data['match'] is defined %}
