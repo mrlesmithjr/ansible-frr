@@ -32,6 +32,11 @@ interface {{ iface }}
   ip ospf authentication message-digest
   ip ospf message-digest-key {{ iface_data['auth']['id'] }} md5 {{ iface_data['auth']['key'] }}
 {%     endif %}
+{%     if iface_data['other'] is defined %}
+{%       for option in iface_data['other'].iteritems() %}
+  {{ option }}
+{%       endfor %}
+{%     endif %}
 {%   endfor %}
 {% endif %}
 !
@@ -53,13 +58,13 @@ router bgp {{ asn }}
 {%       if frr_router_id is defined %}
   bgp router-id {{ frr_router_id }}
 {%       endif %}
-{%       if asn_data['log_neighbor_changes']|default(False) %}
+{%       if asn_data['log_neighbor_changes'] | default(False) %}
   bgp log-neighbor-changes
 {%       endif %}
-{%       if asn_data['timers']|default(False) %}
+{%       if asn_data['timers'] | default(False) %}
   timers bgp {{ asn_data['timers'] }}
 {%       endif %}
-{%       if asn_data['graceful_restart']|default(False) %}
+{%       if asn_data['graceful_restart'] | default(False) %}
   bgp graceful-restart
 {%       endif %}
 {%       if asn_data['maximum_paths'] is defined %}
@@ -67,69 +72,91 @@ router bgp {{ asn }}
 {%       endif %}
 {%       if asn_data['neighbors'] is defined %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].iteritems() %}
-{%           if neighbor_data['is_peer_group']|default(False) %}
+{%           if neighbor_data['is_peer_group'] | default(False) %}
   neighbor {{ neighbor }} peer-group
 {%           endif %}
-{%           if neighbor_data['peer_group']|default(False) %}
+{%           if neighbor_data['peer_group'] | default(False) %}
   neighbor {{ neighbor }} peer-group {{ neighbor_data['peer_group'] }}
 {%           endif %}
-{%           if neighbor_data['asn']|default(False) %}
+{%           if neighbor_data['asn'] | default(False) %}
   neighbor {{ neighbor }} remote-as {{ neighbor_data['asn'] }}
 {%           endif %}
-{%           if neighbor_data['password']|default(False) %}
+{%           if neighbor_data['password'] | default(False) %}
   neighbor {{ neighbor }} password {{ neighbor_data['password'] }}
 {%           endif %}
-{%           if neighbor_data['multihop']|default(False) %}
+{%           if neighbor_data['multihop'] | default(False) %}
   neighbor {{ neighbor }} ebgp-multihop {{ neighbor_data['multihop'] }}
 {%           endif %}
-{%           if neighbor_data['default_originate']|default(False) %}
+{%           if neighbor_data['default_originate'] | default(False) %}
   neighbor {{ neighbor }} default-originate
 {%           endif %}
 {%           if neighbor_data['description'] is defined %}
   neighbor {{ neighbor }} description {{ neighbor_data['description'] }}
 {%           endif %}
-{%           if neighbor_data['next_hop_self']|default(False) %}
+{%           if neighbor_data['next_hop_self'] | default(False) %}
   neighbor {{ neighbor }} next-hop-self
 {%           endif %}
-{%           if neighbor_data['timers_connect']|default(False) %}
+{%           if neighbor_data['timers_connect'] | default(False) %}
   neighbor {{ neighbor }} timers connect {{ neighbor_data['timers_connect'] }}
 {%           endif %}
-{%           if neighbor_data['v4_route_reflector_client']|default(False) or
-                neighbor_data['v4_route_map']|default(False) %}
 !
-  address-family ipv4 unicast
-{%             if neighbor_data['v4_route_reflector_client']|default(False) %}
+{%           if neighbor_data['v4_route_reflector_client'] | default(False) or
+                neighbor_data['v4_route_map'] | default(False) %}
+  address-family {{ neighbor_data['address_family'] | default('ipv4 unicast') }}
+{%             if neighbor_data['v4_route_reflector_client'] | default(False) %}
     neighbor {{ neighbor }} route-reflector-client
 {%             endif %}
-{%             if neighbor_data['v4_route_map']|default(False) %}
+{%             if neighbor_data['v4_route_map'] | default(False) %}
 {%               for _route_map in neighbor_data['v4_route_map'] %}
+    neighbor {{ neighbor }} route-map {{ _route_map }}
+{%               endfor %}
+{%             endif %}
+{%             if neighbor_data['route_map'] | default(False) %}
+{%               for _route_map in neighbor_data['route_map'] %}
     neighbor {{ neighbor }} route-map {{ _route_map }}
 {%               endfor %}
 {%             endif %}
   exit-address-family
 !
+!
 {%           endif %}
 {%         endfor %}
 {%       endif %}
-{%       if asn_data['networks'] is defined %}
+{%       if asn_data['networks'] | default(False) or
+            asn_data['redistribute'] | default(False) %}
   address-family ipv4 unicast
-{%         for network in asn_data['networks'] %}
+{%         if asn_data['networks'] | default(False) %}
+{%           for network in asn_data['networks'] %}
     network {{ network }}
-{%         endfor %}
-{%       endif %}
-{%       if asn_data['redistribute'] is defined %}
-{%         if asn_data['networks'] is not defined %}
-!
-  address-family ipv4 unicast
+{%           endfor %}
 {%         endif %}
-{%         for redist_protocol in asn_data['redistribute'] %}
+{%         if asn_data['redistribute'] | default(False) %}
+{%           for redist_protocol in asn_data['redistribute'] %}
     redistribute {{ redist_protocol }}
-{%         endfor %}
-{%       endif %}
-{%       if asn_data['networks'] is defined or asn_data['redistribute'] is defined %}
+{%           endfor %}
+{%         endif %}
   exit-address-family
+!
+!
 {%       endif %}
-{%       if frr_vnc_defaults|default(False) %}
+{%       if asn_data['networks_v6'] | default(False) or
+            asn_data['redistribute_v6'] | default(False) %}
+  address-family ipv6 unicast
+{%         if asn_data['networks_v6'] | default(False) %}
+{%           for network in asn_data['networks_v6'] %}
+    network {{ network }}
+{%           endfor %}
+{%         endif %}
+{%         if asn_data['redistribute_v6'] | default(False) %}
+{%           for redist_protocol in asn_data['redistribute'] %}
+    redistribute {{ redist_protocol }}
+{%           endfor %}
+{%         endif %}
+  exit-address-family
+!
+!
+{%       endif %}
+{%       if frr_vnc_defaults | default(False) %}
   vnc defaults
     response-lifetime 3600
     exit-vnc
@@ -157,7 +184,7 @@ router ospf
 {%         endif %}
 {%       endfor %}
 {%     endif %}
-{%     if frr_ospf['log_adjacency_changes']|default(False) %}
+{%     if frr_ospf['log_adjacency_changes'] | default(False) %}
   log-adjacency-changes
 {%     endif %}
 {%     if frr_ospf['passive_interfaces'] is defined %}
@@ -168,6 +195,11 @@ router ospf
 {%     if frr_ospf['redistribute'] is defined %}
 {%       for redist_protocol in frr_ospf['redistribute'] %}
   redistribute {{ redist_protocol }}
+{%       endfor %}
+{%     endif %}
+{%     if frr_ospf['distribute_list'] is defined %}
+{%       for acl in frr_ospf['distribute_list'] %}
+  distribute-list {{ acl.name }} {{ acl.dir }} {{ acl.protocol }}
 {%       endfor %}
 {%     endif %}
 {%   endif %}
@@ -185,7 +217,20 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {%       endif %}
 {%     endfor %}
 {%   endfor %}
+{% endif %}
 !
+{% if frr_prefix_list_v6 is defined and frr_prefix_list_v6 != {} %}
+{%   for prefix_list_name, sequences in frr_prefix_list_v6.iteritems() %}
+{%     for seq, seq_data in sequences.iteritems() %}
+{%       if seq_data['prefix'] is defined %}
+{%         if seq_data['match'] is defined %}
+ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
+{%         else %}
+ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
+{%         endif %}
+{%       endif %}
+{%     endfor %}
+{%   endfor %}
 {% endif %}
 !
 {% if frr_route_map is defined and frr_route_map != [] %}
@@ -206,6 +251,12 @@ route-map {{ map_name }} {{ seq }}
 {%       endif %}
 !
 {%     endfor %}
+{%   endfor %}
+{% endif %}
+!
+{% if frr_access_list is defined and frr_access_list != [] %}
+{%   for ace in frr_access_list %}
+access-list {{ ace }}
 {%   endfor %}
 {% endif %}
 !

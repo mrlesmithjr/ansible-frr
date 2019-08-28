@@ -11,6 +11,8 @@
       - [Configuring Route Maps](#configuring-route-maps)
     - [Prefix Lists](#prefix-lists)
       - [Configuring Prefix Lists](#configuring-prefix-lists)
+    - [Access Lists](#access-lists)
+      - [Configuring Access Lists](#configuring-access-lists)
   - [Supported Routing Protocols](#supported-routing-protocols)
     - [BGP](#bgp)
       - [Enable BGP](#enable-bgp)
@@ -88,6 +90,23 @@ frr_prefix_list:
     10 permit:
       prefix: 172.16.0.0/16
       match: le 32
+frr_prefix_list_v6:
+  Bad_IPs:
+    05 permit:
+      prefix: 1234:5678::/32
+      match: ge 128
+```
+
+### Access Lists
+
+#### Configuring Access Lists
+Below is an example
+
+```yaml
+frr_access_list:
+  - '10 permit 10.10.10.21/32'
+  - '10 permit 192.168.0.0/17'
+  - '101 permit ip 10.0.0.0 0.0.0.255 any'
 ```
 
 ## Supported Routing Protocols
@@ -154,6 +173,10 @@ frr_bgp:
         - kernel
         - ospf
         - static
+      redistribute_v6:
+        - bgp
+        - connected
+        - kernel
 ```
 
 #### Example BGP
@@ -176,12 +199,20 @@ frr_bgp:
           default_originate: false
           description: node2
           next_hop_self: true
+        "::1":
+          asn: 65000
+          default_originate: false
+          description: node1
+          next_hop_self: true
+          adress_family: "ipv6 unicast"
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s9']['ipv4']['address'] }}/24"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s10']['ipv4']['address'] }}/24"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s16']['ipv4']['address'] }}/24"
+      networks_v6:
+        - "1::3/64"
 ```
 
 Below is an example of a BGP summary based on the above configuration:
@@ -261,6 +292,10 @@ frr_ospf:
     - kernel
     - ospf
     - static
+  distribute_list:
+    - name: 10
+      dir: out
+      protocol: connected
 ```
 
 ### STATIC
@@ -298,6 +333,9 @@ frr_interfaces: # A dict. key = iface name, value = iface data
     auth:
       id: 1
       key: supersecret
+    other:
+      - "no ipv6 nd suppress-ra"
+      - "link-detect"
 ```
 
 ## Vagrant
