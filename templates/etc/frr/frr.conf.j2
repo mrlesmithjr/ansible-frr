@@ -14,7 +14,7 @@ interface {{ iface }}
 {%       if iface_data['ip'] is string %}
   ip address {{ iface_data['ip'] }}
 {%       elif iface_data['ip'] is iterable %}
-{%         for ip in iface_data['ip'].iteritems() %}
+{%         for ip in iface_data['ip'] %}
   ip address {{ ip }}
 {%         endfor %}
 {%       endif %}
@@ -23,7 +23,7 @@ interface {{ iface }}
 {%       if iface_data['ipv6'] is string %}
   ipv6 address {{ iface_data['ipv6'] }}
 {%       elif iface_data['ipv6'] is iterable %}
-{%         for ipv6 in iface_data['ipv6'].iteritems() %}
+{%         for ipv6 in iface_data['ipv6'] %}
   ipv6 address {{ ipv6 }}
 {%         endfor %}
 {%       endif %}
@@ -33,7 +33,7 @@ interface {{ iface }}
   ip ospf message-digest-key {{ iface_data['auth']['id'] }} md5 {{ iface_data['auth']['key'] }}
 {%     endif %}
 {%     if iface_data['other'] is defined %}
-{%       for option in iface_data['other'].iteritems() %}
+{%       for option in iface_data['other'] %}
   {{ option }}
 {%       endfor %}
 {%     endif %}
