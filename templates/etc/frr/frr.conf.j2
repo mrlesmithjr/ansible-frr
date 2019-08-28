@@ -99,12 +99,11 @@ router bgp {{ asn }}
 {%           if neighbor_data['timers_connect'] | default(False) %}
   neighbor {{ neighbor }} timers connect {{ neighbor_data['timers_connect'] }}
 {%           endif %}
+!
 {%           if neighbor_data['v4_route_reflector_client'] | default(False) or
                 neighbor_data['v4_route_map'] | default(False) %}
-!
   address-family {{ neighbor_data['address_family'] | default('ipv4 unicast') }}
-{%             if neighbor_data['v4_route_reflector_client'] | default(False) or
-                  neighbor_data['route_reflector_client'] | default(False) %}
+{%             if neighbor_data['v4_route_reflector_client'] | default(False) %}
     neighbor {{ neighbor }} route-reflector-client
 {%             endif %}
 {%             if neighbor_data['v4_route_map'] | default(False) %}
@@ -218,6 +217,7 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {%       endif %}
 {%     endfor %}
 {%   endfor %}
+{% endif %}
 !
 {% if frr_prefix_list_v6 is defined and frr_prefix_list_v6 != {} %}
 {%   for prefix_list_name, sequences in frr_prefix_list_v6.iteritems() %}
@@ -231,7 +231,6 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {%       endif %}
 {%     endfor %}
 {%   endfor %}
-!
 {% endif %}
 !
 {% if frr_route_map is defined and frr_route_map != [] %}
