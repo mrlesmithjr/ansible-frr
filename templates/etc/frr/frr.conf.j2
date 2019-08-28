@@ -97,8 +97,9 @@ router bgp {{ asn }}
 {%           if neighbor_data['v4_route_reflector_client']|default(False) or
                 neighbor_data['v4_route_map']|default(False) %}
 !
-  address-family ipv4 unicast
-{%             if neighbor_data['v4_route_reflector_client']|default(False) %}
+  address-family {{ neighbor_data['address_family']|default('ipv4 unicast') }}
+{%             if neighbor_data['v4_route_reflector_client']|default(False) or
+                  neighbor_data['route_reflector_client']|default(False) %}
     neighbor {{ neighbor }} route-reflector-client
 {%             endif %}
 {%             if neighbor_data['v4_route_map']|default(False) %}
@@ -106,7 +107,13 @@ router bgp {{ asn }}
     neighbor {{ neighbor }} route-map {{ _route_map }}
 {%               endfor %}
 {%             endif %}
+{%             if neighbor_data['route_map']|default(False) %}
+{%               for _route_map in neighbor_data['route_map'] %}
+    neighbor {{ neighbor }} route-map {{ _route_map }}
+{%               endfor %}
+{%             endif %}
   exit-address-family
+!
 !
 {%           endif %}
 {%         endfor %}
@@ -116,6 +123,7 @@ router bgp {{ asn }}
 {%         for network in asn_data['networks'] %}
     network {{ network }}
 {%         endfor %}
+  exit-address-family
 {%       endif %}
 {%       if asn_data['redistribute'] is defined %}
 {%         if asn_data['networks'] is not defined %}
@@ -125,9 +133,29 @@ router bgp {{ asn }}
 {%         for redist_protocol in asn_data['redistribute'] %}
     redistribute {{ redist_protocol }}
 {%         endfor %}
-{%       endif %}
-{%       if asn_data['networks'] is defined or asn_data['redistribute'] is defined %}
   exit-address-family
+{%       endif %}
+!
+!
+{%       if asn_data['networks_v6'] is defined %}
+  address-family ipv6 unicast
+{%         for network in asn_data['networks_v6'] %}
+    network {{ network }}
+{%         endfor %}
+  exit-address-family
+{%       endif %}
+{%       if asn_data['redistribute'] is defined %}
+{%         if asn_data['networks_v6'] is not defined %}
+!
+  address-family ipv6 unicast
+{%         endif %}
+{%         for redist_protocol in asn_data['redistribute'] %}
+    redistribute {{ redist_protocol }}
+{%         endfor %}
+  exit-address-family
+{%       endif %}
+!
+{%       if asn_data['networks'] is defined or asn_data['redistribute'] is defined %}
 {%       endif %}
 {%       if frr_vnc_defaults|default(False) %}
   vnc defaults
