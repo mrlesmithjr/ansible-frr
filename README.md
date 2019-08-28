@@ -173,6 +173,10 @@ frr_bgp:
         - kernel
         - ospf
         - static
+      redistribute_v6:
+        - bgp
+        - connected
+        - kernel
 ```
 
 #### Example BGP
