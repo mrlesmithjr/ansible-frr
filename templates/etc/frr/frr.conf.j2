@@ -47,7 +47,7 @@ ip route {{ dest }} {{ next_hop }}
 {% endif %}
 {% if frr_static_v6 is defined and frr_static_v6 != {} %}
 {%   for dest, next_hop in frr_static_v6.iteritems() %}
-ip route {{ dest }} {{ next_hop }}
+ipv6 route {{ dest }} {{ next_hop }}
 {%   endfor %}
 {% endif %}
 !
