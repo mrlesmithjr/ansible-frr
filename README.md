@@ -76,6 +76,16 @@ frr_route_map:
 
 ```
 
+### General Options
+
+#### IP/IPv6 Forwarding
+Below is an example of enabling ip and ipv6 forwading:
+
+```yaml
+frr_ip_forwarding: true
+frr_ipv6_forwarding: true
+```
+
 ### Prefix Lists
 
 #### Configuring Prefix Lists
@@ -147,6 +157,8 @@ frr_bgp:
     65000:
       log_neighbor_changes: true
       timers: '3 9'
+      other:
+        - "bgp bestpath as-path multipath-relax"
       neighbors:
         192.168.250.11:
           asn: 65000
@@ -154,6 +166,9 @@ frr_bgp:
           description: node1
           next_hop_self: true
           timers_connect: 5
+          other:
+            - "interface eth1"
+            - "capability dynamic"
         192.168.250.12:
           asn: 65000
           default_originate: false
