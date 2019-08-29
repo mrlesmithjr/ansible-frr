@@ -51,6 +51,13 @@ ipv6 route {{ dest }} {{ next_hop }}
 {%   endfor %}
 {% endif %}
 !
+{% if frr_ip_forwarding | default(False) %}
+ip forwarding
+{% endif %}
+{% if frr_ipv6_forwarding | default(False) %}
+ipv6 forwarding
+{% endif %}
+!
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != {} %}
 {%     for asn, asn_data in frr_bgp['asns'].iteritems() %}
@@ -69,6 +76,11 @@ router bgp {{ asn }}
 {%       endif %}
 {%       if asn_data['maximum_paths'] is defined %}
   maximum-paths {{ asn_data['maximum_paths'] }}
+{%       endif %}
+{%       if asn_data['other'] | default(False) %}
+{%         for option in asn_data['other'] %}
+  {{ option }}
+{%         endfor %}
 {%       endif %}
 {%       if asn_data['neighbors'] is defined %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].iteritems() %}
@@ -98,6 +110,11 @@ router bgp {{ asn }}
 {%           endif %}
 {%           if neighbor_data['timers_connect'] | default(False) %}
   neighbor {{ neighbor }} timers connect {{ neighbor_data['timers_connect'] }}
+{%           endif %}
+{%           if neighbor_data['other'] | default(False) %}
+{%             for option in neighbor_data['other'] %}
+  neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
 {%           endif %}
 !
 {%           if neighbor_data['v4_route_reflector_client'] | default(False) or
