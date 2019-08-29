@@ -160,14 +160,18 @@ frr_bgp:
       other:
         - "bgp bestpath as-path multipath-relax"
       neighbors:
+        group1:
+          asn: 66000
+          is_peer_group: true
+          multihop: 255
         192.168.250.11:
           asn: 65000
           default_originate: false
           description: node1
           next_hop_self: true
           timers_connect: 5
+          v6only: true
           other:
-            - "interface eth1"
             - "capability dynamic"
         192.168.250.12:
           asn: 65000
@@ -176,9 +180,8 @@ frr_bgp:
           next_hop_self: true
           password: secret
         192.168.250.12:
-          asn: 66000
+          peer_group: group1
           description: far_away
-          multihop: 255
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
