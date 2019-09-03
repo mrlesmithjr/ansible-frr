@@ -212,6 +212,8 @@ frr_bgp:
           default_originate: false
           description: node1
           next_hop_self: true
+          af_v4:
+            - "soft-reconfiguration inbound"
         192.168.250.12:
           asn: 65000
           default_originate: false
@@ -222,7 +224,9 @@ frr_bgp:
           default_originate: false
           description: node1
           next_hop_self: true
-          adress_family: "ipv6 unicast"
+          af_v6:
+            - "activate"
+            - "soft-reconfiguration inbound"
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
