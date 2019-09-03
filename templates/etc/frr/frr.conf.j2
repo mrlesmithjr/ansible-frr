@@ -82,6 +82,22 @@ router bgp {{ asn }}
   {{ option }}
 {%         endfor %}
 {%       endif %}
+{%       if asn_data['af_v4'] | default(False) %}
+  address-family ipv4 unicast
+{%         for option in asn_data['af_v4'] %}
+    {{ option }}
+{%         endfor %}
+  exit-address-family
+!
+{%       endif %}
+{%       if asn_data['af_v6'] | default(False) %}
+  address-family ipv6 unicast
+{%         for option in asn_data['af_v6'] %}
+    {{ option }}
+{%         endfor %}
+  exit-address-family
+{%       endif %}
+!
 {%       if asn_data['neighbors'] is defined %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].iteritems() | sort(reverse=True, attribute="1.is_peer_group") %}
 {%           if neighbor_data['v6only'] | default(False) %}
@@ -120,13 +136,25 @@ router bgp {{ asn }}
 {%             endfor %}
 {%           endif %}
 !
+{%           if neighbor_data['af_v4'] | default(False) %}
+  address-family ipv4 unicast
+{%             for option in neighbor_data['af_v4'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
+  exit-address-family
+!
+{%           endif %}
+{%           if neighbor_data['af_v6'] | default(False) %}
+  address-family ipv6 unicast
+{%             for option in neighbor_data['af_v6'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
+  exit-address-family
+{%           endif %}
+!
 {%           if neighbor_data['v4_route_reflector_client'] | default(False) or
-                neighbor_data['v4_route_map'] | default(False) or 
-                neighbor_data['address_family'] | default(False) %}
-  address-family {{ neighbor_data['address_family'] | default('ipv4 unicast') }}
-{%             if neighbor_data['address_family'] | default(False) %}
-  neighbor {{ neighbor }} activate
-{%             endif %}
+                neighbor_data['v4_route_map'] | default(False) %}
+  address-family ipv4 unicast
 {%             if neighbor_data['v4_route_reflector_client'] | default(False) %}
     neighbor {{ neighbor }} route-reflector-client
 {%             endif %}
