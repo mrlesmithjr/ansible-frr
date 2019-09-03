@@ -206,6 +206,10 @@ frr_bgp:
   asns:
     65000:
       log_neighbor_changes: true
+      af_v4:
+        - "maximum-paths 2"
+      af_v6:
+        - "maximum-paths 2"
       neighbors:
         192.168.250.11:
           asn: 65000
