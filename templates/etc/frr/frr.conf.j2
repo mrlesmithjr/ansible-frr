@@ -99,6 +99,9 @@ router bgp {{ asn }}
 {%       endif %}
 !
 {%       if asn_data['neighbors'] is defined %}
+{%         for neighbor, neighbor_data in asn_data['neighbors'].iteritems() %}
+{%           set x=neighbor_data.__setitem__('is_peer_group', neighbor_data['is_peer_group'] | default(False)) %}
+{%         endfor %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].iteritems() | sort(reverse=True, attribute="1.is_peer_group") %}
 {%           if neighbor_data['v6only'] | default(False) %}
   neighbor {{ neighbor }} interface v6only
