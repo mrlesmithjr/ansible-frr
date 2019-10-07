@@ -12,6 +12,19 @@
     - restart frr
     - start frr
 
+- name: config | Configuring vtysh.conf
+  template:
+    backup: yes
+    src: etc/frr/vtysh.conf.j2
+    dest: /etc/frr/vtysh.conf
+    owner: frr
+    group: frr
+    mode: u=rw,g=r,o=
+  become: true
+  notify:
+    - restart frr
+    - start frr
+
 - name: config | Configuring debian.conf
   template:
     backup: yes
