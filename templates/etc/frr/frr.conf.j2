@@ -14,7 +14,7 @@ interface {{ iface }}
 {%       if iface_data['ip'] is string %}
   ip address {{ iface_data['ip'] }}
 {%       elif iface_data['ip'] is iterable %}
-{%         for ip in iface_data['ip'] %}
+{%         for ip in iface_data['ip'] if ip|length %}
   ip address {{ ip }}
 {%         endfor %}
 {%       endif %}
@@ -23,7 +23,7 @@ interface {{ iface }}
 {%       if iface_data['ipv6'] is string %}
   ipv6 address {{ iface_data['ipv6'] }}
 {%       elif iface_data['ipv6'] is iterable %}
-{%         for ipv6 in iface_data['ipv6'] %}
+{%         for ipv6 in iface_data['ipv6'] if ipv6|length %}
   ipv6 address {{ ipv6 }}
 {%         endfor %}
 {%       endif %}
