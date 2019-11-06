@@ -1,7 +1,14 @@
 ---
 # tasks file for ansible-frr
 - include_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+  when:
+    - ansible_os_family == "Debian"
+    - frr_version >= "7.0"
+
+- include_tasks: debian_legacy.yml
+  when:
+    - ansible_os_family == "Debian"
+    - frr_version < "7.0"
 
 - include_tasks: redhat.yml
   when: ansible_os_family == "RedHat"

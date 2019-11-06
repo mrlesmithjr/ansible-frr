@@ -108,6 +108,11 @@ frr_release_date: 2018010901
 # https://github.com/FRRouting/frr/releases
 frr_version: 6.0.2
 
+# Defines FRR apt repo
+# https://deb.frrouting.org/
+frr_apt_version: frr-stable
+frr_apt_repository: "deb https://deb.frrouting.org/frr {{ ansible_distribution_release }} {{ frr_apt_version }}"
+
 _frr_bgp_summary:
   stdout: ""
 
