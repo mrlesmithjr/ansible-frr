@@ -39,6 +39,7 @@
     name:
       - frr
       - python-ipaddr
+      - frr-pythontools
     state: latest
   become: true
   register: _frrdownload
