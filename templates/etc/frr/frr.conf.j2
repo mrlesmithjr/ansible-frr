@@ -14,7 +14,7 @@ interface {{ iface }}
 {%       if iface_data['ip'] is string %}
   ip address {{ iface_data['ip'] }}
 {%       elif iface_data['ip'] is iterable %}
-{%         for ip in iface_data['ip'] if ip|length %}
+{%         for ip in iface_data['ip'].items() %}
   ip address {{ ip }}
 {%         endfor %}
 {%       endif %}
@@ -23,7 +23,7 @@ interface {{ iface }}
 {%       if iface_data['ipv6'] is string %}
   ipv6 address {{ iface_data['ipv6'] }}
 {%       elif iface_data['ipv6'] is iterable %}
-{%         for ipv6 in iface_data['ipv6'] if ipv6|length %}
+{%         for ipv6 in iface_data['ipv6'].items() %}
   ipv6 address {{ ipv6 }}
 {%         endfor %}
 {%       endif %}
@@ -33,7 +33,7 @@ interface {{ iface }}
   ip ospf message-digest-key {{ iface_data['auth']['id'] }} md5 {{ iface_data['auth']['key'] }}
 {%     endif %}
 {%     if iface_data['other'] is defined %}
-{%       for option in iface_data['other'] %}
+{%       for option in iface_data['other'].items() %}
   {{ option }}
 {%       endfor %}
 {%     endif %}
@@ -47,7 +47,7 @@ ip route {{ dest }} {{ next_hop }}
 {% endif %}
 {% if frr_static_v6 is defined and frr_static_v6 != {} %}
 {%   for dest, next_hop in frr_static_v6.items() %}
-ipv6 route {{ dest }} {{ next_hop }}
+ip route {{ dest }} {{ next_hop }}
 {%   endfor %}
 {% endif %}
 !
@@ -100,12 +100,6 @@ router bgp {{ asn }}
 !
 {%       if asn_data['neighbors'] is defined %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].items() %}
-{%           set x=neighbor_data.__setitem__('is_peer_group', neighbor_data['is_peer_group'] | default(False)) %}
-{%         endfor %}
-{%         for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
-{%           if neighbor_data['v6only'] | default(False) %}
-  neighbor {{ neighbor }} interface v6only
-{%           endif %}
 {%           if neighbor_data['is_peer_group'] | default(False) %}
   neighbor {{ neighbor }} peer-group
 {%           endif %}
