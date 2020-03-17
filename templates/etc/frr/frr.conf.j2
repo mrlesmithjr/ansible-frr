@@ -5,7 +5,7 @@ password {{ frr_password }}
 log {{ frr_logging }}
 !
 {% if frr_interfaces is defined and frr_interfaces != {} %}
-{%   for iface, iface_data in frr_interfaces.iteritems() %}
+{%   for iface, iface_data in frr_interfaces.items() %}
 interface {{ iface }}
 {%     if iface_data['description'] is defined %}
   description {{ iface_data['description'] }}
@@ -14,7 +14,7 @@ interface {{ iface }}
 {%       if iface_data['ip'] is string %}
   ip address {{ iface_data['ip'] }}
 {%       elif iface_data['ip'] is iterable %}
-{%         for ip in iface_data['ip'].iteritems() %}
+{%         for ip in iface_data['ip'].items() %}
   ip address {{ ip }}
 {%         endfor %}
 {%       endif %}
@@ -23,7 +23,7 @@ interface {{ iface }}
 {%       if iface_data['ipv6'] is string %}
   ipv6 address {{ iface_data['ipv6'] }}
 {%       elif iface_data['ipv6'] is iterable %}
-{%         for ipv6 in iface_data['ipv6'].iteritems() %}
+{%         for ipv6 in iface_data['ipv6'].items() %}
   ipv6 address {{ ipv6 }}
 {%         endfor %}
 {%       endif %}
@@ -33,7 +33,7 @@ interface {{ iface }}
   ip ospf message-digest-key {{ iface_data['auth']['id'] }} md5 {{ iface_data['auth']['key'] }}
 {%     endif %}
 {%     if iface_data['other'] is defined %}
-{%       for option in iface_data['other'].iteritems() %}
+{%       for option in iface_data['other'].items() %}
   {{ option }}
 {%       endfor %}
 {%     endif %}
@@ -41,19 +41,19 @@ interface {{ iface }}
 {% endif %}
 !
 {% if frr_static is defined and frr_static != {} %}
-{%   for dest, next_hop in frr_static.iteritems() %}
+{%   for dest, next_hop in frr_static.items() %}
 ip route {{ dest }} {{ next_hop }}
 {%   endfor %}
 {% endif %}
 {% if frr_static_v6 is defined and frr_static_v6 != {} %}
-{%   for dest, next_hop in frr_static_v6.iteritems() %}
+{%   for dest, next_hop in frr_static_v6.items() %}
 ip route {{ dest }} {{ next_hop }}
 {%   endfor %}
 {% endif %}
 !
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != {} %}
-{%     for asn, asn_data in frr_bgp['asns'].iteritems() %}
+{%     for asn, asn_data in frr_bgp['asns'].items() %}
 router bgp {{ asn }}
 {%       if frr_router_id is defined %}
   bgp router-id {{ frr_router_id }}
@@ -71,7 +71,7 @@ router bgp {{ asn }}
   maximum-paths {{ asn_data['maximum_paths'] }}
 {%       endif %}
 {%       if asn_data['neighbors'] is defined %}
-{%         for neighbor, neighbor_data in asn_data['neighbors'].iteritems() %}
+{%         for neighbor, neighbor_data in asn_data['neighbors'].items() %}
 {%           if neighbor_data['is_peer_group'] | default(False) %}
   neighbor {{ neighbor }} peer-group
 {%           endif %}
@@ -172,7 +172,7 @@ router ospf
 {%       endif %}
 {%   if frr_ospf is defined and frr_ospf != {} %}
 {%     if frr_ospf['areas'] is defined %}
-{%       for area, area_data in frr_ospf['areas'].iteritems() %}
+{%       for area, area_data in frr_ospf['areas'].items() %}
 {%         for area_network in area_data['networks'] %}
   network {{ area_network }} area {{ area }}
 {%         endfor %}
@@ -206,8 +206,8 @@ router ospf
 {% endif %}
 !
 {% if frr_prefix_list is defined and frr_prefix_list != {} %}
-{%   for prefix_list_name, sequences in frr_prefix_list.iteritems() %}
-{%     for seq, seq_data in sequences.iteritems() %}
+{%   for prefix_list_name, sequences in frr_prefix_list.items() %}
+{%     for seq, seq_data in sequences.items() %}
 {%       if seq_data['prefix'] is defined %}
 {%         if seq_data['match'] is defined %}
 ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
@@ -220,8 +220,8 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {% endif %}
 !
 {% if frr_prefix_list_v6 is defined and frr_prefix_list_v6 != {} %}
-{%   for prefix_list_name, sequences in frr_prefix_list_v6.iteritems() %}
-{%     for seq, seq_data in sequences.iteritems() %}
+{%   for prefix_list_name, sequences in frr_prefix_list_v6.items() %}
+{%     for seq, seq_data in sequences.items() %}
 {%       if seq_data['prefix'] is defined %}
 {%         if seq_data['match'] is defined %}
 ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
@@ -234,8 +234,8 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {% endif %}
 !
 {% if frr_route_map is defined and frr_route_map != [] %}
-{%   for map_name, sequences in frr_route_map.iteritems() %}
-{%     for seq, seq_data in sequences.iteritems() %}
+{%   for map_name, sequences in frr_route_map.items() %}
+{%     for seq, seq_data in sequences.items() %}
 route-map {{ map_name }} {{ seq }}
 {%       if seq_data['interface'] is defined %}
   match interface {{ seq_data['interface'] }}
