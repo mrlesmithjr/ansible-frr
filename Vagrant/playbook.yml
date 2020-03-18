@@ -14,9 +14,9 @@
 
     - name: Ensuring lldpd Is Started and Enabled On Boot
       service:
-        name: lldpd
-        state: started
-        enabled: true
+       name: lldpd
+       state: started
+       enabled: true
       become: true
 
     - name: Installing traceroute
