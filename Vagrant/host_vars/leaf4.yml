@@ -1,4 +1,3 @@
----
 ansible_ssh_host: 192.168.250.24
 ansible_ssh_port: 22
 ansible_ssh_private_key_file: .vagrant/machines/leaf4/virtualbox/private_key
