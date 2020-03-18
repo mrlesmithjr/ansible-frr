@@ -3,11 +3,11 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint: |
-  set -e
-  yamllint .
-  ansible-lint
-  flake8
+lint:
+  name: yamllint
+  options:
+    config-data:
+      ignore: Vagrant
 platforms:
   - name: centos7
     image: centos:7
@@ -36,3 +36,13 @@ platforms:
   # - name: ubuntu1904
   #   image: ubuntu:19.04
   #   privileged: true
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+    options:
+      x: ["204", "503", "602"]
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
