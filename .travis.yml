@@ -8,7 +8,8 @@ services:
   - docker
 
 install:
-  - pip install molecule docker
+  - pip install molecule == 2.22
+  - pip install docker
 
 script:
   - molecule --version
