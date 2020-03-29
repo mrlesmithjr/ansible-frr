@@ -46,6 +46,7 @@
     name: "{{ frr_debs }}"
     state: present
   become: true
+  register: _frrdownload
   when:
     - ansible_distribution == "CentOS"
     - ansible_distribution_major_version == "7"
