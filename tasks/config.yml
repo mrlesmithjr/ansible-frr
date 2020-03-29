@@ -43,7 +43,6 @@
 # We need to flush here in case interfaces are configured in zebra.conf
 - name: config | Flusing Handlers
   meta: flush_handlers
-  when: _frr_zebra_configured['changed']
 
 # We need to rediscover facts if interfaces are initially configured in zebra.conf
 - name: config | Rediscovering Facts
