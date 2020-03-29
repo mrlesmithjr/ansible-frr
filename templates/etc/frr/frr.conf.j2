@@ -33,7 +33,7 @@ interface {{ iface }}
   ip ospf message-digest-key {{ iface_data['auth']['id'] }} md5 {{ iface_data['auth']['key'] }}
 {%     endif %}
 {%     if iface_data['other'] is defined %}
-{%       for option in iface_data['other'].items() %}
+{%       for option in iface_data['other'] %}
   {{ option }}
 {%       endfor %}
 {%     endif %}
