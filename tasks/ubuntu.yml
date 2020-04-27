@@ -1,0 +1,10 @@
+---
+- name: Install FRR
+  package:
+    name:
+      - frr
+      - python-ipaddress
+      - frr-pythontools
+    state: latest
+  become: true
+  register: _frrdownload
