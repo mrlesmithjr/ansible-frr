@@ -123,4 +123,6 @@ frr_reload: false
 
 # When a newer version of FRR is installed we need to restart instead of reloading the configuration.
 _frrdownload.changed: false
+
+# This is changed to allow for either frr or quagga to be configured depending on the need.
 routing_type: frr
