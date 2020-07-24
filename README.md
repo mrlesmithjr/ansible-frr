@@ -34,6 +34,7 @@
     - [Grafana Dashboards](#grafana-dashboards)
     - [Tearing down](#tearing-down)
   - [Upgrade/Downgrade](#upgradedowngrade)
+  - [Quagga Configruation](#quagga-configuration)
   - [License](#license)
   - [Author Information](#author-information)
 
@@ -465,6 +466,23 @@ You can upgrade or downgrade FRR by setting the following variable:
 
 `frr_version: 6.0.2` from `frr_version: 6.0`
 
+## Quagga configuration
+> NOTE: Quagga must be installed from the local repos of the OS
+
+You can configure quagga instead of FRR by using the following variable:
+
+`routing_type: quagga`
+
+> Additional Quagga-specific configurations
+
+```bash
+frr_bgp:
+  asns:
+    65000:
+      neighbors:
+        swp1:
+          **interface: true**
+```
 
 ## License
 

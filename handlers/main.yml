@@ -27,3 +27,32 @@
     enabled: true
   become: true
   listen: "start frr"
+
+## Quagga restart
+- name: full restart quagga
+  service:
+    name: quagga
+    state: restarted
+    enabled: true
+  become: true
+  ignore_errors: true
+  when: not frr_reload|bool
+  listen: "restart quagga"
+
+- name: reload quagga
+  service:
+    name: quagga
+    state: reloaded
+    enabled: true
+  become: true
+  ignore_errors: true
+  when: frr_reload|bool
+  listen: "restart quagga"
+
+- name: start quagga
+  service:
+    name: quagga
+    state: started
+    enabled: true
+  become: true
+  listen: "start quagga"

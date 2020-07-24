@@ -1,28 +1,28 @@
 ---
 # tasks file for ansible-frr
-- include_tasks: debian.yml
-  when:
-    - ansible_os_family == "Debian"
-    - frr_version >= "7.0"
-    - ansible_distribution_version < "20.04"
-    
-- include_tasks: debian_legacy.yml
-  when:
-    - ansible_os_family == "Debian"
-    - frr_version < "7.0"
-    
-- include_tasks: ubuntu.yml
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version >= "20.04"
+- name: Run FRR Tasks
+  block:
+   - include_tasks: debian.yml
+     when:
+       - ansible_os_family == "Debian"
+       - frr_version >= "7.0"
+       - ansible_distribution_version < "20.04"
+   - include_tasks: debian_legacy.yml
+     when:
+       - ansible_os_family == "Debian"
+       - frr_version < "7.0"
+   - include_tasks: ubuntu.yml
+     when:
+       - ansible_distribution == "Ubuntu"
+       - ansible_distribution_version >= "20.04"
+   - include_tasks: redhat.yml
+     when: ansible_os_family == "RedHat"
+   - include_tasks: system_tuning.yml
+   - include_tasks: config.yml
+   - include_tasks: monitor.yml
+     tags:
+       - frr-monitoring
+  when: routing_type == "frr"
 
-- include_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
-
-- include_tasks: system_tuning.yml
-
-- include_tasks: config.yml
-
-- include_tasks: monitor.yml
-  tags:
-    - frr-monitoring
+- include_tasks: quagga.yml
+  when: routing_type == "quagga"

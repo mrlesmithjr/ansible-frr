@@ -123,3 +123,4 @@ frr_reload: false
 
 # When a newer version of FRR is installed we need to restart instead of reloading the configuration.
 _frrdownload.changed: false
+routing_type: frr
