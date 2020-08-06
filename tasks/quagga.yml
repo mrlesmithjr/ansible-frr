@@ -29,7 +29,7 @@
     backup: yes
     src: etc/frr/vtysh.conf.j2
     dest: /etc/quagga/vtysh.conf
-    owner: quagga 
+    owner: quagga
     group: quaggavty
     mode: u=rw,g=r,o=
   become: true

@@ -5,6 +5,6 @@
       - frr
       - python-ipaddress
       - frr-pythontools
-    state: latest
+    state: latest  # noqa: E403
   become: true
   register: _frrdownload

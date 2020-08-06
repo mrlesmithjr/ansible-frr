@@ -40,7 +40,7 @@
       - frr
       - python-ipaddr
       - frr-pythontools
-    state: latest
+    state: latest  # noqa: E403
   become: true
   register: _frrdownload
 
