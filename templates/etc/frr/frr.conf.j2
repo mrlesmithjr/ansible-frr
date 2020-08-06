@@ -14,7 +14,7 @@ interface {{ iface }}
 {%       if iface_data['ip'] is string %}
   ip address {{ iface_data['ip'] }}
 {%       elif iface_data['ip'] is iterable %}
-{%         for ip in iface_data['ip'].items() %}
+{%         for ip in iface_data['ip'] if ip|length %}
   ip address {{ ip }}
 {%         endfor %}
 {%       endif %}
@@ -23,7 +23,7 @@ interface {{ iface }}
 {%       if iface_data['ipv6'] is string %}
   ipv6 address {{ iface_data['ipv6'] }}
 {%       elif iface_data['ipv6'] is iterable %}
-{%         for ipv6 in iface_data['ipv6'].items() %}
+{%         for ipv6 in iface_data['ipv6'] if ipv6|length %}
   ipv6 address {{ ipv6 }}
 {%         endfor %}
 {%       endif %}
@@ -47,8 +47,15 @@ ip route {{ dest }} {{ next_hop }}
 {% endif %}
 {% if frr_static_v6 is defined and frr_static_v6 != {} %}
 {%   for dest, next_hop in frr_static_v6.items() %}
-ip route {{ dest }} {{ next_hop }}
+ipv6 route {{ dest }} {{ next_hop }}
 {%   endfor %}
+{% endif %}
+!
+{% if frr_ip_forwarding | default(False) %}
+ip forwarding
+{% endif %}
+{% if frr_ipv6_forwarding | default(False) %}
+ipv6 forwarding
 {% endif %}
 !
 {% if frr_daemons['bgpd'] %}
@@ -70,8 +77,38 @@ router bgp {{ asn }}
 {%       if asn_data['maximum_paths'] is defined %}
   maximum-paths {{ asn_data['maximum_paths'] }}
 {%       endif %}
+{%       if asn_data['other'] | default(False) %}
+{%         for option in asn_data['other'] %}
+  {{ option }}
+{%         endfor %}
+{%       endif %}
+{%       if asn_data['af_v4'] | default(False) %}
+  address-family ipv4 unicast
+{%         for option in asn_data['af_v4'] %}
+    {{ option }}
+{%         endfor %}
+  exit-address-family
+!
+{%       endif %}
+{%       if asn_data['af_v6'] | default(False) %}
+  address-family ipv6 unicast
+{%         for option in asn_data['af_v6'] %}
+    {{ option }}
+{%         endfor %}
+  exit-address-family
+{%       endif %}
+!
 {%       if asn_data['neighbors'] is defined %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].items() %}
+{%           set x=neighbor_data.__setitem__('is_peer_group', neighbor_data['is_peer_group'] | default(False)) %}
+{%         endfor %}
+{%         for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
+{%           if neighbor_data['interface'] | default(False) %}
+  neighbor {{ neighbor }} interface
+{%           endif %}
+{%           if neighbor_data['v6only'] | default(False) %}
+  neighbor {{ neighbor }} interface v6only
+{%           endif %}
 {%           if neighbor_data['is_peer_group'] | default(False) %}
   neighbor {{ neighbor }} peer-group
 {%           endif %}
@@ -99,10 +136,31 @@ router bgp {{ asn }}
 {%           if neighbor_data['timers_connect'] | default(False) %}
   neighbor {{ neighbor }} timers connect {{ neighbor_data['timers_connect'] }}
 {%           endif %}
+{%           if neighbor_data['other'] | default(False) %}
+{%             for option in neighbor_data['other'] %}
+  neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
+{%           endif %}
+!
+{%           if neighbor_data['af_v4'] | default(False) %}
+  address-family ipv4 unicast
+{%             for option in neighbor_data['af_v4'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
+  exit-address-family
+!
+{%           endif %}
+{%           if neighbor_data['af_v6'] | default(False) %}
+  address-family ipv6 unicast
+{%             for option in neighbor_data['af_v6'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
+  exit-address-family
+{%           endif %}
 !
 {%           if neighbor_data['v4_route_reflector_client'] | default(False) or
                 neighbor_data['v4_route_map'] | default(False) %}
-  address-family {{ neighbor_data['address_family'] | default('ipv4 unicast') }}
+  address-family ipv4 unicast
 {%             if neighbor_data['v4_route_reflector_client'] | default(False) %}
     neighbor {{ neighbor }} route-reflector-client
 {%             endif %}
@@ -148,9 +206,15 @@ router bgp {{ asn }}
 {%           endfor %}
 {%         endif %}
 {%         if asn_data['redistribute_v6'] | default(False) %}
-{%           for redist_protocol in asn_data['redistribute'] %}
+{%           if asn_data['redistribute_v6'] is iterable %}
+{%             for redist_protocol in asn_data['redistribute_v6'] %}
     redistribute {{ redist_protocol }}
-{%           endfor %}
+{%             endfor %}
+{%           else %}
+{%             for redist_protocol in asn_data['redistribute'] %}
+    redistribute {{ redist_protocol }}
+{%             endfor %}
+{%           endif %}
 {%         endif %}
   exit-address-family
 !
@@ -224,9 +288,9 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {%     for seq, seq_data in sequences.items() %}
 {%       if seq_data['prefix'] is defined %}
 {%         if seq_data['match'] is defined %}
-ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
+ipv6 prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
 {%         else %}
-ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
+ipv6 prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {%         endif %}
 {%       endif %}
 {%     endfor %}

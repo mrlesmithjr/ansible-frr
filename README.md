@@ -34,6 +34,7 @@
     - [Grafana Dashboards](#grafana-dashboards)
     - [Tearing down](#tearing-down)
   - [Upgrade/Downgrade](#upgradedowngrade)
+  - [Quagga Configruation](#quagga-configuration)
   - [License](#license)
   - [Author Information](#author-information)
 
@@ -74,6 +75,16 @@ frr_route_map:
   RTBH_IN:
     deny 10: []
 
+```
+
+### General Options
+
+#### IP/IPv6 Forwarding
+Below is an example of enabling ip and ipv6 forwading:
+
+```yaml
+frr_ip_forwarding: true
+frr_ipv6_forwarding: true
 ```
 
 ### Prefix Lists
@@ -147,13 +158,22 @@ frr_bgp:
     65000:
       log_neighbor_changes: true
       timers: '3 9'
+      other:
+        - "bgp bestpath as-path multipath-relax"
       neighbors:
+        group1:
+          asn: 66000
+          is_peer_group: true
+          multihop: 255
         192.168.250.11:
           asn: 65000
           default_originate: false
           description: node1
           next_hop_self: true
           timers_connect: 5
+          v6only: true
+          other:
+            - "capability dynamic"
         192.168.250.12:
           asn: 65000
           default_originate: false
@@ -161,9 +181,8 @@ frr_bgp:
           next_hop_self: true
           password: secret
         192.168.250.12:
-          asn: 66000
+          peer_group: group1
           description: far_away
-          multihop: 255
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
@@ -188,12 +207,18 @@ frr_bgp:
   asns:
     65000:
       log_neighbor_changes: true
+      af_v4:
+        - "maximum-paths 2"
+      af_v6:
+        - "maximum-paths 2"
       neighbors:
         192.168.250.11:
           asn: 65000
           default_originate: false
           description: node1
           next_hop_self: true
+          af_v4:
+            - "soft-reconfiguration inbound"
         192.168.250.12:
           asn: 65000
           default_originate: false
@@ -204,7 +229,9 @@ frr_bgp:
           default_originate: false
           description: node1
           next_hop_self: true
-          adress_family: "ipv6 unicast"
+          af_v6:
+            - "activate"
+            - "soft-reconfiguration inbound"
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
@@ -439,6 +466,23 @@ You can upgrade or downgrade FRR by setting the following variable:
 
 `frr_version: 6.0.2` from `frr_version: 6.0`
 
+## Quagga configuration
+> NOTE: Quagga must be installed from the local repos of the OS
+
+You can configure quagga instead of FRR by using the following variable:
+
+`routing_type: quagga`
+
+> Additional Quagga-specific configurations
+
+```bash
+frr_bgp:
+  asns:
+    65000:
+      neighbors:
+        swp1:
+          **interface: true**
+```
 
 ## License
 

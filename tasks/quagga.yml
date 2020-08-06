@@ -1,76 +1,89 @@
 ---
+- name: Remove FRR
+  package:
+    name: frr
+    state: absent
+  become: true
+
+- name: Installing Quagga From Repo
+  package:
+    name: quagga
+    state: present
+  become: true
+
 - name: config | Configuring daemons
   template:
     backup: yes
     src: etc/frr/daemons.j2
-    dest: /etc/frr/daemons
-    owner: root
-    group: root
+    dest: /etc/quagga/daemons
+    owner: quagga
+    group: quagga
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
-    - start frr
+    - restart quagga
+    - start quagga
 
 - name: config | Configuring vtysh.conf
   template:
     backup: yes
     src: etc/frr/vtysh.conf.j2
-    dest: /etc/frr/vtysh.conf
-    owner: frr
-    group: frr
+    dest: /etc/quagga/vtysh.conf
+    owner: quagga
+    group: quaggavty
     mode: u=rw,g=r,o=
   become: true
   notify:
-    - restart frr
-    - start frr
+    - restart quagga
+    - start quagga
 
 - name: config | Configuring debian.conf
   template:
     backup: yes
     src: etc/frr/debian.conf.j2
-    dest: /etc/frr/debian.conf
-    owner: root
-    group: root
+    dest: /etc/quagga/debian.conf
+    owner: quagga
+    group: quagga
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
-    - start frr
+    - restart quagga
+    - start quagga
   when: ansible_os_family == "Debian"
 
 - name: config | Configuring zebra.conf
   template:
     backup: yes
     src: etc/frr/zebra.conf.j2
-    dest: /etc/frr/zebra.conf
-    owner: frr
-    group: frr
+    dest: /etc/quagga/zebra.conf
+    owner: quagga
+    group: quagga
     mode: u=rw,g=r,o=
   become: true
-  register: _frr_zebra_configured
+  register: _quagga_zebra_configured
   notify:
-    - restart frr
-    - start frr
+    - restart quagga
+    - start quagga
 
 # We need to flush here in case interfaces are configured in zebra.conf
 - name: config | Flusing Handlers
   meta: flush_handlers
+  when: _quagga_zebra_configured['changed']
 
 # We need to rediscover facts if interfaces are initially configured in zebra.conf
 - name: config | Rediscovering Facts
   setup:
-  when: _frr_zebra_configured['changed']
+  when: _quagga_zebra_configured['changed']
 
-- name: config | Configuring FRR
+- name: config | Configuring Quagga
   template:
     backup: yes
     src: etc/frr/frr.conf.j2
-    dest: /etc/frr/frr.conf
-    owner: frr
-    group: frr
+    dest: /etc/quagga/Quagga.conf
+    owner: quagga
+    group: quagga
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
-    - start frr
+    - restart quagga
+    - start quagga
