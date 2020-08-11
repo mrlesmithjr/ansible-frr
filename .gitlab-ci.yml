@@ -24,30 +24,30 @@ centos7:
   script:
     - molecule test --scenario-name centos7
 
-centos8:
-  stage: molecule-test
-  script:
-    - molecule test --scenario-name centos8
+# centos8:
+#   stage: molecule-test
+#   script:
+#     - molecule test --scenario-name centos8
 
-debian8:
-  stage: molecule-test
-  script:
-    - molecule test --scenario-name debian8
+# debian8:
+#   stage: molecule-test
+#   script:
+#     - molecule test --scenario-name debian8
 
-debian9:
-  stage: molecule-test
-  script:
-    - molecule test --scenario-name debian9
+# debian9:
+#   stage: molecule-test
+#   script:
+#     - molecule test --scenario-name debian9
 
-debian10:
-  stage: molecule-test
-  script:
-    - molecule test --scenario-name debian10
+# debian10:
+#   stage: molecule-test
+#   script:
+#     - molecule test --scenario-name debian10
 
-fedora:
-  stage: molecule-test
-  script:
-    - molecule test --scenario-name fedora
+# fedora:
+#   stage: molecule-test
+#   script:
+#     - molecule test --scenario-name fedora
 
 ubuntu1604:
   stage: molecule-test
@@ -58,8 +58,7 @@ ubuntu1804:
   stage: molecule-test
   script:
     - molecule test --scenario-name ubuntu1804
-
-ubuntu2004:
-  stage: molecule-test
-  script:
-    - molecule test --scenario-name ubuntu2004
+# ubuntu2004:
+#   stage: molecule-test
+#   script:
+#     - molecule test --scenario-name ubuntu2004
