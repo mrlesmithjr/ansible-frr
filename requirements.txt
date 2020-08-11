@@ -19,7 +19,7 @@ click==7.1.2              # via click-completion, click-help-colors, cookiecutte
 colorama==0.4.3           # via molecule, python-gilt
 cookiecutter==1.7.2       # via molecule
 cryptography==3.0         # via ansible, paramiko
-docker==4.3.0             # via -r requirements.in
+docker==4.2.2             # via -r requirements.in
 fasteners==0.15           # via python-gilt
 future==0.18.2            # via lunr
 idna==2.10                # via requests

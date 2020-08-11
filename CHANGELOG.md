@@ -1,3 +1,14 @@
+commit 713a841802017bcb3cc78c0aced5988479b068b0
+Author: Larry Smith Jr <mrlesmithjr@gmail.com>
+Date:   Tue Aug 11 10:13:16 2020 -0400
+
+    Disabled unsupported distro tests
+    
+    - CentOS 8
+    - Debian
+    - Fedora
+    - Ubuntu 20.04
+
 commit 8e8d43ce9bd224c728160a62b471372b6073d681
 Author: Larry Smith Jr <mrlesmithjr@gmail.com>
 Date:   Tue Aug 11 10:03:43 2020 -0400
