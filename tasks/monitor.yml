@@ -44,7 +44,7 @@
 - debug: var=_frr_bgp_summary['stdout']
   when:
     - _frr_bgp_summary['stdout'] is defined
-    - _frr_bgp_summary['stdout'] != ""
+    - _frr_bgp_summary['stdout'] != "" # noqa 602
 # - name: monitoring | Caputuring BGP Peer Info
 #   command: vtysh -c "sh ip bgp {{ item }} json"
 #   become: true

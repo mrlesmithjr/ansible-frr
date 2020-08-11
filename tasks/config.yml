@@ -58,7 +58,7 @@
   meta: flush_handlers
 
 # We need to rediscover facts if interfaces are initially configured in zebra.conf
-- name: config | Rediscovering Facts
+- name: config | Rediscovering Facts # noqa 503
   setup:
   when: _frr_zebra_configured['changed']
 
