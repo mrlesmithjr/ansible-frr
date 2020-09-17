@@ -41,7 +41,9 @@
     frr_daemons['bgpd'] and
     _frr_service_status['status']['SubState'] == "running"
 
-- debug: var=_frr_bgp_summary['stdout']
+- debug:
+    var: _frr_bgp_summary['stdout']
+    verbosity: 1
   when:
     - _frr_bgp_summary['stdout'] is defined
     - _frr_bgp_summary['stdout'] != ""
