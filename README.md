@@ -1,7 +1,11 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [ansible-frr](#ansible-frr)
+  - [Build Status](#build-status)
+    - [GitHub Actions](#github-actions)
+    - [Travis CI](#travis-ci)
   - [Requirements](#requirements)
   - [Role Variables](#role-variables)
   - [Dependencies](#dependencies)
@@ -9,6 +13,8 @@
   - [Route Maps and Prefix Lists](#route-maps-and-prefix-lists)
     - [Route Maps](#route-maps)
       - [Configuring Route Maps](#configuring-route-maps)
+    - [General Options](#general-options)
+      - [IP/IPv6 Forwarding](#ipipv6-forwarding)
     - [Prefix Lists](#prefix-lists)
       - [Configuring Prefix Lists](#configuring-prefix-lists)
     - [Access Lists](#access-lists)
@@ -25,16 +31,8 @@
       - [Configuring STATIC routes](#configuring-static-routes)
   - [Interface Configuration](#interface-configuration)
     - [Interfaces](#interfaces)
-  - [Vagrant](#vagrant)
-    - [Spinning Up](#spinning-up)
-    - [Monitoring](#monitoring)
-    - [Grafana](#grafana)
-      - [Accessing Grafana](#accessing-grafana)
-      - [Configuring InfluxDB Data Source](#configuring-influxdb-data-source)
-    - [Grafana Dashboards](#grafana-dashboards)
-    - [Tearing down](#tearing-down)
   - [Upgrade/Downgrade](#upgradedowngrade)
-  - [Quagga Configruation](#quagga-configuration)
+  - [Quagga configuration](#quagga-configuration)
   - [License](#license)
   - [Author Information](#author-information)
 
@@ -42,12 +40,25 @@
 
 # ansible-frr
 
-An [Ansible](https://www.ansible.com) role to install/configure [FRR](https://frrouting.org/)
+Ansible role to install/configure FRR
 
 > NOTE: FRRouting (FRR) is an IP routing protocol suite for Linux and Unix
 > platforms which includes protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP.
 
+## Build Status
+
+### GitHub Actions
+
+![Molecule Test](https://github.com/mrlesmithjr/ansible-frr/workflows/Molecule%20Test/badge.svg)
+
+### Travis CI
+
+[![Build Status](https://travis-ci.org/mrlesmithjr/ansible-frr.svg?branch=master)](https://travis-ci.org/mrlesmithjr/ansible-frr)
+
 ## Requirements
+
+For any required Ansible roles, review:
+[requirements.yml](requirements.yml)
 
 ## Role Variables
 
@@ -57,11 +68,14 @@ An [Ansible](https://www.ansible.com) role to install/configure [FRR](https://fr
 
 ## Example Playbook
 
+[playbook.yml](playbook.yml)
+
 ## Route Maps and Prefix Lists
 
 ### Route Maps
 
 #### Configuring Route Maps
+
 Below is an example of Route Maps Configuration:
 
 ```yaml
@@ -71,15 +85,15 @@ frr_route_map:
       interface: blackhole
       prefix_list: Bad_IPs
       origin: igp
-      community: '12345:100'
+      community: "12345:100"
   RTBH_IN:
     deny 10: []
-
 ```
 
 ### General Options
 
 #### IP/IPv6 Forwarding
+
 Below is an example of enabling ip and ipv6 forwading:
 
 ```yaml
@@ -90,6 +104,7 @@ frr_ipv6_forwarding: true
 ### Prefix Lists
 
 #### Configuring Prefix Lists
+
 Below is an example of Prefix List Configuration:
 
 ```yaml
@@ -111,22 +126,23 @@ frr_prefix_list_v6:
 ### Access Lists
 
 #### Configuring Access Lists
+
 Below is an example
 
 ```yaml
 frr_access_list:
-  - '10 permit 10.10.10.21/32'
-  - '10 permit 192.168.0.0/17'
-  - '101 permit ip 10.0.0.0 0.0.0.255 any'
+  - "10 permit 10.10.10.21/32"
+  - "10 permit 192.168.0.0/17"
+  - "101 permit ip 10.0.0.0 0.0.0.255 any"
 ```
 
 ## Supported Routing Protocols
 
-| Protocol      | Implemented | Notes               |
-| ------------- | ----------- | ------------------- |
-| [BGP](#bgp)   | X           | Only initial config |
-| [OSPF](#ospf) | X           | Only initial config |
-| [STATIC](#static) | X       | Only initial config |
+| Protocol          | Implemented | Notes               |
+| ----------------- | ----------- | ------------------- |
+| [BGP](#bgp)       | X           | Only initial config |
+| [OSPF](#ospf)     | X           | Only initial config |
+| [STATIC](#static) | X           | Only initial config |
 
 ### BGP
 
@@ -365,101 +381,8 @@ frr_interfaces: # A dict. key = iface name, value = iface data
       - "link-detect"
 ```
 
-## Vagrant
-
-Included is a ready to go BGP CLOS fabric based on the below diagram. Ready to
-be spun up in Vagrant.
-
-![FRR-BGP-Routing](https://github.com/mrlesmithjr/diagrams/blob/master/FRR-BGP-Routing.png?raw=true)
-
-| Node     | Function | ASN   | Loopback     | enp0s8            | enp0s9          | enp0s10         | enp0s16        | enp0s17        |
-| -------- | -------- | ----- | ------------ | ----------------- | --------------- | --------------- | -------------- | -------------- |
-| Spine1   | Spine    | 65011 | 10.0.10.1/32 | 192.168.250.11/24 | 192.168.1.0/31  | 192.168.1.2/31  | 192.168.1.4/31 | 192.168.1.6/31 |
-| Spine2   | Spine    | 65012 | 10.0.10.2/32 | 192.168.250.12/24 | 192.168.2.0/31  | 192.168.2.2/31  | 192.168.2.4/31 | 192.168.2.6/31 |
-| Leaf1    | Leaf     | 65021 | 10.0.20.3/32 | 192.168.250.21/24 | 192.168.1.1/31  | 192.168.10.0/31 | 192.168.2.5/31 |                |
-| Leaf2    | Leaf     | 65022 | 10.0.20.4/32 | 192.168.250.22/24 | 192.168.1.3/31  | 192.168.10.2/31 | 192.168.2.7/31 |                |
-| Leaf3    | Leaf     | 65023 | 10.0.20.5/32 | 192.168.250.23/24 | 192.168.1.5/31  | 192.168.20.0/31 | 192.168.2.1/31 |                |
-| Leaf4    | Leaf     | 65024 | 10.0.20.6/32 | 192.168.250.24/24 | 192.168.1.7/31  | 192.168.20.2/31 | 192.168.2.3/31 |                |
-| Compute1 | Compute  | 65031 | 10.0.30.1/32 | 192.168.250.31/24 | 192.168.10.1/31 | 192.168.10.3/31 |                |                |
-| Compute2 | Compute  | 65032 | 10.0.30.2/32 | 192.168.250.32/24 | 192.168.20.1/31 | 192.168.20.3/31 |                |                |
-
-### Spinning Up
-
-In order to spin up this environment simply do the following:
-
-```bash
-cd Vagrant
-vagrant up
-```
-
-Once all of the nodes are spun up your routing topology should be similar to
-below:
-
-```bash
-sh ip route bgp
-Codes: K - kernel route, C - connected, S - static, R - RIP,
-       O - OSPF, I - IS-IS, B - BGP, P - PIM, N - NHRP, T - Table,
-       v - VNC, V - VNC-Direct,
-       > - selected route, * - FIB route
-
-B>* 10.0.10.2/32 [20/0] via 192.168.1.3, enp0s10, 02:53:22
-B>* 10.0.20.3/32 [20/0] via 192.168.1.1, enp0s9, 02:43:37
-B>* 10.0.20.4/32 [20/0] via 192.168.1.3, enp0s10, 02:53:22
-B>* 10.0.20.5/32 [20/0] via 192.168.1.5, enp0s16, 02:53:22
-B>* 10.0.20.6/32 [20/0] via 192.168.1.7, enp0s17, 02:53:22
-B>* 10.0.30.1/32 [20/0] via 192.168.1.3, enp0s10, 02:53:22
-B>* 10.0.30.2/32 [20/0] via 192.168.1.7, enp0s17, 02:53:22
-B>* 192.168.2.0/31 [20/0] via 192.168.1.5, enp0s16, 02:53:22
-B>* 192.168.2.2/31 [20/0] via 192.168.1.7, enp0s17, 02:53:22
-B>* 192.168.2.4/31 [20/0] via 192.168.1.1, enp0s9, 02:43:37
-B>* 192.168.2.6/31 [20/0] via 192.168.1.3, enp0s10, 02:53:22
-B>* 192.168.10.0/31 [20/0] via 192.168.1.1, enp0s9, 02:43:37
-B>* 192.168.10.2/31 [20/0] via 192.168.1.3, enp0s10, 02:53:22
-B>* 192.168.20.0/31 [20/0] via 192.168.1.5, enp0s16, 02:53:22
-B>* 192.168.20.2/31 [20/0] via 192.168.1.7, enp0s17, 02:53:22
-```
-
-### Monitoring
-
-We have included some basic monitoring of BGP stats and system stats. We are
-spinning up an `InfluxDB` container on `compute1` and a `Grafana` container on
-`compute2` as part of the provisioning. All of the VMs are running
-`Telegraf` which is running some scripts to capture BGP stats and then sending
-to `InfluxDB`. We can then visualize the status using `Grafana` by connecting to
-the [Grafana Web UI](http://192.168.250.32:3000) which again, is a Docker
-container running on `compute2`.
-
-### Grafana
-
-#### Accessing Grafana
-
-Using your browser of choice connect to the [Grafana Web UI](http://192.168.250.32:3000)
-and use `admin:admin` to login.
-
-#### Configuring InfluxDB Data Source
-
-Add InfluxDB as a data source by providing the following in the config:
-
--   `Name:` influxdb
--   `Type:` InfluxDB
--   `URL:` <http://192.168.250.31:8086>
--   `Database:` telegraf
-
-### Grafana Dashboards
-
-We have included some `Grafana` dashboards which can be imported in the
-[Vagrant/dashboards](Vagrant/dashboards) folder.
-
-![BGP Stats](images/2018/02/bgp-stats.png)
-
-### Tearing down
-
-When you are done testing you can simply tear everything down by:
-
-```bash
-scripts/cleanup.sh
-```
 ## Upgrade/Downgrade
+
 > NOTE: FRR is unable to be downgraded from 6.0.2 using this role.
 
 You can upgrade or downgrade FRR by setting the following variable:
@@ -467,6 +390,7 @@ You can upgrade or downgrade FRR by setting the following variable:
 `frr_version: 6.0.2` from `frr_version: 6.0`
 
 ## Quagga configuration
+
 > NOTE: Quagga must be installed from the local repos of the OS
 
 You can configure quagga instead of FRR by using the following variable:
@@ -492,6 +416,8 @@ MIT
 
 Larry Smith Jr.
 
--   [EverythingShouldBeVirtual](http://everythingshouldbevirtual.com)
--   [@mrlesmithjr](https://www.twitter.com/mrlesmithjr)
--   <mailto:mrlesmithjr@gmail.com>
+- [@mrlesmithjr](https://twitter.com/mrlesmithjr)
+- [mrlesmithjr@gmail.com](mailto:mrlesmithjr@gmail.com)
+- [http://everythingshouldbevirtual.com](http://everythingshouldbevirtual.com)
+
+> NOTE: Repo has been created/updated using [https://github.com/mrlesmithjr/cookiecutter-ansible-role](https://github.com/mrlesmithjr/cookiecutter-ansible-role) as a template.
