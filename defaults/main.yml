@@ -113,6 +113,11 @@ frr_version: 6.0.2
 frr_apt_version: frr-stable
 frr_apt_repository: "deb https://deb.frrouting.org/frr {{ ansible_distribution_release }} {{ frr_apt_version }}"
 
+# Defines FRR rpm repo
+# https://rpm.frrouting.org/
+frr_rpm_version: frr-stable
+frr_rpm_repository: "https://rpm.frrouting.org/repo/{{ frr_rpm_version }}-repo-1-0.el{{ ansible_distribution_major_version }}.noarch.rpm"
+
 _frr_bgp_summary:
   stdout: ""
 
