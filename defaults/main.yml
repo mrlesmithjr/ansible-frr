@@ -30,6 +30,7 @@ frr_bgp: {}
   #         default_originate: false
   #         description: node2
   #         next_hop_self: true
+  #         v4_route_reflector_client: true
   #     networks:
   #       - "{{ frr_router_id }}/32"
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
