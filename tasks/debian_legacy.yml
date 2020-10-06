@@ -76,12 +76,10 @@
 - name: add python frr tools to install list
   set_fact:
     frr_package_deb: "{{ frr_package_url }}/frr-pythontools_{{ frr_version }}{{ frr_url_part }}{{ ansible_distribution|lower }}{{ ansible_distribution_version }}{{ frr_url_part_3 | default('+1') }}_all.deb" # noqa 204
-  when: frr_reload|bool
 
 - name: add python frr tools to install list
   set_fact:
     frr_debs: "{{ frr_debs }} + [ '{{ frr_package_deb }}' ]"
-  when: frr_reload|bool
 
 - name: Install python-ipaddr
   package:
@@ -136,7 +134,8 @@
         force: true
       become: true
       with_items: "{{ frr_debs }}"
-      register: _frrdownload
+      notify:
+        - restart frr
       when: _frr_version.stdout != frr_version
   when: ansible_lsb.release is version ('18.04', '<')
 

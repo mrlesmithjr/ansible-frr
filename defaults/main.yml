@@ -121,13 +121,5 @@ frr_rpm_repository: "https://rpm.frrouting.org/repo/{{ frr_rpm_version }}-repo-1
 _frr_bgp_summary:
   stdout: ""
 
-# Installs and configured FRR python tools for reload
-# If you make a change to your routing configuration, you need to reload so your changes take place. FRR reload enables you to apply only the modifications you make to your FRR configuration, synchronizing its running state with the configuration in /etc/frr/frr.conf. This is useful for optimizing the automation of FRR in your environment or to apply changes made at runtime.
-
-frr_reload: false
-
-# When a newer version of FRR is installed we need to restart instead of reloading the configuration.
-_frrdownload.changed: false
-
 # This is changed to allow for either frr or quagga to be configured depending on the need.
 routing_type: frr

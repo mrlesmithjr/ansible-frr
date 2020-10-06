@@ -39,14 +39,14 @@
 - name: redhat | Combine FRR {{ frr_version }} and tools
   set_fact:
     frr_debs: "{{ frr_debs }} + [ '{{ frr_package_deb }}' ]"
-  when: frr_reload|bool
 
 - name: redhat | Installing FRR {{ frr_version }}
   yum:
     name: "{{ frr_debs }}"
     state: present
   become: true
-  register: _frrdownload
   when:
     - ansible_distribution == "CentOS"
     - ansible_distribution_major_version == "7"
+  notify:
+    - restart frr
