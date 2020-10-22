@@ -9,7 +9,7 @@
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
+    - reload frr
     - start frr
 
 - name: config | Configuring vtysh.conf
@@ -22,7 +22,7 @@
     mode: u=rw,g=r,o=
   become: true
   notify:
-    - restart frr
+    - reload frr
     - start frr
 
 - name: config | Configuring debian.conf
@@ -35,7 +35,7 @@
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
+    - reload frr
     - start frr
   when: ansible_os_family == "Debian"
 
@@ -50,7 +50,7 @@
   become: true
   register: _frr_zebra_configured
   notify:
-    - restart frr
+    - reload frr
     - start frr
 
 # We need to flush here in case interfaces are configured in zebra.conf
@@ -72,5 +72,5 @@
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
+    - reload frr
     - start frr

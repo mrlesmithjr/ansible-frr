@@ -6,8 +6,6 @@
     state: restarted
     enabled: true
   become: true
-  ignore_errors: true
-  when: not frr_reload|bool or _frrdownload.changed
   listen: "restart frr"
 
 - name: reload frr
@@ -16,9 +14,7 @@
     state: reloaded
     enabled: true
   become: true
-  ignore_errors: true
-  when: frr_reload|bool and not _frrdownload.changed
-  listen: "restart frr"
+  listen: "reload frr"
 
 - name: start frr
   service:
@@ -35,8 +31,6 @@
     state: restarted
     enabled: true
   become: true
-  ignore_errors: true
-  when: not frr_reload|bool
   listen: "restart quagga"
 
 - name: reload quagga
@@ -45,9 +39,7 @@
     state: reloaded
     enabled: true
   become: true
-  ignore_errors: true
-  when: frr_reload|bool
-  listen: "restart quagga"
+  listen: "reload quagga"
 
 - name: start quagga
   service:

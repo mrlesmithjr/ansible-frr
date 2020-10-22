@@ -42,7 +42,8 @@
       - frr-pythontools
     state: latest  # noqa 403
   become: true
-  register: _frrdownload
+  notify:
+    - restart frr
 
 - name: stat config
   stat:

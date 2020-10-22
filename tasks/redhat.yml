@@ -27,3 +27,5 @@
       - frr-pythontools
     state: present
   become: true
+  notify:
+    - restart frr
