@@ -195,6 +195,7 @@ frr_bgp:
           default_originate: false
           description: node2
           next_hop_self: true
+          v4_route_reflector_client: true
           password: secret
         192.168.250.12:
           peer_group: group1
