@@ -107,7 +107,7 @@ frr_release_date: 2018010901
 
 # Defines FRR version to install
 # https://github.com/FRRouting/frr/releases
-frr_version: 6.0.2
+frr_version: 7.2
 
 # Defines FRR apt repo
 # https://deb.frrouting.org/
