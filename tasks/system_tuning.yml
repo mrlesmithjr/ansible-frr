@@ -8,3 +8,5 @@
   with_items:
     - net.ipv4.ip_forward
     - net.ipv6.conf.all.forwarding
+  tags:
+    - molecule-notest
