@@ -7,7 +7,7 @@
   register: add_repository_key
   ignore_errors: true
 
-- name: Ensure curl is present (on older systems without SNI).
+- name: Ensure curl & gnupg is present (on older systems without SNI).
   package: 
     name: 
       - curl
@@ -30,6 +30,7 @@
   apt_repository:
     repo: "{{ frr_apt_repository }}"
     state: present
+    mode: "0644"
     update_cache: true
   become: true
 
