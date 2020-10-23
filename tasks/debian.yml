@@ -8,7 +8,11 @@
   ignore_errors: true
 
 - name: Ensure curl is present (on older systems without SNI).
-  package: name=curl state=present
+  package: 
+    name: 
+      - curl
+      - gnupg 
+    state: present
   become: true
   when: add_repository_key is failed
 
