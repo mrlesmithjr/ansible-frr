@@ -18,6 +18,7 @@
     curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
   args:
     warn: false
+    executable: "/bin/bash"
   become: true
   when: add_repository_key is failed
 
