@@ -8,7 +8,7 @@
   ignore_errors: true
 
 - name: Ensure curl & gnupg is present (on older systems without SNI).
-  package: 
+  package:
     name: 
       - curl
       - gnupg 
@@ -25,6 +25,12 @@
     executable: "/bin/bash"
   become: true
   when: add_repository_key is failed
+
+- name: Ensure apt-transport-https is present to enable https repositories
+  package:
+    name: apt-transport-https
+    state: present
+  become: true
 
 - name: Install FRR apt repo
   apt_repository:
