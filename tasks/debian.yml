@@ -9,9 +9,9 @@
 
 - name: Ensure curl & gnupg is present (on older systems without SNI).
   package:
-    name: 
+    name:
       - curl
-      - gnupg 
+      - gnupg
     state: present
   become: true
   when: add_repository_key is failed
@@ -68,24 +68,14 @@
     access_time: preserve
   become: true
 
-- name: stat config
+- name: stat defaut config
   stat:
     path: /etc/default/frr
   register: conf_stat
-
-- name: Backup old /etc/frr/daemons.conf and /etc/default/frr
-  copy:
-    remote_src: True
-    src: "{{ item }}"
-    dest: "{{ item }}.bak"
-  ignore_errors: true
   when:
-    - conf_stat.stat.exists
-  with_items:
-    - /etc/frr/daemons.conf
-    - /etc/default/frr
+    - frr_version > "6.0"
 
-- name: Remove old /etc/frr/daemons.conf and /etc/default/frr
+- name: Remove old /etc/default/frr
   file:
     path: "{{ item }}"
     state: absent
@@ -95,5 +85,4 @@
   when:
     - frr_version > "6.0"
   with_items:
-    - /etc/frr/daemons.conf
     - /etc/default/frr

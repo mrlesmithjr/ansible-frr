@@ -3,6 +3,7 @@
   file:
     path: /opt/frr/monitoring
     state: directory
+    mode: 0600
   become: true
 
 - name: monitor | Capturing sudo Path
