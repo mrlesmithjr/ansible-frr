@@ -1,7 +1,7 @@
 ---
 - name: Install FRR apt repo key
   apt_key:
-    url: https://deb-ch.frrouting.org/frr/keys.asc
+    url: https://deb.frrouting.org/frr/keys.asc
     state: present
   become: true
   register: add_repository_key
@@ -15,7 +15,7 @@
 - name: Add FRR apt key (alternative for older systems without SNI).
   shell: |
     set -o pipefail
-    curl -sSL https://deb-ch.frrouting.org/frr/keys.asc | sudo apt-key add -
+    curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
   args:
     warn: false
   become: true
