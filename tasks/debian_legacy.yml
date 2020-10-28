@@ -140,7 +140,7 @@
       when: _frr_version.stdout != frr_version
   when: ansible_lsb.release is version ('18.04', '<')
 
-- name: stat defaut config
+- name: stat default config
   stat:
     path: /etc/default/frr
   register: conf_stat
