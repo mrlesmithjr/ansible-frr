@@ -1,4 +1,14 @@
 ---
+- name: config | Configuring vtysh.conf
+  template:
+    backup: yes
+    src: etc/frr/vtysh.conf.j2
+    dest: /etc/frr/vtysh.conf
+    owner: frr
+    group: frr
+    mode: u=rw,g=r,o=
+  become: true
+
 - name: config | Configuring daemons
   template:
     backup: yes
@@ -9,23 +19,10 @@
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
+    - reload frr
     - start frr
 
-- name: config | Configuring vtysh.conf
-  template:
-    backup: yes
-    src: etc/frr/vtysh.conf.j2
-    dest: /etc/frr/vtysh.conf
-    owner: frr
-    group: frr
-    mode: u=rw,g=r,o=
-  become: true
-  notify:
-    - restart frr
-    - start frr
-
-- name: config | Configuring debian.conf
+- name: config | Configuring debian.conf (debian version of daemons)
   template:
     backup: yes
     src: etc/frr/debian.conf.j2
@@ -35,32 +32,9 @@
     mode: u=rw,g=r,o=r
   become: true
   notify:
-    - restart frr
+    - reload frr
     - start frr
   when: ansible_os_family == "Debian"
-
-- name: config | Configuring zebra.conf
-  template:
-    backup: yes
-    src: etc/frr/zebra.conf.j2
-    dest: /etc/frr/zebra.conf
-    owner: frr
-    group: frr
-    mode: u=rw,g=r,o=
-  become: true
-  register: _frr_zebra_configured
-  notify:
-    - restart frr
-    - start frr
-
-# We need to flush here in case interfaces are configured in zebra.conf
-- name: config | Flusing Handlers
-  meta: flush_handlers
-
-# We need to rediscover facts if interfaces are initially configured in zebra.conf
-- name: config | Rediscovering Facts # noqa 503
-  setup:
-  when: _frr_zebra_configured['changed']
 
 - name: config | Configuring FRR
   template:
