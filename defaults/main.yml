@@ -12,12 +12,28 @@ frr_daemons:
   ripngd: false
   zebra: true
 
+# Define if we want to use traditional or datacenter FRR defaults
+# Official docs http://docs.frrouting.org/en/latest/basic.html#profiles
+# If undefined than current FRR default value is used implicitly (traditional)
+#frr_defaults: "datacenter"
+
+frr_prefix_list: {}
+  # Bad_IPs:
+  #   05 permit:
+  #     prefix: 192.168.88.0/24
+  #     match: ge 32
+  #   10 permit:
+  #     prefix: 172.16.0.0/16
+  #     match: le 32
+
 frr_bgp: {}
   # asns:
   #   65000:
   #     log_neighbor_changes: true
   #     timers: '3 9'
   #     maximum_paths: 64
+  #     other:
+  #       - "no bgp network import-check"
   #     neighbors:
   #       192.168.250.11:
   #         asn: 65000
@@ -31,6 +47,8 @@ frr_bgp: {}
   #         description: node2
   #         next_hop_self: true
   #         v4_route_reflector_client: true
+  #         other:
+  #           - "prefix-list Bad_IPs in"
   #     networks:
   #       - "{{ frr_router_id }}/32"
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"

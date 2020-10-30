@@ -1,5 +1,8 @@
 {{ ansible_managed|comment }}
 
+{% if frr_defaults is defined and frr_defaults|length  %}
+frr defaults {{ frr_defaults }}
+{% endif %}
 hostname {{ ansible_hostname }}
 password {{ frr_password }}
 log {{ frr_logging }}

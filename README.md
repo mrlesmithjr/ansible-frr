@@ -176,6 +176,7 @@ frr_bgp:
       timers: '3 9'
       other:
         - "bgp bestpath as-path multipath-relax"
+        - "no bgp network import-check"
       neighbors:
         group1:
           asn: 66000
@@ -197,6 +198,8 @@ frr_bgp:
           next_hop_self: true
           v4_route_reflector_client: true
           password: secret
+          other:
+            - "prefix-list Bad_IPs in"
         192.168.250.12:
           peer_group: group1
           description: far_away
