@@ -4,13 +4,22 @@
   block:
    - include_tasks: debian.yml
      when:
-       - ansible_os_family == "Debian"
-       - frr_version >= "7.0"
-       - ansible_distribution_version < "20.04"
+       - ansible_distribution == "Debian"
+       - frr_version|float is version("7.0", ">=")
    - include_tasks: debian_legacy.yml
      when:
-       - ansible_os_family == "Debian"
-       - frr_version < "7.0"
+       - ansible_distribution == "Debian"
+       - frr_version|float is version("7.0", "<")
+   - include_tasks: debian.yml
+     when:
+       - ansible_distribution == "Ubuntu"
+       - ansible_distribution_version < "20.04"
+       - frr_version|float is version("7.0", ">=")
+   - include_tasks: debian_legacy.yml
+     when:
+       - ansible_distribution == "Ubuntu"
+       - ansible_distribution_version < "20.04"
+       - frr_version|float is version("7.0", "<")
    - include_tasks: ubuntu.yml
      when:
        - ansible_distribution == "Ubuntu"
