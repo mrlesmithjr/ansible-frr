@@ -124,3 +124,6 @@ _frr_bgp_summary:
 
 # This is changed to allow for either frr or quagga to be configured depending on the need.
 routing_type: frr
+
+# Global setting for "no bgp ebgp-requires-policy"
+frr_no_ebgp_requires_policy: false
