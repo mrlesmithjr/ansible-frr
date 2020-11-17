@@ -106,6 +106,7 @@
       file:
         path: /tmp/frr/{{ frr_version }}/
         state: directory
+        mode: 0600
       changed_when: false
 
     - name: Download FRR package
@@ -139,27 +140,14 @@
       when: _frr_version.stdout != frr_version
   when: ansible_lsb.release is version ('18.04', '<')
 
-- name: stat config
+- name: stat default config
   stat:
     path: /etc/default/frr
   register: conf_stat
   when:
     - frr_version > "6.0"
 
-- name: Backup old /etc/frr/daemons.conf and /etc/default/frr
-  copy:
-    remote_src: True
-    src: "{{ item }}"
-    dest: "{{ item }}.bak"
-  ignore_errors: true
-  when:
-    - frr_version > "6.0"
-    - conf_stat.stat.exists
-  with_items:
-    - /etc/frr/daemons.conf
-    - /etc/default/frr
-
-- name: Remove old /etc/frr/daemons.conf and /etc/default/frr
+- name: Remove old /etc/default/frr
   file:
     path: "{{ item }}"
     state: absent
@@ -169,5 +157,4 @@
   when:
     - frr_version > "6.0"
   with_items:
-    - /etc/frr/daemons.conf
     - /etc/default/frr

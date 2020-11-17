@@ -10,13 +10,13 @@ jobs:
       matrix:
         molecule_distro:
           - centos7
-          # - centos8
-          # - debian9
-          # - debian10
+          - centos8
+          - debian9
+          - debian10
           # - fedora
           - ubuntu1604
           - ubuntu1804
-          # - ubuntu2004
+          - ubuntu2004
 
     steps:
       - uses: actions/checkout@v1

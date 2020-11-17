@@ -1,8 +1,0 @@
----
-# We need to flush here in case interfaces are configured in zebra.conf
-- name: config | Flusing Handlers
-  meta: flush_handlers
-
-# We need to rediscover facts if interfaces are initially configured in zebra.conf
-- name: config | Rediscovering Facts # noqa 503
-  setup:

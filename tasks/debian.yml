@@ -9,26 +9,36 @@
       register: add_repository_key
       ignore_errors: true
 
-    - name: Ensure curl is present (on older systems without SNI).
-      package: name=curl state=present
+    - name: Ensure curl & gnupg is present (on older systems without SNI).
+      package:
+        name:
+          - curl
+          - gnupg
+        state: present
       become: true
       when: add_repository_key is failed
-
+    
     - name: Add FRR apt key (alternative for older systems without SNI).
       shell: |
         set -o pipefail
         curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
       args:
         warn: false
+        executable: "/bin/bash"
       become: true
       when: add_repository_key is failed
-
+    
+    - name: Ensure apt-transport-https is present to enable https repositories
+      package:
+        name: apt-transport-https
+        state: present
+      become: true
+    
     - name: Install FRR apt repo
       apt_repository:
         repo: "{{ frr_apt_repository }}"
         state: present
-        update_cache: true
-      become: true
+        mode: "0644"
   when: frr_use_upstream_repo_debian
 
 - name: Remove upstream repo
@@ -57,24 +67,25 @@
   notify:
     - restart frr
 
-- name: stat config
+- name: debian | Touch FRR reload log
+  file:
+    path: /var/log/frr/frr-reload.log
+    state: touch
+    owner: frr
+    group: frr
+    mode: 0644
+    modification_time: preserve
+    access_time: preserve
+  become: true
+
+- name: stat defaut config
   stat:
     path: /etc/default/frr
   register: conf_stat
-
-- name: Backup old /etc/frr/daemons.conf and /etc/default/frr
-  copy:
-    remote_src: True
-    src: "{{ item }}"
-    dest: "{{ item }}.bak"
-  ignore_errors: true
   when:
-    - conf_stat.stat.exists
-  with_items:
-    - /etc/frr/daemons.conf
-    - /etc/default/frr
+    - frr_version > "6.0"
 
-- name: Remove old /etc/frr/daemons.conf and /etc/default/frr
+- name: Remove old /etc/default/frr
   file:
     path: "{{ item }}"
     state: absent
@@ -84,5 +95,4 @@
   when:
     - frr_version > "6.0"
   with_items:
-    - /etc/frr/daemons.conf
     - /etc/default/frr
