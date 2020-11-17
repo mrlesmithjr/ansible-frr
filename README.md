@@ -173,6 +173,7 @@ frr_bgp:
   asns:
     65000:
       log_neighbor_changes: true
+      no_ebgp_requires_policy: true
       timers: '3 9'
       other:
         - "bgp bestpath as-path multipath-relax"

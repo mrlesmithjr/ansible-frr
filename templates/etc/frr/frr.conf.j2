@@ -68,6 +68,9 @@ router bgp {{ asn }}
 {%       if asn_data['log_neighbor_changes'] | default(False) %}
   bgp log-neighbor-changes
 {%       endif %}
+{%       if asn_data['no_ebgp_requires_policy'] | default(frr_no_ebgp_requires_policy) %}
+  no bgp ebgp-requires-policy
+{%       endif %}
 {%       if asn_data['timers'] | default(False) %}
   timers bgp {{ asn_data['timers'] }}
 {%       endif %}
