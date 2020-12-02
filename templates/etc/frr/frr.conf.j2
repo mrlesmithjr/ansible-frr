@@ -182,10 +182,16 @@ router bgp {{ asn }}
 {%             endif %}
   exit-address-family
 !
-!
 {%           endif %}
 {%         endfor %}
 {%       endif %}
+!
+{%       if asn_data['listen_range'] is defined %}
+{%         for listen_range, listen_range_peer_group in asn_data['listen_range'].items() %}
+  bgp listen range {{ listen_range }} peer-group {{ listen_range_peer_group }}
+{%         endfor %}
+{%       endif %}
+!
 {%       if asn_data['networks'] | default(False) or
             asn_data['redistribute'] | default(False) %}
   address-family ipv4 unicast
