@@ -204,6 +204,8 @@ frr_bgp:
         192.168.250.12:
           peer_group: group1
           description: far_away
+      listen_range:
+        192.168.250.0/24: group1
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
