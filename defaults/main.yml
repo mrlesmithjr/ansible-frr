@@ -49,6 +49,9 @@ frr_bgp: {}
   #         v4_route_reflector_client: true
   #         other:
   #           - "prefix-list Bad_IPs in"
+  #     listen_range:
+  #       192.168.250.0/24: any_peer_group
+  #       "2600::/64": any_v6_peer_group
   #     networks:
   #       - "{{ frr_router_id }}/32"
   #       - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"

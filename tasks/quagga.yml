@@ -51,30 +51,6 @@
     - start quagga
   when: ansible_os_family == "Debian"
 
-- name: config | Configuring zebra.conf
-  template:
-    backup: yes
-    src: etc/frr/zebra.conf.j2
-    dest: /etc/quagga/zebra.conf
-    owner: quagga
-    group: quagga
-    mode: u=rw,g=r,o=
-  become: true
-  register: _quagga_zebra_configured
-  notify:
-    - restart quagga
-    - start quagga
-
-# We need to flush here in case interfaces are configured in zebra.conf
-- name: config | Flusing Handlers # noqa 503
-  meta: flush_handlers
-  when: _quagga_zebra_configured['changed']
-
-# We need to rediscover facts if interfaces are initially configured in zebra.conf
-- name: config | Rediscovering Facts # noqa 503
-  setup:
-  when: _quagga_zebra_configured['changed']
-
 - name: config | Configuring Quagga
   template:
     backup: yes
