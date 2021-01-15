@@ -1,6 +1,7 @@
 ---
 # defaults file for ansible-frr
 frr_daemons:
+  bfdd: false
   bgpd: false
   isisd: false
   ldpd: false
@@ -41,12 +42,22 @@ frr_bgp: {}
   #         description: node1
   #         next_hop_self: true
   #         timers_connect: 5
+  #         bfd_peer: true
+  #         bfd_peer_detect_multiplier: 3
+  #         bfd_peer_receive_interval: 50
+  #         bfd_peer_transmit_interval: 50
+  #         bfd_peer_echo_interval: 50
+  #         bfd_peer_passive_mode: true
+  #         bfd_peer_minimum_ttl: 253
   #       192.168.250.12:
   #         asn: 65000
   #         default_originate: false
   #         description: node2
   #         next_hop_self: true
   #         v4_route_reflector_client: true
+  #         bfd_peer: true
+  #         bfd_peer_transmit_interval: 2000
+  #         bfd_peer_echo_mode: true
   #         other:
   #           - "prefix-list Bad_IPs in"
   #     listen_range:
