@@ -9,7 +9,8 @@ log {{ frr_logging }}
 !
 {% if frr_vrf is defined and frr_vrf != {} %}
 {%   for vrf in frr_vrf %}
-vrf {{ vrf }}
+vrf {{ vrf.name }}
+  ip router-id {{ vrf.router_id }}
   exit-vrf
 !
 {%   endfor %}
@@ -254,11 +255,21 @@ router bgp {{ asn }}
 {% endif %}
 !
 {% if frr_daemons['ospfd'] %}
-router ospf
-{%       if frr_router_id is defined %}
+{%   if frr_ospf is defined and frr_ospf != {} %}
+{% set ospf_vrf_list = ["default"] %}
+{%     if frr_ospf_vrf_enabled is defined %}
+{%       for vrf in frr_ospf_vrf_enabled %}
+{{ ospf_vrf_list.append(vrf) or '!' }}
+{%       endfor  %}
+{%     endif %}
+{%       for vrf in ospf_vrf_list %}
+router ospf vrf {{ vrf }}
+{%     if vrf != "default" %}
+{% set frr_ospf = frr_ospf_vrf_enabled[vrf] %}
+{%     endif %}
+{%       if frr_router_id is defined and vrf == "default" %}
   router-id {{ frr_router_id }}
 {%       endif %}
-{%   if frr_ospf is defined and frr_ospf != {} %}
 {%     if frr_ospf['areas'] is defined %}
 {%       for area, area_data in frr_ospf['areas'].items() %}
 {%         for area_network in area_data['networks'] %}
@@ -290,48 +301,9 @@ router ospf
   distribute-list {{ acl.name }} {{ acl.dir }} {{ acl.protocol }}
 {%       endfor %}
 {%     endif %}
-{%   endif %}
-{% endif %}
 !
-{% if frr_daemons['ospfd'] and frr_ospf_vrf_enabled is defined %}
-{%       for instance in frr_ospf_vrf_enabled %}
-router ospf vrf {{ instance.vrf }}
-{%       if instance.frr_router_id is defined %}
-  router-id {{ instance.frr_router_id }}
-{%       endif %}
-{%     if instance['areas'] is defined %}
-{%       for area, area_data in instance['areas'].items() %}
-{%         for area_network in area_data['networks'] %}
-  network {{ area_network }} area {{ area }}
-{%         endfor %}
-{%         if area_data['auth'] is defined %}
-  area {{ area }} authentication message-digest
-{%         endif %}
-{%         if area_data['type'] is defined %}
-  area {{ area }} {{ area_data['type'] }}
-{%         endif %}
-{%       endfor %}
-{%     endif %}
-{%     if instance['log_adjacency_changes'] | default(False) %}
-  log-adjacency-changes
-{%     endif %}
-{%     if instance['passive_interfaces'] is defined %}
-{%       for passive_int in instance['passive_interfaces'] %}
-  passive-interface {{ passive_int }}
-{%       endfor %}
-{%     endif %}
-{%     if instance['redistribute'] is defined %}
-{%       for redist_protocol in instance['redistribute'] %}
-  redistribute {{ redist_protocol }}
-{%       endfor %}
-{%     endif %}
-{%     if instance['distribute_list'] is defined %}
-{%       for acl in instance['distribute_list'] %}
-  distribute-list {{ acl.name }} {{ acl.dir }} {{ acl.protocol }}
-{%       endfor %}
-{%     endif %}
-
-{%       endfor %}
+{%     endfor %}
+{%   endif %}
 {% endif %}
 !
 {% if frr_prefix_list is defined and frr_prefix_list != {} %}
