@@ -347,6 +347,37 @@ frr_ospf:
       dir: out
       protocol: connected
 ```
+#### VRF-aware OSPF
+
+Each key under ````frr_ospf_vrf_enabled```` represents VRF name:
+
+```yaml
+frr_ospf_vrf_enabled:
+  public:
+    redistribute:
+    - bgp
+    - connected
+    passive_interfaces:
+     - lo
+    log_adjacency_changes: true
+    areas:
+      1:
+        networks:
+          - "{{ hostvars[inventory_hostname]['ansible_ens3']['ipv4']['address'] }}/30"
+        auth: true
+  mgmt:
+    redistribute:
+      - kernel
+    areas:
+      0:
+        networks:
+          - 172.16.0.0/12
+      2:
+        networks:
+          - 192.168.0.0/16
+        type: nssa
+```
+> NOTE: Device should have VRF's already configured.
 
 ### STATIC
 
@@ -380,12 +411,22 @@ frr_interfaces: # A dict. key = iface name, value = iface data
     ipv6: # ipv6 can be a single value or list
       - 2001:0db8:85a3:8a2e::1/64
       - 2001:0db8:85a3:8a2e::2/64
+    vrf: management # put interface in 'management' VRF
     auth:
       id: 1
       key: supersecret
     other:
       - "no ipv6 nd suppress-ra"
       - "link-detect"
+```
+
+## VRF Definition
+```yaml
+frr_vrf:
+  - name: public
+    router_id: "{{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}"
+  - name: mgmt
+    router_id: 192.168.100.100
 ```
 
 ## Upgrade/Downgrade

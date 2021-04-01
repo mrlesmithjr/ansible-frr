@@ -10,7 +10,9 @@ log {{ frr_logging }}
 {% if frr_vrf is defined and frr_vrf != {} %}
 {%   for vrf in frr_vrf %}
 vrf {{ vrf.name }}
+{%     if vrf.router_id is defined %}
   ip router-id {{ vrf.router_id }}
+{%     endif %}
   exit-vrf
 !
 {%   endfor %}
@@ -257,6 +259,7 @@ router bgp {{ asn }}
 {% if frr_daemons['ospfd'] %}
 {%   if frr_ospf is defined and frr_ospf != {} %}
 {% set ospf_vrf_list = ["default"] %}
+{#   if only 'frr_ospf' section defined without 'frr_ospf_vrf_enabled', it will be configured for default VRF only #}
 {%     if frr_ospf_vrf_enabled is defined %}
 {%       for vrf in frr_ospf_vrf_enabled %}
 {{ ospf_vrf_list.append(vrf) or '!' }}
