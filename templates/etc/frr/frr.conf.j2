@@ -256,23 +256,28 @@ router bgp {{ asn }}
 {%   endif %}
 {% endif %}
 !
-{% if frr_daemons['ospfd'] %}
+{% if ( (frr_daemons['ospfd'] is defined) and
+        (frr_ospf is defined or frr_ospf_vrf_enabled is defined) ) %}
+{# define VRF list to iterate over it #}
+{%   set ospf_vrf_list = [] %}
+{#   when 'frr_ospf_vrf_enabled' is defined, 'ospf_vrf_list' is populated by defined vrf instances #}
+{#   when 'frr_ospf' is also defined, 'default' vrf is added to list #}
+{%   if frr_ospf_vrf_enabled is defined and frr_ospf_vrf_enabled != {} %}
+{%     for vrf in frr_ospf_vrf_enabled %}
+{{       ospf_vrf_list.append(vrf) or '!' }}
+{%     endfor  %}
+{%   endif %}
 {%   if frr_ospf is defined and frr_ospf != {} %}
-{% set ospf_vrf_list = ["default"] %}
-{#   if only 'frr_ospf' section defined without 'frr_ospf_vrf_enabled', it will be configured for default VRF only #}
-{%     if frr_ospf_vrf_enabled is defined %}
-{%       for vrf in frr_ospf_vrf_enabled %}
-{{ ospf_vrf_list.append(vrf) or '!' }}
-{%       endfor  %}
-{%     endif %}
-{%       for vrf in ospf_vrf_list %}
+{{     ospf_vrf_list.append("default") }}
+{%   endif %}
+{%     for vrf in ospf_vrf_list %}
 router ospf vrf {{ vrf }}
 {%     if vrf != "default" %}
-{% set frr_ospf = frr_ospf_vrf_enabled[vrf] %}
+{%       set frr_ospf = frr_ospf_vrf_enabled[vrf] %}
 {%     endif %}
-{%       if frr_router_id is defined and vrf == "default" %}
+{%     if frr_router_id is defined and vrf == "default" %}
   router-id {{ frr_router_id }}
-{%       endif %}
+{%     endif %}
 {%     if frr_ospf['areas'] is defined %}
 {%       for area, area_data in frr_ospf['areas'].items() %}
 {%         for area_network in area_data['networks'] %}
@@ -304,9 +309,7 @@ router ospf vrf {{ vrf }}
   distribute-list {{ acl.name }} {{ acl.dir }} {{ acl.protocol }}
 {%       endfor %}
 {%     endif %}
-!
-{%     endfor %}
-{%   endif %}
+{%   endfor %}
 {% endif %}
 !
 {% if frr_prefix_list is defined and frr_prefix_list != {} %}

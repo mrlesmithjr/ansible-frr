@@ -27,10 +27,12 @@
     - [OSPF](#ospf)
       - [Enable OSPF](#enable-ospf)
       - [Configuring OSPF](#configuring-ospf)
+        - [VRF-aware OSPF](#vrf-aware-ospf)
     - [STATIC](#static)
       - [Configuring STATIC routes](#configuring-static-routes)
   - [Interface Configuration](#interface-configuration)
     - [Interfaces](#interfaces)
+  - [VRF Definition](#vrf-definition)
   - [Upgrade/Downgrade](#upgradedowngrade)
   - [Quagga configuration](#quagga-configuration)
   - [License](#license)
@@ -377,7 +379,7 @@ frr_ospf_vrf_enabled:
           - 192.168.0.0/16
         type: nssa
 ```
-> NOTE: Device should have VRF's already configured.
+> NOTE: In order to run OSPF in custom VRF, see [VRF Definition](#vrf-definition)
 
 ### STATIC
 
@@ -419,6 +421,11 @@ frr_interfaces: # A dict. key = iface name, value = iface data
       - "no ipv6 nd suppress-ra"
       - "link-detect"
 ```
+> NOTE: Device should have correct VRF assignment on each vrf-aware interface:
+```bash
+ip link set dev ${IFACE} master ${VRF}
+```
+
 
 ## VRF Definition
 ```yaml
@@ -427,6 +434,11 @@ frr_vrf:
     router_id: "{{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}"
   - name: mgmt
     router_id: 192.168.100.100
+```
+> NOTE: Device should have VRF's already configured.
+```bash
+ip link add dev ${IFACE} type vrf table ${TABLE_ID}
+ip link set dev ${IFACE} up
 ```
 
 ## Upgrade/Downgrade
