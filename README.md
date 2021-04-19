@@ -428,18 +428,22 @@ ip link set dev ${IFACE} master ${VRF}
 
 
 ## VRF Definition
+
 ```yaml
 frr_vrf:
   - name: public
     router_id: "{{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}"
   - name: mgmt
+  - name: dmz
     router_id: 192.168.100.100
 ```
-> NOTE: Device should have VRF's already configured.
+> NOTE: Device should have VRF's already configured:
 ```bash
 ip link add dev ${IFACE} type vrf table ${TABLE_ID}
 ip link set dev ${IFACE} up
 ```
+
+> **SUPPORT NOTE**: *router-id* definition for VRF is only supported in FRR-7.5.1 and higher!
 
 ## Upgrade/Downgrade
 

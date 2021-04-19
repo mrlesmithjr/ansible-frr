@@ -10,7 +10,7 @@ log {{ frr_logging }}
 {% if frr_vrf is defined and frr_vrf != {} %}
 {%   for vrf in frr_vrf %}
 vrf {{ vrf.name }}
-{%     if vrf.router_id is defined %}
+{%     if vrf.router_id is defined and frr_version >= 7.5.1 %}
   ip router-id {{ vrf.router_id }}
 {%     endif %}
   exit-vrf
