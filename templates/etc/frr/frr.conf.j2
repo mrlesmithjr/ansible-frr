@@ -7,17 +7,6 @@ hostname {{ ansible_hostname }}
 password {{ frr_password }}
 log {{ frr_logging }}
 !
-{% if frr_vrf is defined and frr_vrf != {} %}
-{%   for vrf in frr_vrf %}
-vrf {{ vrf.name }}
-{%     if vrf.router_id is defined and frr_version >= 7.5.1 %}
-  ip router-id {{ vrf.router_id }}
-{%     endif %}
-  exit-vrf
-!
-{%   endfor %}
-{% endif %}
-!
 {% if frr_interfaces is defined and frr_interfaces != {} %}
 {%   for iface, iface_data in frr_interfaces.items() %}
 {%     if iface_data['vrf'] is defined %}
