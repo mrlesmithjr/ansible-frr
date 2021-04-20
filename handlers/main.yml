@@ -15,6 +15,7 @@
     enabled: true
   become: true
   listen: "reload frr"
+  when: frr_reload
 
 - name: start frr
   service:
