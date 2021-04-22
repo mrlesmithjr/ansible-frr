@@ -260,10 +260,12 @@ router bgp {{ asn }}
 {{     ospf_vrf_list.append("default") }}
 {%   endif %}
 {%     for vrf in ospf_vrf_list %}
+{%       if vrf == "default" %}
+router ospf
+{%       else %}
 router ospf vrf {{ vrf }}
-{%     if vrf != "default" %}
-{%       set frr_ospf = frr_ospf_vrf_enabled[vrf] %}
-{%     endif %}
+{%         set frr_ospf = frr_ospf_vrf_enabled[vrf] %}
+{%       endif %}
 {%     if frr_router_id is defined and vrf == "default" %}
   router-id {{ frr_router_id }}
 {%     endif %}
