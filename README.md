@@ -279,6 +279,7 @@ frr_bgp:
           default_originate: false
           description: node1
           next_hop_self: true
+          v4_route_map: ["RTBH out", "RTBH_IN in"]
           af_v4:
             - "soft-reconfiguration inbound"
         192.168.250.12:
@@ -294,6 +295,7 @@ frr_bgp:
           af_v6:
             - "activate"
             - "soft-reconfiguration inbound"
+            - "route_map RTBH out"
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
