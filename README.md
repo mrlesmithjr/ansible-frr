@@ -89,6 +89,7 @@ frr_route_map:
       prefix_list: Bad_IPs
       origin: igp
       community: "12345:100"
+      metric: 100
   RTBH_IN:
     deny 10: []
 ```

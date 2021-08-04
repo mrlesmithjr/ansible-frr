@@ -365,6 +365,9 @@ route-map {{ map_name }} {{ seq }}
 {%       if seq_data['origin'] is defined %}
   set origin {{ seq_data['origin'] }}
 {%       endif %}
+{%       if seq_data['metric'] is defined %}
+  set metric {{ seq_data['metric'] }}
+{%       endif %}
 !
 {%     endfor %}
 {%   endfor %}
