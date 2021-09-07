@@ -376,6 +376,9 @@ route-map {{ map_name }} {{ seq }}
 {%       if seq_data['origin'] is defined %}
   set origin {{ seq_data['origin'] }}
 {%       endif %}
+{%       if seq_data['local-preference'] is defined %}
+  set local-preference {{ seq_data['local-preference'] }}
+{%       endif %}
 !
 {%     endfor %}
 {%   endfor %}
