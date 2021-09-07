@@ -61,6 +61,12 @@ ip forwarding
 ipv6 forwarding
 {% endif %}
 !
+{% if frr_vrf_static is defined and frr_vrf_static != {} %}
+{%   for route, values in frr_vrf_static.items() %}
+ip route {{ route }} {{ values.gw }} vrf {{ values.gw }}
+{%   endfor %}
+{% endif %}
+!
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != {} %}
 {%     for asn, asn_data in frr_bgp['asns'].items() %}
