@@ -63,7 +63,7 @@ ipv6 forwarding
 !
 {% if frr_vrf_static is defined and frr_vrf_static != {} %}
 {%   for route, values in frr_vrf_static.items() %}
-ip route {{ route }} {{ values.gw }} vrf {{ values.gw }}
+ip route {{ route }} {{ values.gw }} vrf {{ values.vrf }}
 {%   endfor %}
 {% endif %}
 !
