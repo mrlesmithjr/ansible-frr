@@ -152,6 +152,11 @@ frr_apt_repository: "deb https://deb.frrouting.org/frr {{ ansible_distribution_r
 frr_rpm_version: frr-stable
 frr_rpm_repository: "https://rpm.frrouting.org/repo/{{ frr_rpm_version }}-repo-1-0.el{{ ansible_distribution_major_version }}.noarch.rpm"
 
+frr_packages:
+  - frr
+  - python3-ipaddr
+  - frr-pythontools
+
 _frr_bgp_summary:
   stdout: ""
 
