@@ -49,6 +49,14 @@ frr_bgp: {}
   #         v4_route_reflector_client: true
   #         other:
   #           - "prefix-list Bad_IPs in"
+  #       172.16.250.10:
+  #         asn: internal
+  #         timers_connect: 5
+  #         description: "L2VPN EVPN neighbor"
+  #         af_evpn:
+  #           - "activate"
+  #         other:
+  #           - "capability extended-nexthop"
   #     listen_range:
   #       192.168.250.0/24: any_peer_group
   #       "2600::/64": any_v6_peer_group
@@ -113,6 +121,9 @@ frr_static: {}
   # 2.2.2.2:
   #   192.168.0.1
 frr_static_v6: {}
+
+# Nexthop tracking via default gateway - disabled by default.
+frr_nht_resolve_default: false
 
 frr_package_url: "https://github.com/FRRouting/frr/releases/download/frr-{{ frr_version }}"
 

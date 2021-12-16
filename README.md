@@ -102,6 +102,15 @@ frr_ip_forwarding: true
 frr_ipv6_forwarding: true
 ```
 
+#### Next-hop tracking via default
+Resolve nexthops using the default route;
+useful if BGP peer is only reachable via default gateway (disabled by default).
+
+To enable:
+```yaml
+frr_nht_resolve_default: true
+```
+
 ### Prefix Lists
 
 #### Configuring Prefix Lists
@@ -235,6 +244,9 @@ frr_bgp:
         - "maximum-paths 2"
       af_v6:
         - "maximum-paths 2"
+      af_evpn:
+        - "advertise-all-vni"
+        - "rd {{ frr_router_id }}:1"
       neighbors:
         192.168.250.11:
           asn: 65000
@@ -256,6 +268,14 @@ frr_bgp:
           af_v6:
             - "activate"
             - "soft-reconfiguration inbound"
+        172.16.250.10:
+          asn: internal
+          timers_connect: 5
+          description: "L2VPN EVPN neighbor"
+          af_evpn:
+            - "activate"
+          other:
+            - "capability extended-nexthop"
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
