@@ -12,7 +12,17 @@
     state: present
   become: true
   when:
-    - (ansible_distribution == "CentOS") or (ansible_distribution == "RedHat")
+    - (ansible_distribution == "CentOS" and ansible_distribution_major_version > "7") or
+      (ansible_distribution == "RedHat")
+
+- name: redhat | Installing FRR repository ignore SSL
+  yum:
+    name: "{{ frr_rpm_repository }}"
+    state: present
+    validate_certs: no
+  become: true
+  when:
+    - (ansible_distribution == "CentOS" and ansible_distribution_major_version <= "7")
 
 - name: redhat | Ensure Quagga is removed
   package:

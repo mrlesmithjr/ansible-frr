@@ -157,6 +157,9 @@ router bgp {{ asn }}
 {%           if neighbor_data['timers_connect'] | default(False) %}
   neighbor {{ neighbor }} timers connect {{ neighbor_data['timers_connect'] }}
 {%           endif %}
+{%           if neighbor_data['bfd_peer'] | default(False) %}
+  neighbor {{ neighbor }} bfd
+{%           endif %}
 {%           if neighbor_data['other'] | default(False) %}
 {%             for option in neighbor_data['other'] %}
   neighbor {{ neighbor }} {{ option }}
@@ -258,6 +261,43 @@ router bgp {{ asn }}
   vnc defaults
     response-lifetime 3600
     exit-vnc
+{%       endif %}
+{%     endfor %}
+{%   endif %}
+{% endif %}
+!
+{% if frr_daemons['bfdd'] and frr_daemons['bgpd'] %}
+bfd
+{%   if frr_bgp is defined and frr_bgp != {} %}
+{%     for asn, asn_data in frr_bgp['asns'].items() %}
+{%       if asn_data['neighbors'] is defined %}
+{%         for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
+{%           if neighbor_data['bfd_peer'] | default(False) %}
+  peer {{ neighbor }}
+    no shutdown
+{%           endif %}
+{%           if neighbor_data['bfd_peer_detect_multiplier'] | default(False) %}
+    detect-multiplier {{ neighbor_data['bfd_peer_detect_multiplier'] }}
+{%           endif %}
+{%           if neighbor_data['bfd_peer_receive_interval'] | default(False) %}
+    receive-interval {{ neighbor_data['bfd_peer_receive_interval'] }}
+{%           endif %}
+{%           if neighbor_data['bfd_peer_transmit_interval'] | default(False) %}
+    transmit-interval {{ neighbor_data['bfd_peer_transmit_interval'] }}
+{%           endif %}
+{%           if neighbor_data['bfd_peer_echo_interval'] | default(False) %}
+    echo-interval {{ neighbor_data['bfd_peer_echo_interval'] }}
+{%           endif %}
+{%           if neighbor_data['bfd_peer_echo_mode'] | default(False) %}
+    echo-mode
+{%           endif %}
+{%           if neighbor_data['bfd_peer_passive_mode'] | default(False) %}
+    passive-mode
+{%           endif %}
+{%           if neighbor_data['bfd_peer_minimum_ttl'] | default(False) %}
+    minimum-ttl {{ neighbor_data['bfd_peer_minimum_ttl'] }}
+{%           endif %}
+{%         endfor %}
 {%       endif %}
 {%     endfor %}
 {%   endif %}

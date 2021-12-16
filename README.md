@@ -19,6 +19,9 @@
       - [Configuring Prefix Lists](#configuring-prefix-lists)
     - [Access Lists](#access-lists)
       - [Configuring Access Lists](#configuring-access-lists)
+  - [Bidirectional Forwarding Detection](#bidirectional-forwarding-detection)
+    - [Enable BFD](#enable-bfd)
+    - [Configuring BFD](#configuring-bfd)
   - [Supported Routing Protocols](#supported-routing-protocols)
     - [BGP](#bgp)
       - [Enable BGP](#enable-bgp)
@@ -44,7 +47,7 @@
 Ansible role to install/configure FRR
 
 > NOTE: FRRouting (FRR) is an IP routing protocol suite for Linux and Unix
-> platforms which includes protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP.
+> platforms which includes protocol daemons for BFD, BGP, IS-IS, LDP, OSPF, PIM, and RIP.
 
 ## Build Status
 
@@ -146,6 +149,31 @@ frr_access_list:
   - "101 permit ip 10.0.0.0 0.0.0.255 any"
 ```
 
+## Bidirectional Forwarding Detection (BFD)
+
+### Enable BFD
+
+To enable BFD, make sure that `bfdd: true` is configured under:
+
+```yaml
+frr_daemons:
+  bfdd: true
+  bgpd: false
+  isisd: false
+  ldpd: false
+  nhrpd: false
+  ospf6d: false
+  ospfd: false
+  pimd: false
+  ripd: false
+  ripngd: false
+  zebra: true
+```
+
+### Configuring BFD
+
+BFD configuration is made under BGP neighbor settings. BFD for OSPF is not supported yet.
+
 ## Supported Routing Protocols
 
 | Protocol          | Implemented | Notes               |
@@ -162,6 +190,7 @@ To enable BGP routing, make sure that `bgpd: true` is configured under:
 
 ```yaml
 frr_daemons:
+  bfdd: false
   bgpd: false
   isisd: false
   ldpd: false
@@ -200,6 +229,13 @@ frr_bgp:
           next_hop_self: true
           timers_connect: 5
           v6only: true
+          bfd_peer: true
+          bfd_peer_detect_multiplier: 3
+          bfd_peer_receive_interval: 50
+          bfd_peer_transmit_interval: 50
+          bfd_peer_echo_interval: 50
+          bfd_peer_passive_mode: true
+          bfd_peer_minimum_ttl: 253
           other:
             - "capability dynamic"
         192.168.250.12:
@@ -209,6 +245,9 @@ frr_bgp:
           next_hop_self: true
           v4_route_reflector_client: true
           password: secret
+          bfd_peer: true
+          bfd_peer_transmit_interval: 2000
+          bfd_peer_echo_mode: true
           other:
             - "prefix-list Bad_IPs in"
         192.168.250.12:
@@ -322,6 +361,7 @@ To enable OSPF routing, make sure that `ospfd: true` is configured under:
 
 ```yaml
 frr_daemons:
+  bfdd: false
   bgpd: false
   isisd: false
   ldpd: false
