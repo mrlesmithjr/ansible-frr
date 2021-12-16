@@ -30,6 +30,7 @@
     - [OSPF](#ospf)
       - [Enable OSPF](#enable-ospf)
       - [Configuring OSPF](#configuring-ospf)
+        - [VRF-aware OSPF](#vrf-aware-ospf)
     - [STATIC](#static)
       - [Configuring STATIC routes](#configuring-static-routes)
   - [Interface Configuration](#interface-configuration)
@@ -102,6 +103,15 @@ Below is an example of enabling ip and ipv6 forwading:
 ```yaml
 frr_ip_forwarding: true
 frr_ipv6_forwarding: true
+```
+
+#### Next-hop tracking via default
+Resolve nexthops using the default route;
+useful if BGP peer is only reachable via default gateway (disabled by default).
+
+To enable:
+```yaml
+frr_nht_resolve_default: true
 ```
 
 ### Prefix Lists
@@ -273,6 +283,9 @@ frr_bgp:
         - "maximum-paths 2"
       af_v6:
         - "maximum-paths 2"
+      af_evpn:
+        - "advertise-all-vni"
+        - "rd {{ frr_router_id }}:1"
       neighbors:
         192.168.250.11:
           asn: 65000
@@ -294,6 +307,14 @@ frr_bgp:
           af_v6:
             - "activate"
             - "soft-reconfiguration inbound"
+        172.16.250.10:
+          asn: internal
+          timers_connect: 5
+          description: "L2VPN EVPN neighbor"
+          af_evpn:
+            - "activate"
+          other:
+            - "capability extended-nexthop"
       networks:
         - "{{ frr_router_id }}/32"
         - "{{ hostvars[inventory_hostname]['ansible_enp0s8']['ipv4']['address'] }}/24"
@@ -387,6 +408,36 @@ frr_ospf:
       dir: out
       protocol: connected
 ```
+#### VRF-aware OSPF
+
+Each key under ````frr_ospf_vrf_enabled```` represents VRF name:
+
+```yaml
+frr_ospf_vrf_enabled:
+  public:
+    redistribute:
+    - bgp
+    - connected
+    passive_interfaces:
+     - lo
+    log_adjacency_changes: true
+    areas:
+      1:
+        networks:
+          - "{{ hostvars[inventory_hostname]['ansible_ens3']['ipv4']['address'] }}/30"
+        auth: true
+  mgmt:
+    redistribute:
+      - kernel
+    areas:
+      0:
+        networks:
+          - 172.16.0.0/12
+      2:
+        networks:
+          - 192.168.0.0/16
+        type: nssa
+```
 
 ### STATIC
 
@@ -420,6 +471,7 @@ frr_interfaces: # A dict. key = iface name, value = iface data
     ipv6: # ipv6 can be a single value or list
       - 2001:0db8:85a3:8a2e::1/64
       - 2001:0db8:85a3:8a2e::2/64
+    vrf: management # put interface in 'management' VRF
     auth:
       id: 1
       key: supersecret
@@ -427,6 +479,11 @@ frr_interfaces: # A dict. key = iface name, value = iface data
       - "no ipv6 nd suppress-ra"
       - "link-detect"
 ```
+> NOTE: Device should have correct VRF assignment on each vrf-aware interface:
+```bash
+ip link set dev ${IFACE} master ${VRF}
+```
+
 
 ## Upgrade/Downgrade
 

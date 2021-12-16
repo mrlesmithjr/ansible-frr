@@ -9,7 +9,11 @@ log {{ frr_logging }}
 !
 {% if frr_interfaces is defined and frr_interfaces != {} %}
 {%   for iface, iface_data in frr_interfaces.items() %}
+{%     if iface_data['vrf'] is defined %}
+interface {{ iface }} vrf {{ iface_data['vrf'] }}
+{%     else %}
 interface {{ iface }}
+{%     endif %}
 {%     if iface_data['description'] is defined %}
   description {{ iface_data['description'] }}
 {%     endif %}
@@ -61,6 +65,10 @@ ip forwarding
 ipv6 forwarding
 {% endif %}
 !
+{% if frr_nht_resolve_default | default(False) %}
+ip nht resolve-via-default
+{% endif %}
+!
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != {} %}
 {%     for asn, asn_data in frr_bgp['asns'].items() %}
@@ -99,6 +107,13 @@ router bgp {{ asn }}
 {%       if asn_data['af_v6'] | default(False) %}
   address-family ipv6 unicast
 {%         for option in asn_data['af_v6'] %}
+    {{ option }}
+{%         endfor %}
+  exit-address-family
+{%       endif %}
+{%       if asn_data['af_evpn'] | default(False) %}
+  address-family l2vpn evpn
+{%         for option in asn_data['af_evpn'] %}
     {{ option }}
 {%         endfor %}
   exit-address-family
@@ -162,6 +177,13 @@ router bgp {{ asn }}
 {%           if neighbor_data['af_v6'] | default(False) %}
   address-family ipv6 unicast
 {%             for option in neighbor_data['af_v6'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
+  exit-address-family
+{%           endif %}
+{%           if neighbor_data['af_evpn'] | default(False) %}
+  address-family l2vpn evpn
+{%             for option in neighbor_data['af_evpn'] %}
     neighbor {{ neighbor }} {{ option }}
 {%             endfor %}
   exit-address-family
@@ -283,10 +305,35 @@ bfd
 !
 {% if frr_daemons['ospfd'] %}
 router ospf
-{%       if frr_router_id is defined %}
+{%   if frr_router_id is defined %}
   router-id {{ frr_router_id }}
-{%       endif %}
+{%   endif %}
+{% endif %}
+!
+{% if ( (frr_daemons['ospfd'] is defined) and
+        (frr_ospf is defined or frr_ospf_vrf_enabled is defined) ) %}
+{# define VRF list to iterate over it #}
+{%   set ospf_vrf_list = [] %}
+{#   when 'frr_ospf_vrf_enabled' is defined, 'ospf_vrf_list' is populated by defined vrf instances #}
+{#   when 'frr_ospf' is also defined, 'default' vrf is added to list #}
+{%   if frr_ospf_vrf_enabled is defined and frr_ospf_vrf_enabled != {} %}
+{%     for vrf in frr_ospf_vrf_enabled %}
+{{       ospf_vrf_list.append(vrf) or '!' }}
+{%     endfor  %}
+{%   endif %}
 {%   if frr_ospf is defined and frr_ospf != {} %}
+{{     ospf_vrf_list.append("default") }}
+{%   endif %}
+{%     for vrf in ospf_vrf_list %}
+{%       if vrf == "default" %}
+router ospf
+{%       else %}
+router ospf vrf {{ vrf }}
+{%         set frr_ospf = frr_ospf_vrf_enabled[vrf] %}
+{%       endif %}
+{%     if frr_router_id is defined and vrf == "default" %}
+  router-id {{ frr_router_id }}
+{%     endif %}
 {%     if frr_ospf['areas'] is defined %}
 {%       for area, area_data in frr_ospf['areas'].items() %}
 {%         for area_network in area_data['networks'] %}
@@ -318,7 +365,7 @@ router ospf
   distribute-list {{ acl.name }} {{ acl.dir }} {{ acl.protocol }}
 {%       endfor %}
 {%     endif %}
-{%   endif %}
+{%   endfor %}
 {% endif %}
 !
 {% if frr_prefix_list is defined and frr_prefix_list != {} %}
