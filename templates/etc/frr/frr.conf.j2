@@ -65,6 +65,10 @@ ip forwarding
 ipv6 forwarding
 {% endif %}
 !
+{% if frr_nht_resolve_default | default(False) %}
+ip nht resolve-via-default
+{% endif %}
+!
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != {} %}
 {%     for asn, asn_data in frr_bgp['asns'].items() %}
@@ -103,6 +107,13 @@ router bgp {{ asn }}
 {%       if asn_data['af_v6'] | default(False) %}
   address-family ipv6 unicast
 {%         for option in asn_data['af_v6'] %}
+    {{ option }}
+{%         endfor %}
+  exit-address-family
+{%       endif %}
+{%       if asn_data['af_evpn'] | default(False) %}
+  address-family l2vpn evpn
+{%         for option in asn_data['af_evpn'] %}
     {{ option }}
 {%         endfor %}
   exit-address-family
@@ -163,6 +174,13 @@ router bgp {{ asn }}
 {%           if neighbor_data['af_v6'] | default(False) %}
   address-family ipv6 unicast
 {%             for option in neighbor_data['af_v6'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%             endfor %}
+  exit-address-family
+{%           endif %}
+{%           if neighbor_data['af_evpn'] | default(False) %}
+  address-family l2vpn evpn
+{%             for option in neighbor_data['af_evpn'] %}
     neighbor {{ neighbor }} {{ option }}
 {%             endfor %}
   exit-address-family
