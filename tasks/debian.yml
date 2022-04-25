@@ -17,7 +17,7 @@
         state: present
       become: true
       when: add_repository_key is failed
-    
+
     - name: Add FRR apt key (alternative for older systems without SNI).
       shell: |
         set -o pipefail
@@ -27,13 +27,13 @@
         executable: "/bin/bash"
       become: true
       when: add_repository_key is failed
-    
+
     - name: Ensure apt-transport-https is present to enable https repositories
       package:
         name: apt-transport-https
         state: present
       become: true
-    
+
     - name: Install FRR apt repo
       apt_repository:
         repo: "{{ frr_apt_repository }}"
@@ -48,7 +48,6 @@
     update_cache: true
   become: true
   when: frr_use_upstream_repo_debian | bool == false
-
 
 - name: Remove Quagga
   package:
