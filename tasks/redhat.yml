@@ -10,19 +10,21 @@
   yum:
     name: "{{ frr_rpm_repository }}"
     state: present
+    disable_gpg_check: true
   become: true
   when:
-    - (ansible_distribution == "CentOS" and ansible_distribution_major_version > "7") or
-      (ansible_distribution == "RedHat")
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version > "7"
 
 - name: redhat | Installing FRR repository ignore SSL
   yum:
     name: "{{ frr_rpm_repository }}"
     state: present
-    validate_certs: no
+    validate_certs: false
   become: true
   when:
-    - (ansible_distribution == "CentOS" and ansible_distribution_major_version <= "7")
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version <= "7"
 
 - name: redhat | Ensure Quagga is removed
   package:
