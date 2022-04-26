@@ -48,3 +48,9 @@
   notify:
     - reload frr
     - start frr
+
+- name: config | Ensure FRR service is enabled
+  service:
+    name: frr
+    enabled: true
+  become: true
