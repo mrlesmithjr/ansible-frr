@@ -412,6 +412,9 @@ route-map {{ map_name }} {{ seq }}
 {%       if seq_data['prefix_list'] is defined %}
   match ip address prefix-list {{ seq_data['prefix_list'] }}
 {%       endif %}
+{%       if seq_data['ipv6_prefix_list'] is defined %}
+  match ipv6 address prefix-list {{ seq_data['ipv6_prefix_list'] }}
+{%       endif %}
 {%       if seq_data['ipv6_nexthop'] is defined %}
   set ipv6 next-hop global-list {{ seq_data['ipv6_nexthop'] }}
 {%       endif %}
