@@ -71,6 +71,9 @@ ipv6 forwarding
 {% if frr_nht_resolve_default | default(False) %}
 ip nht resolve-via-default
 {% endif %}
+{% if frr_ipv6_nht_resolve_default | default(False) %}
+ipv6 nht resolve-via-default
+{% endif %}
 !
 {% if frr_daemons['bgpd'] %}
 {%   if frr_bgp is defined and frr_bgp != {} %}
