@@ -39,6 +39,18 @@
       - frr-pythontools
     state: present
   become: true
+  when:
+    - frr_rpms is not defined
+  notify:
+    - restart frr
+
+- name: redhat | Installing FRR {{ frr_version }}
+  yum:
+    name: "{{ frr_rpms }}"
+    state: present
+  become: true
+  when:
+    - frr_rpms is defined
   notify:
     - restart frr
 
