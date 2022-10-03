@@ -375,8 +375,8 @@ router ospf vrf {{ vrf }}
 {% endif %}
 !
 {% if frr_prefix_list is defined and frr_prefix_list != {} %}
-{%   for prefix_list_name, sequences in frr_prefix_list.items() %}
-{%     for seq, seq_data in sequences.items() %}
+{%   for prefix_list_name, sequences in frr_prefix_list.items()|sort(attribute='0') %}
+{%     for seq, seq_data in sequences.items()|sort(attribute='0') %}
 {%       if seq_data['prefix'] is defined %}
 {%         if seq_data['match'] is defined %}
 ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
@@ -389,8 +389,8 @@ ip prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 {% endif %}
 !
 {% if frr_prefix_list_v6 is defined and frr_prefix_list_v6 != {} %}
-{%   for prefix_list_name, sequences in frr_prefix_list_v6.items() %}
-{%     for seq, seq_data in sequences.items() %}
+{%   for prefix_list_name, sequences in frr_prefix_list_v6.items()|sort(attribute='0') %}
+{%     for seq, seq_data in sequences.items()|sort(attribute='0') %}
 {%       if seq_data['prefix'] is defined %}
 {%         if seq_data['match'] is defined %}
 ipv6 prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }} {{ seq_data['match'] }}
@@ -404,7 +404,7 @@ ipv6 prefix-list {{ prefix_list_name }} seq {{ seq }} {{ seq_data['prefix'] }}
 !
 {% if frr_route_map is defined and frr_route_map != [] %}
 {%   for map_name, sequences in frr_route_map.items() %}
-{%     for seq, seq_data in sequences.items() %}
+{%     for seq, seq_data in sequences.items()|sort(attribute='0') %}
 route-map {{ map_name }} {{ seq }}
 {%       if seq_data['interface'] is defined %}
   match interface {{ seq_data['interface'] }}
