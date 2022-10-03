@@ -421,6 +421,9 @@ route-map {{ map_name }} {{ seq }}
 {%       if seq_data['origin'] is defined %}
   set origin {{ seq_data['origin'] }}
 {%       endif %}
+{%       if seq_data['continue'] is defined %}
+  continue {{ seq_data['continue'] }}
+{%       endif %}
 !
 {%     endfor %}
 {%   endfor %}
