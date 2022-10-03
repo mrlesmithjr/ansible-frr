@@ -17,6 +17,9 @@ frr_daemons:
 # Official docs http://docs.frrouting.org/en/latest/basic.html#profiles
 # If undefined than current FRR default value is used implicitly (traditional)
 #frr_defaults: "datacenter"
+#
+# Install monitoring scripts
+frr_monitor: True
 
 frr_prefix_list: {}
   # Bad_IPs:
