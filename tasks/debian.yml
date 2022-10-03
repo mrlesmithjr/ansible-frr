@@ -57,10 +57,7 @@
 
 - name: Install FRR
   package:
-    name:
-      - frr
-      - python-ipaddr
-      - frr-pythontools
+    name: "{{ frr_packages }}"
     state: latest  # noqa 403
   become: true
   notify:

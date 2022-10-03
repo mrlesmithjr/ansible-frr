@@ -1,5 +1,14 @@
 ---
 # tasks file for ansible-frr
+- name: Gather os specific variables
+  include_vars: "{{ item }}"
+  tags:
+    - always
+  with_first_found:
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+
 - name: Run FRR Tasks
   block:
    - include_tasks: debian.yml
