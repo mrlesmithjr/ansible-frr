@@ -415,6 +415,9 @@ route-map {{ map_name }} {{ seq }}
 {%       if seq_data['community'] is defined %}
   set community {{ seq_data['community'] }} additive
 {%       endif %}
+{%       if seq_data['prepend'] is defined %}
+  set as-path prepend {{ seq_data['prepend'] }}
+{%       endif %}
 {%       if seq_data['origin'] is defined %}
   set origin {{ seq_data['origin'] }}
 {%       endif %}
