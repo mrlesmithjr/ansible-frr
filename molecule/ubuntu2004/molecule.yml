@@ -12,7 +12,7 @@ lint: |
   flake8
 platforms:
   - name: ubuntu2004
-    image: jrei/systemd-ubuntu:20.04
+    image: mrlesmithjr/ubuntu:20.04
     privileged: true
     command: /lib/systemd/systemd
     # tmpfs:
