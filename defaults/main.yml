@@ -18,6 +18,9 @@ frr_daemons:
 # If undefined than current FRR default value is used implicitly (traditional)
 #frr_defaults: "datacenter"
 #
+# Install frr from os repo (ie.. Red Hat repo)
+frr_os_rpm: False
+#
 # Install monitoring scripts
 frr_monitor: True
 
