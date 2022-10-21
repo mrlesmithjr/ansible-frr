@@ -1,0 +1,5 @@
+---
+frr_packages:
+  - frr
+  - python-ipaddr
+  - frr-pythontools

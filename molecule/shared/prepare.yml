@@ -6,3 +6,10 @@
         update_cache: true
       become: true
       when: ansible_os_family == "Debian"
+
+    - name: Ensure apt-utils is installed
+      apt:
+        name: apt-utils
+        state: present
+      become: true
+      when: ansible_os_family == "Debian"

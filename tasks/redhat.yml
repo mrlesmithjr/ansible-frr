@@ -34,9 +34,7 @@
 
 - name: redhat | Installing FRR {{ frr_version }}
   yum:
-    name:
-      - frr
-      - frr-pythontools
+    name: "{{ frr_packages }}"
     state: present
   become: true
   notify:

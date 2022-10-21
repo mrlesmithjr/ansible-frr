@@ -46,11 +46,6 @@ debian10:
 #   script:
 #     - molecule test --scenario-name fedora
 
-ubuntu1604:
-  stage: molecule-test
-  script:
-    - molecule test --scenario-name ubuntu1604
-
 ubuntu1804:
   stage: molecule-test
   script:
