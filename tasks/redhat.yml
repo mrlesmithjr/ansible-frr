@@ -15,6 +15,7 @@
   when:
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version > "7"
+    - frr_os_rpm == False
 
 - name: redhat | Installing FRR repository ignore SSL
   yum:
@@ -25,6 +26,7 @@
   when:
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version <= "7"
+    - frr_os_rpm == False
 
 - name: redhat | Ensure Quagga is removed
   package:
@@ -37,6 +39,18 @@
     name: "{{ frr_packages }}"
     state: present
   become: true
+  when:
+    - frr_rpms is not defined
+  notify:
+    - restart frr
+
+- name: redhat | Installing FRR {{ frr_version }}
+  yum:
+    name: "{{ frr_rpms }}"
+    state: present
+  become: true
+  when:
+    - frr_rpms is defined
   notify:
     - restart frr
 

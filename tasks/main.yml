@@ -38,6 +38,8 @@
    - include_tasks: system_tuning.yml
    - include_tasks: config.yml
    - include_tasks: monitor.yml
+     when:
+       - frr_monitor == True
      tags:
        - frr-monitoring
   when: routing_type == "frr"
