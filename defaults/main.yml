@@ -178,5 +178,9 @@ routing_type: frr
 # Global setting for "no bgp ebgp-requires-policy"
 frr_no_ebgp_requires_policy: false
 
-# reloads frr upon config changes
+# Reloads frr upon config changes
 frr_reload: true
+
+# Enable ipv/ipv6 forwarding
+frr_ip_forwarding: true
+frr_ipv6_forwarding: true
