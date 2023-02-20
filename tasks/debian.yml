@@ -20,12 +20,14 @@
       when: add_repository_key is failed
 
     - name: Debian | Add FRR apt key (alternative for older systems without SNI).
-      ansible.builtin.shell: |
-        set -o pipefail
-        curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
       args:
         executable: "/bin/bash"
       become: true
+      changed_when: false
       when: add_repository_key is failed
 
     - name: Debian | Ensure apt-transport-https is present to enable https repositories

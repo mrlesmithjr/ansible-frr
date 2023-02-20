@@ -1,7 +1,7 @@
 ---
 # tasks file for ansible-frr
 - name: Gather os specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   tags:
     - always
   with_first_found:

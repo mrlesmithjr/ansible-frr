@@ -34,7 +34,7 @@
     state: absent
   become: true
 
-- name: Redhat | Installing FRR {{ frr_version }} from repository
+- name: Redhat | Installing FRR from repository
   ansible.builtin.yum:
     name: "{{ frr_packages }}"
     state: present
@@ -44,7 +44,7 @@
   notify:
     - restart frr
 
-- name: Redhat | Installing FRR {{ frr_version }} from rpms
+- name: Redhat | Installing FRR from RPMs
   ansible.builtin.yum:
     name: "{{ frr_rpms }}"
     state: present

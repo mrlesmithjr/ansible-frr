@@ -129,10 +129,14 @@
       with_items: "{{ frr_debs }}"
 
     - name: Debian(legacy) | Installing FRR and netplan apply to fix connectivity
-      ansible.builtin.shell: |
-        dpkg --force-confnew -i /tmp/frr/{{ frr_version }}/frr*.deb
-        netplan apply 2> /dev/null || { echo >&2 "no netplan installed";}
+      ansible.builtin.shell:
+        cmd: |
+          dpkg --force-confnew -i /tmp/frr/{{ frr_version }}/frr*.deb
+          netplan apply 2> /dev/null || { echo >&2 "no netplan installed";}
+      args:
+        executable: "/bin/bash"
       become: true
+      changed_when: false
       when: _frr_version.stdout != frr_version
       notify:
         - restart frr
