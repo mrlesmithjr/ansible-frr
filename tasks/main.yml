@@ -10,39 +10,57 @@
     - "{{ ansible_os_family | lower }}.yml"
 
 - name: Run FRR Tasks
-  block:
-   - include_tasks: debian.yml
-     when:
-       - ansible_distribution == "Debian"
-       - frr_version|float is version("7.0", ">=")
-   - include_tasks: debian_legacy.yml
-     when:
-       - ansible_distribution == "Debian"
-       - frr_version|float is version("7.0", "<")
-   - include_tasks: debian.yml
-     when:
-       - ansible_distribution == "Ubuntu"
-       - frr_version|float is version("7.0", ">=")
-   - include_tasks: debian_legacy.yml
-     when:
-       - ansible_distribution == "Ubuntu"
-       - frr_version|float is version("7.0", "<")
-   - include_tasks: redhat.yml
-     when:
-       - ansible_os_family == "RedHat"
-       - frr_version|float is version("7.0", ">=")
-   - include_tasks: redhat_legacy.yml
-     when:
-       - ansible_os_family == "RedHat"
-       - frr_version|float is version("7.0", "<")
-   - include_tasks: system_tuning.yml
-   - include_tasks: config.yml
-   - include_tasks: monitor.yml
-     when:
-       - frr_monitor == True
-     tags:
-       - frr-monitoring
   when: routing_type == "frr"
+  block:
+    - name: Include debian tasks for FRR >= 7.0 on Debian distribution
+      ansible.builtin.include_tasks: debian.yml
+      when:
+        - ansible_distribution == "Debian"
+        - frr_version | float is version("7.0", ">=")
 
-- include_tasks: quagga.yml
+    - name: Include debian(legacy) tasks for FRR < 7.0 on Debian distribution
+      ansible.builtin.include_tasks: debian_legacy.yml
+      when:
+        - ansible_distribution == "Debian"
+        - frr_version | float is version("7.0", "<")
+
+    - name: Include debian tasks for FRR >= 7.0 on Ubuntu distribution
+      ansible.builtin.include_tasks: debian.yml
+      when:
+        - ansible_distribution == "Ubuntu"
+        - frr_version | float is version("7.0", ">=")
+
+    - name: Include debian tasks for FRR < 7.0 on Ubuntu distribution
+      ansible.builtin.include_tasks: debian_legacy.yml
+      when:
+        - ansible_distribution == "Ubuntu"
+        - frr_version | float is version("7.0", "<")
+
+    - name: Include redhat tasks for FRR >= 7.0 on RH like distributions
+      ansible.builtin.include_tasks: redhat.yml
+      when:
+        - ansible_os_family == "RedHat"
+        - frr_version | float is version("7.0", ">=")
+
+    - name: Include redhat tasks for FRR < 7.0 on RH like distributions
+      ansible.builtin.include_tasks: redhat_legacy.yml
+      when:
+        - ansible_os_family == "RedHat"
+        - frr_version | float is version("7.0", "<")
+
+    - name: Include system tuning tasks
+      ansible.builtin.include_tasks: system_tuning.yml
+
+    - name: Include config tasks
+      ansible.builtin.include_tasks: config.yml
+
+    - name: Include monitoring tasks
+      ansible.builtin.include_tasks: monitor.yml
+      when:
+        - frr_monitor
+      tags:
+        - frr-monitoring
+
+- name: Include quagga tasks
+  ansible.builtin.include_tasks: quagga.yml
   when: routing_type == "quagga"

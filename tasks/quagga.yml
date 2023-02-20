@@ -1,64 +1,64 @@
 ---
-- name: Remove FRR
-  package:
+- name: Quagga | Remove FRR
+  ansible.builtin.package:
     name: frr
     state: absent
   become: true
 
-- name: Installing Quagga From Repo
-  package:
+- name: Quagga | Installing Quagga From Repo
+  ansible.builtin.package:
     name: quagga
     state: present
   become: true
 
-- name: config | Configuring daemons
-  template:
+- name: Config | Configuring daemons
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/daemons.j2
     dest: /etc/quagga/daemons
     owner: quagga
     group: quagga
-    mode: u=rw,g=r,o=r
+    mode: 0644
   become: true
   notify:
     - restart quagga
     - start quagga
 
-- name: config | Configuring vtysh.conf
-  template:
+- name: Config | Configuring vtysh.conf
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/vtysh.conf.j2
     dest: /etc/quagga/vtysh.conf
     owner: quagga
     group: quaggavty
-    mode: u=rw,g=r,o=
+    mode: 0640
   become: true
   notify:
     - restart quagga
     - start quagga
 
-- name: config | Configuring debian.conf
-  template:
+- name: Config | Configuring debian.conf
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/debian.conf.j2
     dest: /etc/quagga/debian.conf
     owner: quagga
     group: quagga
-    mode: u=rw,g=r,o=r
+    mode: 0644
   become: true
   notify:
     - restart quagga
     - start quagga
   when: ansible_os_family == "Debian"
 
-- name: config | Configuring Quagga
-  template:
+- name: Config | Configuring Quagga
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/frr.conf.j2
     dest: /etc/quagga/Quagga.conf
     owner: quagga
     group: quagga
-    mode: u=rw,g=r,o=r
+    mode: 0644
   become: true
   notify:
     - restart quagga

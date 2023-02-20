@@ -1,48 +1,48 @@
 ---
-- name: redhat | Installing Pre-Reqs
-  yum:
+- name: Redhat(legacy) | Installing Pre-Reqs
+  ansible.builtin.yum:
     name: ["iproute", "sudo", "which"]
     state: present
   become: true
   when: ansible_distribution != "Fedora"
 
-- name: set url on frr version less than or equal to 4.1
-  set_fact:
+- name: Redhat(legacy) | Set url on frr version less than or equal to 4.1
+  ansible.builtin.set_fact:
     frr_url_part: "{{ frr_release_date }}"
   when:
     - frr_version <= "4.1"
 
-- name: set url on frr version 5
-  set_fact:
+- name: Redhat(legacy) | Set url on frr version 5
+  ansible.builtin.set_fact:
     frr_url_part: "001"
   when:
     - frr_version == "5.0.2"
 
-- name: set url on frr version 6
-  set_fact:
+- name: Redhat(legacy) | Set url on frr version 6
+  ansible.builtin.set_fact:
     frr_url_part: "01"
   when:
     - frr_version >= "6"
 
-- name: redhat | Create FRR {{ frr_version }} install
-  set_fact:
-    frr_debs:
+- name: Redhat(legacy) | Set FRR package list to install
+  ansible.builtin.set_fact:
+    frr_rpms:
       [
         "{{ frr_package_url }}/frr-{{ frr_version }}-{{ frr_url_part }}.el7.centos.x86_64.rpm",
       ]
   become: true
 
-- name: redhat | Create Python Tools FRR {{ frr_version }} install
-  set_fact:
+- name: Redhat(legacy) | Set Python Tools package list to install
+  ansible.builtin.set_fact:
     frr_package_deb: "{{ frr_package_url }}/frr-pythontools-{{ frr_version }}-{{ frr_url_part }}.el7.centos.x86_64.rpm"
 
-- name: redhat | Combine FRR {{ frr_version }} and tools
-  set_fact:
-    frr_debs: "{{ frr_debs }} + [ '{{ frr_package_deb }}' ]"
+- name: Redhat(legacy) | Combine FRR package list amd Python Tools package list
+  ansible.builtin.set_fact:
+    frr_rpms: "{{ frr_rpms }} + [ '{{ frr_package_deb }}' ]"
 
-- name: redhat | Installing FRR {{ frr_version }}
-  yum:
-    name: "{{ frr_debs }}"
+- name: Redhat(legacy) | Installing FRR packages
+  ansible.builtin.yum:
+    name: "{{ frr_rpms }}"
     state: present
   become: true
   when:

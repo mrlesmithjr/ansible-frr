@@ -1,6 +1,6 @@
 ---
-- name: config | Configuring vtysh.conf
-  template:
+- name: Config | Configuring vtysh.conf
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/vtysh.conf.j2
     dest: /etc/frr/vtysh.conf
@@ -9,8 +9,8 @@
     mode: u=rw,g=r,o=
   become: true
 
-- name: config | Configuring daemons
-  template:
+- name: Config | Configuring daemons
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/daemons.j2
     dest: /etc/frr/daemons
@@ -22,8 +22,8 @@
     - reload frr
     - start frr
 
-- name: config | Configuring debian.conf (debian version of daemons)
-  template:
+- name: Config | Configuring debian.conf (debian version of daemons)
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/debian.conf.j2
     dest: /etc/frr/debian.conf
@@ -36,8 +36,8 @@
     - start frr
   when: ansible_os_family == "Debian"
 
-- name: config | Configuring FRR
-  template:
+- name: Config | Configuring FRR
+  ansible.builtin.template:
     backup: yes
     src: etc/frr/frr.conf.j2
     dest: /etc/frr/frr.conf
@@ -49,8 +49,8 @@
     - reload frr
     - start frr
 
-- name: config | Ensure FRR service is enabled
-  service:
+- name: Config | Ensure FRR service is enabled
+  ansible.builtin.service:
     name: frr
     enabled: true
   become: true
