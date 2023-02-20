@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements-dev.in
 #
-astroid==2.14.1
+astroid==2.14.2
     # via pylint
 autopep8==2.0.1
     # via -r requirements-dev.in
@@ -40,7 +40,7 @@ packaging==23.0
     #   -c requirements.txt
     #   pyproject-api
     #   tox
-platformdirs==2.6.2
+platformdirs==3.0.0
     # via
     #   -c requirements.txt
     #   pylint
@@ -57,7 +57,7 @@ pycodestyle==2.10.0
     #   flake8
 pyflakes==3.0.1
     # via flake8
-pylint==2.16.1
+pylint==2.16.2
     # via -r requirements-dev.in
 pyproject-api==1.5.0
     # via tox
@@ -70,14 +70,14 @@ tomli==2.0.1
     #   tox
 tomlkit==0.11.6
     # via pylint
-tox==4.4.4
+tox==4.4.5
     # via -r requirements-dev.in
-typing-extensions==4.4.0
+typing-extensions==4.5.0
     # via
     #   -c requirements.txt
     #   astroid
     #   pylint
-virtualenv==20.17.1
+virtualenv==20.19.0
     # via tox
 wrapt==1.14.1
     # via astroid
