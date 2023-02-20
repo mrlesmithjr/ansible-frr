@@ -1,14 +1,15 @@
 ---
-- hosts: all
+- name: Prepare
+  hosts: all
   tasks:
     - name: Update Apt Cache
-      apt:
+      ansible.builtin.apt:
         update_cache: true
       become: true
       when: ansible_os_family == "Debian"
 
     - name: Ensure apt-utils is installed
-      apt:
+      ansible.builtin.apt:
         name: apt-utils
         state: present
       become: true

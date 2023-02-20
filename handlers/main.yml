@@ -1,15 +1,15 @@
 ---
 # handlers file for ansible-frr
-- name: full restart frr
-  service:
+- name: Full restart frr
+  ansible.builtin.service:
     name: frr
     state: restarted
     enabled: true
   become: true
   listen: "restart frr"
 
-- name: reload frr
-  service:
+- name: Reload frr
+  ansible.builtin.service:
     name: frr
     state: reloaded
     enabled: true
@@ -17,8 +17,8 @@
   listen: "reload frr"
   when: frr_reload
 
-- name: start frr
-  service:
+- name: Start frr
+  ansible.builtin.service:
     name: frr
     state: started
     enabled: true
@@ -26,24 +26,24 @@
   listen: "start frr"
 
 ## Quagga restart
-- name: full restart quagga
-  service:
+- name: Full restart quagga
+  ansible.builtin.service:
     name: quagga
     state: restarted
     enabled: true
   become: true
   listen: "restart quagga"
 
-- name: reload quagga
-  service:
+- name: Reload quagga
+  ansible.builtin.service:
     name: quagga
     state: reloaded
     enabled: true
   become: true
   listen: "reload quagga"
 
-- name: start quagga
-  service:
+- name: Start quagga
+  ansible.builtin.service:
     name: quagga
     state: started
     enabled: true

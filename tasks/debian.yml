@@ -1,16 +1,17 @@
 ---
-- name: Add upstream repo
+- name: Debian | Add upstream repo
+  when: frr_use_upstream_repo_debian
   block:
-    - name: Install FRR apt repo key
-      apt_key:
+    - name: Debian | Install FRR apt repo key
+      ansible.builtin.apt_key:
         url: https://deb.frrouting.org/frr/keys.asc
         state: present
       become: true
       register: add_repository_key
       ignore_errors: true
 
-    - name: Ensure curl & gnupg is present (on older systems without SNI).
-      package:
+    - name: Debian | Ensure curl & gnupg is present (on older systems without SNI).
+      ansible.builtin.package:
         name:
           - curl
           - gnupg
@@ -18,53 +19,53 @@
       become: true
       when: add_repository_key is failed
 
-    - name: Add FRR apt key (alternative for older systems without SNI).
-      shell: |
-        set -o pipefail
-        curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
+    - name: Debian | Add FRR apt key (alternative for older systems without SNI).
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          curl -sSL https://deb.frrouting.org/frr/keys.asc | sudo apt-key add -
       args:
-        warn: false
         executable: "/bin/bash"
       become: true
+      changed_when: false
       when: add_repository_key is failed
 
-    - name: Ensure apt-transport-https is present to enable https repositories
-      package:
+    - name: Debian | Ensure apt-transport-https is present to enable https repositories
+      ansible.builtin.package:
         name: apt-transport-https
         state: present
       become: true
 
-    - name: Install FRR apt repo
-      apt_repository:
+    - name: Debian | Install FRR apt repo
+      ansible.builtin.apt_repository:
         repo: "{{ frr_apt_repository }}"
         state: present
         mode: "0644"
-  when: frr_use_upstream_repo_debian
 
-- name: Remove upstream repo
-  apt_repository:
+- name: Debian | Remove upstream repo
+  ansible.builtin.apt_repository:
     repo: "{{ frr_apt_repository }}"
     state: absent
     update_cache: true
   become: true
-  when: frr_use_upstream_repo_debian | bool == false
+  when: not frr_use_upstream_repo_debian
 
-- name: Remove Quagga
-  package:
+- name: Debian | Remove Quagga
+  ansible.builtin.package:
     name: quagga
     state: absent
   become: true
 
-- name: Install FRR
-  package:
+- name: Debian | Install FRR
+  ansible.builtin.package:
     name: "{{ frr_packages }}"
-    state: latest  # noqa 403
+    state: latest  # noqa package-latest
   become: true
   notify:
     - restart frr
 
-- name: debian | Touch FRR reload log
-  file:
+- name: Debian | Touch FRR reload log
+  ansible.builtin.file:
     path: /var/log/frr/frr-reload.log
     state: touch
     owner: frr
@@ -74,15 +75,15 @@
     access_time: preserve
   become: true
 
-- name: stat defaut config
-  stat:
+- name: Debian | Stat defaut config
+  ansible.builtin.stat:
     path: /etc/default/frr
   register: conf_stat
   when:
     - frr_version > "6.0"
 
-- name: Remove old /etc/default/frr
-  file:
+- name: Debian | Remove old /etc/default/frr
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   notify:
