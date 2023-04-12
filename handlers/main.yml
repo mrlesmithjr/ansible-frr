@@ -25,6 +25,13 @@
   become: true
   listen: "start frr"
 
+- name: Clear bgp frr
+  ansible.builtin.shell:
+    cmd: 'vtysh -c "clear ip bgp * soft out"'
+  become: true
+  listen: "clear bgp frr"
+  when: frr_clear_bgp_on_change
+
 ## Quagga restart
 - name: Full restart quagga
   ansible.builtin.service:
