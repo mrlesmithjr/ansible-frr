@@ -182,6 +182,9 @@ frr_no_ebgp_requires_policy: false
 # Reloads frr upon config changes
 frr_reload: true
 
+# Performs a "clear ip bgp * soft out" on config file changes
+frr_clear_bgp_on_change: false
+
 # Enable ipv/ipv6 forwarding
 frr_ip_forwarding: true
 frr_ipv6_forwarding: true

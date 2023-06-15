@@ -48,6 +48,7 @@
   notify:
     - reload frr
     - start frr
+    - clear bgp frr
 
 - name: Config | Ensure FRR service is enabled
   ansible.builtin.service:
