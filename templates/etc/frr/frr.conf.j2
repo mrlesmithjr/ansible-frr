@@ -443,4 +443,7 @@ route-map {{ map_name }} {{ seq }}
 access-list {{ ace }}
 {%   endfor %}
 {% endif %}
+{% if frr_bgp.route_map is defined %}
+ip protocol bgp route-map {{ frr_bgp.route_map }}
+{% endif %}
 !

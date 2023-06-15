@@ -34,6 +34,7 @@ frr_prefix_list: {}
   #     match: le 32
 
 frr_bgp: {}
+  # route_map: BGP_IN
   # asns:
   #   65000:
   #     log_neighbor_changes: true
