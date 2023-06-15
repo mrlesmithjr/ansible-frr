@@ -3,6 +3,7 @@
   ansible.posix.sysctl:
     name: "{{ item }}"
     value: "1"
+    sysctl_file: "{{ frr_sysctl_file | default(omit) }}"
     state: present
   become: true
   with_items:
@@ -16,6 +17,7 @@
   ansible.posix.sysctl:
     name: "{{ item }}"
     value: "1"
+    sysctl_file: "{{ frr_sysctl_file | default(omit) }}"
     state: present
   become: true
   with_items:

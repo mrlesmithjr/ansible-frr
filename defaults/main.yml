@@ -184,3 +184,5 @@ frr_reload: true
 # Enable ipv/ipv6 forwarding
 frr_ip_forwarding: true
 frr_ipv6_forwarding: true
+# Customize the location of the sysctl configuration file
+#frr_sysctl_file: /etc/sysctl.d/100-ansible-frr.conf
