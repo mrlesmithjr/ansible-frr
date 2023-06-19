@@ -59,7 +59,7 @@
 - name: Debian | Install FRR
   ansible.builtin.package:
     name: "{{ frr_packages }}"
-    state: latest  # noqa package-latest
+    state: "{{ 'latest' if frr_apt_always_install_latest else 'present' }}"
   become: true
   notify:
     - restart frr
