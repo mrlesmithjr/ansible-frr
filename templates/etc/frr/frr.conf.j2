@@ -278,7 +278,7 @@ bfd
 {%     for asn, asn_data in frr_bgp['asns'].items() %}
 {%       if asn_data['neighbors'] is defined %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
-{%           if neighbor_data['bfd_peer'] | default(False) %}
+{%           if neighbor_data['bfd_peer'] | default(False) and not neighbor_data['is_peer_group'] | default(False) %}
   peer {{ neighbor }}
     no shutdown
 {%           endif %}
