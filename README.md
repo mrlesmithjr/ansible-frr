@@ -90,6 +90,7 @@ frr_route_map:
       prefix_list: Bad_IPs
       origin: igp
       community: "12345:100"
+      src: 2001:db8::bf03
   RTBH_IN:
     deny 10: []
 ```
@@ -103,6 +104,12 @@ Below is an example of enabling ip and ipv6 forwading:
 ```yaml
 frr_ip_forwarding: true
 frr_ipv6_forwarding: true
+```
+
+To enable kernel forwarding, the role sets the sysctl variables `net.ipv4.ip_forward` and `net.ipv6.conf.all.forwarding`. To customize the location of the sysctl configuration, the following variable may be used:
+
+```yaml
+frr_sysctl_file: /etc/sysctl.d/100-ansible-frr.conf
 ```
 
 #### Next-hop tracking via default

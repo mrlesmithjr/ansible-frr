@@ -34,6 +34,7 @@ frr_prefix_list: {}
   #     match: le 32
 
 frr_bgp: {}
+  # route_map: BGP_IN
   # asns:
   #   65000:
   #     log_neighbor_changes: true
@@ -187,3 +188,5 @@ frr_clear_bgp_on_change: false
 # Enable ipv/ipv6 forwarding
 frr_ip_forwarding: true
 frr_ipv6_forwarding: true
+# Customize the location of the sysctl configuration file
+#frr_sysctl_file: /etc/sysctl.d/100-ansible-frr.conf

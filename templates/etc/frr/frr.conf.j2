@@ -427,6 +427,9 @@ route-map {{ map_name }} {{ seq }}
 {%       if seq_data['origin'] is defined %}
   set origin {{ seq_data['origin'] }}
 {%       endif %}
+{%       if seq_data['src'] is defined %}
+  set src {{ seq_data['src'] }}
+{%       endif %}
 {%       if seq_data['continue'] is defined %}
   continue {{ seq_data['continue'] }}
 {%       endif %}
@@ -439,5 +442,8 @@ route-map {{ map_name }} {{ seq }}
 {%   for ace in frr_access_list %}
 access-list {{ ace }}
 {%   endfor %}
+{% endif %}
+{% if frr_bgp.route_map is defined %}
+ip protocol bgp route-map {{ frr_bgp.route_map }}
 {% endif %}
 !
