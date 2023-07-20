@@ -119,7 +119,7 @@ pluggy==1.0.0
     # via molecule
 pycparser==2.21
     # via cffi
-pygments==2.14.0
+pygments==2.15.0
     # via rich
 pyproject-hooks==1.0.0
     # via build
