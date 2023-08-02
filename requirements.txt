@@ -47,7 +47,7 @@ click-help-colors==0.9.1
     # via molecule
 cookiecutter==2.1.1
     # via molecule
-cryptography==41.0.0
+cryptography==41.0.3
     # via ansible-core
 distro==1.8.0
     # via selinux
