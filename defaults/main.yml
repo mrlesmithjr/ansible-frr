@@ -164,6 +164,7 @@ frr_version: "7.2"
 frr_use_upstream_repo_debian: true
 frr_apt_version: frr-stable
 frr_apt_repository: "deb https://deb.frrouting.org/frr {{ ansible_distribution_release }} {{ frr_apt_version }}"
+frr_apt_always_install_latest: true
 
 # Defines FRR rpm repo
 # https://rpm.frrouting.org/
