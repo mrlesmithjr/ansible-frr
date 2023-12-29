@@ -4,11 +4,11 @@
 #
 #    pip-compile requirements.in
 #
-ansible==7.2.0
+ansible==8.5.0
     # via -r requirements.in
 ansible-compat==3.0.1
     # via molecule
-ansible-core==2.14.2
+ansible-core==2.15.8
     # via
     #   ansible
     #   ansible-compat
@@ -67,6 +67,8 @@ importlib-metadata==6.8.0
     # via
     #   markdown
     #   mkdocs
+importlib-resources==5.0.7
+    # via ansible-core
 jinja2==3.1.2
     # via
     #   ansible-core
