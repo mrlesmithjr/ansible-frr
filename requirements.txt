@@ -180,7 +180,7 @@ tomli==2.0.1
     #   pyproject-hooks
 typing-extensions==4.8.0
     # via black
-urllib3==1.26.14
+urllib3==1.26.19
     # via
     #   docker
     #   requests
