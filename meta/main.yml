@@ -13,6 +13,7 @@ galaxy_info:
       versions:
         - stretch
         - buster
+        - bookworm
     - name: EL
       versions:
         - '7'
