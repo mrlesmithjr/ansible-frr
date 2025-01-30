@@ -1,0 +1,4 @@
+---
+frr_packages:
+  - frr
+  - frr-pythontools
