@@ -22,6 +22,8 @@ galaxy_info:
       versions:
         - bionic
         - focal
+        - jammy
+        - noble
 
   galaxy_tags:
     - networking
