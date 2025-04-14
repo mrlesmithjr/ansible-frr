@@ -351,6 +351,11 @@ router ospf vrf {{ vrf }}
 {%         if area_data['type'] is defined %}
   area {{ area }} {{ area_data['type'] }}
 {%         endif %}
+{%         if area_data['other'] is defined %}
+{%           for option in area_data['other'] %}
+  area {{ area }} {{ option }}
+{%           endfor %}
+{%         endif %}
 {%       endfor %}
 {%     endif %}
 {%     if frr_ospf['log_adjacency_changes'] | default(False) %}
