@@ -54,6 +54,9 @@
     - name: Include config tasks
       ansible.builtin.include_tasks: config.yml
 
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+
     - name: Include monitoring tasks
       ansible.builtin.include_tasks: monitor.yml
       when:
