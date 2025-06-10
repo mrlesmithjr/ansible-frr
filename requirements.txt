@@ -147,7 +147,7 @@ pyyaml==6.0
     #   yamllint
 pyyaml-env-tag==0.1
     # via mkdocs
-requests==2.31.0
+requests==2.32.4
     # via
     #   cookiecutter
     #   docker
