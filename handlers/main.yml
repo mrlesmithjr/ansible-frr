@@ -30,6 +30,7 @@
     cmd: 'vtysh -c "clear ip bgp * soft out"'
   become: true
   listen: "clear bgp frr"
+  changed_when: false
   when: frr_clear_bgp_on_change
 
 ## Quagga restart

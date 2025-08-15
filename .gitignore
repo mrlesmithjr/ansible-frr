@@ -1,1 +1,4 @@
 venv/
+.vscode
+.ansible
+.trunk
