@@ -47,7 +47,9 @@ cryptography==46.0.5
     #   ansible-core
     #   ansible-lint
 distro==1.9.0
-    # via ansible-lint
+    # via
+    #   ansible-lint
+    #   selinux
 docker==7.1.0
     # via
     #   -r requirements.in
@@ -149,7 +151,7 @@ referencing==0.37.0
     #   ansible-lint
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.5
+requests==2.33.0
     # via
     #   docker
     #   molecule-plugins
@@ -165,6 +167,8 @@ rpds-py==0.30.0
     #   referencing
 ruamel-yaml==0.19.1
     # via ansible-lint
+selinux==0.3.0
+    # via molecule-plugins
 six==1.17.0
     # via python-dateutil
 subprocess-tee==0.4.2
