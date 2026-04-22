@@ -16,11 +16,11 @@ jobs:
           - ubuntu2404
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - name: Set up Python 3
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: "3.12"
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip pip-tools
