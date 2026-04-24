@@ -4,6 +4,42 @@
 - name: Verify
   hosts: all
   tasks:
-  - name: Example assertion
+  - name: Verify FRR package is installed
+    ansible.builtin.package_facts:
+      manager: apt
+
+  - name: Assert FRR is installed
     ansible.builtin.assert:
-      that: true
+      that: "'frr' in ansible_facts.packages"
+
+  - name: Find FRR key file in trusted.gpg.d
+    ansible.builtin.find:
+      paths: /etc/apt/trusted.gpg.d/
+      patterns: "*.gpg,*.asc"
+      excludes: "ubuntu*"
+    register: _frr_verify_key_files
+
+  - name: Check legacy trusted.gpg
+    ansible.builtin.stat:
+      path: /etc/apt/trusted.gpg
+    register: _frr_verify_legacy_keyring
+
+  - name: Assert at least one key store is populated
+    ansible.builtin.assert:
+      that: >
+        _frr_verify_key_files.matched > 0 or
+        (_frr_verify_legacy_keyring.stat.exists and _frr_verify_legacy_keyring.stat.size > 0)
+  
+  - name: Get status of frr service
+    ansible.builtin.service:
+      name: frr
+    register: _frr_verify_service_status
+
+  - name: Assert frr service enabled and running
+    ansible.builtin.assert:
+      that:
+        - _frr_verify_service_status.status.ActiveState | default('n/a') == 'active'
+        - _frr_verify_service_status.status.LoadState | default('n/a') == 'loaded'
+        - _frr_verify_service_status.status.SubState | default('n/a') == 'running'
+        - _frr_verify_service_status.status.UnitFilePreset | default('n/a') == 'enabled'
+        - _frr_verify_service_status.status.UnitFileState | default('n/a') == 'enabled'
