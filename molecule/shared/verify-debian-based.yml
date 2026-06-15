@@ -1,0 +1,68 @@
+---
+- name: Verify debian based systems
+  hosts: all
+  tasks:
+  - name: Verify FRR package is installed
+    ansible.builtin.package_facts:
+      manager: apt
+
+  - name: Assert FRR is installed
+    ansible.builtin.assert:
+      that: "'frr' in ansible_facts.packages"
+      fail_msg: "frr package not installed"
+
+  - name: Legacy APT keyring check
+    when: >
+      (
+        ansible_distribution == "Debian" and
+        ansible_distribution_major_version|int <= 12
+      ) or
+      (
+        ansible_distribution == "Ubuntu" and
+        ansible_distribution_major_version|int <= 24
+      )
+    block:
+      - name: Stat legacy APT keyring
+        ansible.builtin.stat:
+          path: /etc/apt/trusted.gpg
+        register: _frr_verify_legacy_keyring
+
+      - name: Assert legacy keyring is populated
+        ansible.builtin.assert:
+          that:
+            - _frr_verify_legacy_keyring.stat.exists
+            - _frr_verify_legacy_keyring.stat.size > 0
+          fail_msg: "/etc/apt/trusted.gpg does not exist or is empty"
+
+  - name: Modern APT keyring check
+    when: >
+      (
+        ansible_distribution == "Debian" and
+        ansible_distribution_major_version|int > 12
+      ) or
+      (
+        ansible_distribution == "Ubuntu" and
+        ansible_distribution_major_version|int > 24
+      )
+    block:
+      - name: Assert signed-by keyring file exists
+        ansible.builtin.stat:
+          path: /etc/apt/keyrings/frrouting.gpg
+        register: _frr_verify_keyring_stat
+
+      - name: Assert keyring is populated
+        ansible.builtin.assert:
+          that:
+            - _frr_verify_keyring_stat.stat.exists
+            - _frr_verify_keyring_stat.stat.size > 0
+          fail_msg: "/etc/apt/keyrings/frrouting.gpg does not exist or is empty"
+
+  - name: Get status of frr service
+    ansible.builtin.service_facts:
+
+  - name: Assert frr service enabled and running
+    ansible.builtin.assert:
+      that:
+        - ansible_facts.services['frr.service'].state == 'running'
+        - ansible_facts.services['frr.service'].status == 'enabled'
+      fail_msg: "frr service is not running or not enabled"
