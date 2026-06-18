@@ -1,7 +1,7 @@
 ---
 - name: Config | Configuring vtysh.conf
   ansible.builtin.template:
-    backup: yes
+    backup: "{{ frr_backup | default(true) | bool }}"
     src: etc/frr/vtysh.conf.j2
     dest: /etc/frr/vtysh.conf
     owner: frr
@@ -11,7 +11,7 @@
 
 - name: Config | Configuring daemons
   ansible.builtin.template:
-    backup: yes
+    backup: "{{ frr_backup | default(true) | bool }}"
     src: etc/frr/daemons.j2
     dest: /etc/frr/daemons
     owner: root
@@ -24,7 +24,7 @@
 
 - name: Config | Configuring debian.conf (debian version of daemons)
   ansible.builtin.template:
-    backup: yes
+    backup: "{{ frr_backup | default(true) | bool }}"
     src: etc/frr/debian.conf.j2
     dest: /etc/frr/debian.conf
     owner: root
@@ -38,7 +38,7 @@
 
 - name: Config | Configuring FRR
   ansible.builtin.template:
-    backup: yes
+    backup: "{{ frr_backup | default(true) | bool }}"
     src: etc/frr/frr.conf.j2
     dest: /etc/frr/frr.conf
     owner: frr

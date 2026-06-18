@@ -500,6 +500,16 @@ You can upgrade or downgrade FRR by setting the following variable:
 
 `frr_version: 6.0.2` from `frr_version: 6.0`
 
+## Role Options
+
+This section describes generic options not tied to a particular routing daemon.
+
+### Backup of Configuration files
+
+By default, configuration files are backed up before they are changed.
+
+Define following variable to disable backup: `frr_backup: false`
+
 ## Quagga configuration
 
 > NOTE: Quagga must be installed from the local repos of the OS
