@@ -26,6 +26,7 @@ provisioner:
   playbooks:
     converge: ../shared/converge.yml
     prepare: ../shared/prepare.yml
+    verify: ../shared/verify-debian-based.yml
   env:
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..
 verifier:
