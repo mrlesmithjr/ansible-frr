@@ -36,19 +36,62 @@
     - start frr
   when: ansible_os_family == "Debian"
 
-- name: Config | Configuring FRR
-  ansible.builtin.template:
-    backup: "{{ frr_backup | default(true) | bool }}"
-    src: etc/frr/frr.conf.j2
-    dest: /etc/frr/frr.conf
-    owner: frr
-    group: frr
-    mode: u=rw,g=r,o=r
+- name: Config | Validate and apply FRR configuration
   become: true
-  notify:
-    - reload frr
-    - start frr
-    - clear bgp frr
+  block:
+    - name: Config | Create staging file for FRR configuration validation
+      ansible.builtin.tempfile:
+        state: file
+        suffix: .frr.conf
+      register: frr_config_staged
+      changed_when: false
+
+    - name: Config | Render staged FRR configuration for validation
+      ansible.builtin.template:
+        src: etc/frr/frr.conf.j2
+        dest: "{{ frr_config_staged.path }}"
+        mode: "0600"
+      changed_when: false
+
+    - name: Config | Validate staged FRR configuration with vtysh
+      ansible.builtin.command:
+        cmd: "vtysh -C -f {{ frr_config_staged.path }}"
+      register: frr_config_validation
+      changed_when: false
+
+    - name: Config | Apply validated FRR configuration
+      ansible.builtin.copy:
+        remote_src: true
+        backup: "{{ frr_backup | default(true) | bool }}"
+        src: "{{ frr_config_staged.path }}"
+        dest: /etc/frr/frr.conf
+        owner: frr
+        group: frr
+        mode: u=rw,g=r,o=r
+      notify:
+        - reload frr
+        - start frr
+        - clear bgp frr
+
+  rescue:
+    - name: Config | Fail due to invalid or unstaged FRR configuration
+      ansible.builtin.fail:
+        msg: >-
+          {% if frr_config_validation is defined -%}
+          Rendered FRR configuration failed 'vtysh -C -f' validation and was not
+          applied to /etc/frr/frr.conf. Validation output:
+          {{ frr_config_validation.stdout | default('') }} {{ frr_config_validation.stderr | default('') }}{%- else -%}
+          Failed to stage or render the FRR configuration for validation: {{ ansible_failed_result.msg | default('unknown error') }}{%- endif %}
+
+  always:
+    - name: Config | Remove staged FRR configuration file
+      ansible.builtin.file:
+        path: "{{ frr_config_staged.path }}"
+        state: absent
+      changed_when: false
+      when:
+        - frr_config_staged is defined
+        - frr_config_staged.path is defined
 
 - name: Config | Ensure FRR service is enabled
   ansible.builtin.service:

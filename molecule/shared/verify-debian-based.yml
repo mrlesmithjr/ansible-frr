@@ -66,3 +66,70 @@
         - ansible_facts.services['frr.service'].state == 'running'
         - ansible_facts.services['frr.service'].status == 'enabled'
       fail_msg: "frr service is not running or not enabled"
+
+  - name: Validate the applied /etc/frr/frr.conf with vtysh
+    become: true
+    ansible.builtin.command:
+      cmd: vtysh -C -f /etc/frr/frr.conf
+    register: frr_conf_applied_validation
+    changed_when: false
+
+  - name: Assert the applied /etc/frr/frr.conf is valid
+    ansible.builtin.assert:
+      that:
+        - frr_conf_applied_validation.rc == 0
+      fail_msg: "Applied /etc/frr/frr.conf failed vtysh validation"
+
+  - name: Record checksum of the currently applied /etc/frr/frr.conf
+    become: true
+    ansible.builtin.stat:
+      path: /etc/frr/frr.conf
+      checksum_algorithm: sha256
+    register: frr_conf_before_negative_test
+
+  - name: Attempt to apply an intentionally invalid FRR configuration
+    become: true
+    vars:
+      frr_access_list:
+        - "this is not valid frr syntax !!!"
+    block:
+      - name: Include config tasks with an intentionally invalid FRR configuration
+        ansible.builtin.include_role:
+          name: ansible-frr
+          tasks_from: config
+    rescue:
+      - name: Record that the invalid FRR configuration was rejected
+        ansible.builtin.set_fact:
+          frr_config_negative_test_rejected: true
+
+  - name: Assert the invalid FRR configuration was rejected
+    ansible.builtin.assert:
+      that:
+        - frr_config_negative_test_rejected | default(false)
+      fail_msg: "Invalid FRR configuration was not rejected by vtysh validation"
+
+  - name: Record checksum of /etc/frr/frr.conf after the negative test
+    become: true
+    ansible.builtin.stat:
+      path: /etc/frr/frr.conf
+      checksum_algorithm: sha256
+    register: frr_conf_after_negative_test
+
+  - name: Assert /etc/frr/frr.conf was not modified by the failed validation
+    ansible.builtin.assert:
+      that:
+        - frr_conf_after_negative_test.stat.checksum == frr_conf_before_negative_test.stat.checksum
+      fail_msg: "/etc/frr/frr.conf was modified despite failing vtysh validation"
+
+  - name: Find any leftover staged FRR configuration files
+    become: true
+    ansible.builtin.find:
+      paths: /tmp
+      patterns: "*.frr.conf"
+    register: frr_conf_staged_leftovers
+
+  - name: Assert no staged FRR configuration files were left behind
+    ansible.builtin.assert:
+      that:
+        - frr_conf_staged_leftovers.files | length == 0
+      fail_msg: "Staged FRR configuration files were left behind in /tmp"
