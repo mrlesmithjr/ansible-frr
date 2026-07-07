@@ -309,7 +309,7 @@ bfd
 {%   endif %}
 {% endif %}
 !
-{% if frr_daemons['ospfd'] %}
+{% if frr_daemons['ospfd'] and (frr_ospf is not defined or frr_ospf == {}) %}
 router ospf
 {%   if frr_router_id is defined %}
   router-id {{ frr_router_id }}

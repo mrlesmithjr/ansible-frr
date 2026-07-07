@@ -133,3 +133,20 @@
       that:
         - frr_conf_staged_leftovers.files | length == 0
       fail_msg: "Staged FRR configuration files were left behind in /tmp"
+
+  - name: Slurp the applied /etc/frr/frr.conf for OSPF duplication check
+    become: true
+    ansible.builtin.slurp:
+      src: /etc/frr/frr.conf
+    register: frr_conf_slurp
+
+  - name: Assert exactly one router ospf block exists for the default VRF
+    vars:
+      frr_conf_content: "{{ frr_conf_slurp.content | b64decode }}"
+      frr_conf_router_ospf_lines: "{{ frr_conf_content.splitlines() | select('equalto', 'router ospf') | list }}"
+    ansible.builtin.assert:
+      that:
+        - frr_conf_router_ospf_lines | length == 1
+      fail_msg: >-
+        Expected exactly one 'router ospf' block for the default VRF but found
+        {{ frr_conf_router_ospf_lines | length }}

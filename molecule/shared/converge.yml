@@ -1,6 +1,26 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    frr_daemons:
+      bfdd: false
+      bgpd: false
+      isisd: false
+      ldpd: false
+      nhrpd: false
+      ospf6d: false
+      ospfd: true
+      pimd: false
+      ripd: false
+      ripngd: false
+      zebra: true
+    frr_router_id: 1.1.1.1
+    frr_ospf:
+      areas:
+        0:
+          networks:
+            - 10.0.0.0/24
+      log_adjacency_changes: true
   tasks:
     - name: Include ansible-frr
       ansible.builtin.include_role:
