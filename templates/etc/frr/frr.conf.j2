@@ -316,7 +316,7 @@ router ospf
 {%   endif %}
 {% endif %}
 !
-{% if ( (frr_daemons['ospfd'] is defined) and
+{% if ( (frr_daemons['ospfd']) and
         (frr_ospf is defined or frr_ospf_vrf_enabled is defined) ) %}
 {# define VRF list to iterate over it #}
 {%   set ospf_vrf_list = [] %}

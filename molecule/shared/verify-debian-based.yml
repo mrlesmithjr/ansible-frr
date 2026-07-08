@@ -229,3 +229,84 @@
         when:
           - frr_conf_ospf_vrf_staged is defined
           - frr_conf_ospf_vrf_staged.path is defined
+
+  - name: Render frr.conf for OSPF disabled scenario (ospfd false, frr_ospf and frr_ospf_vrf_enabled populated)
+    vars:
+      _frr_role_defaults: "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') + '/defaults/main.yml') | from_yaml }}"
+      frr_daemons:
+        bfdd: false
+        bgpd: false
+        isisd: false
+        ldpd: false
+        nhrpd: false
+        ospf6d: false
+        ospfd: false
+        pimd: false
+        ripd: false
+        ripngd: false
+        zebra: true
+      frr_router_id: 1.1.1.1
+      frr_password: "{{ _frr_role_defaults.frr_password }}"
+      frr_logging: "{{ _frr_role_defaults.frr_logging }}"
+      frr_ospf:
+        areas:
+          0:
+            networks:
+              - 10.0.0.0/24
+      frr_ospf_vrf_enabled:
+        blue:
+          areas:
+            0:
+              networks:
+                - 10.10.0.0/24
+    block:
+      - name: Create staging file for OSPF-disabled rendering check
+        ansible.builtin.tempfile:
+          state: file
+          suffix: .frr-ospf-disabled.conf
+        register: frr_conf_ospf_disabled_staged
+        changed_when: false
+
+      - name: Render frr.conf.j2 with ospfd disabled but OSPF config populated
+        ansible.builtin.template:
+          src: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/templates/etc/frr/frr.conf.j2"
+          dest: "{{ frr_conf_ospf_disabled_staged.path }}"
+          mode: "0600"
+        changed_when: false
+
+      - name: Validate the rendered OSPF-disabled frr.conf with vtysh
+        ansible.builtin.command:
+          cmd: "vtysh -C -f {{ frr_conf_ospf_disabled_staged.path }}"
+        register: frr_conf_ospf_disabled_validation
+        changed_when: false
+
+      - name: Assert the rendered OSPF-disabled frr.conf is valid
+        ansible.builtin.assert:
+          that:
+            - frr_conf_ospf_disabled_validation.rc == 0
+          fail_msg: "Rendered OSPF-disabled frr.conf failed vtysh validation"
+
+      - name: Slurp the rendered OSPF-disabled frr.conf
+        ansible.builtin.slurp:
+          src: "{{ frr_conf_ospf_disabled_staged.path }}"
+        register: frr_conf_ospf_disabled_slurp
+
+      - name: Assert no router ospf config is rendered when ospfd is disabled
+        vars:
+          frr_conf_ospf_disabled_content: "{{ frr_conf_ospf_disabled_slurp.content | b64decode }}"
+        ansible.builtin.assert:
+          that:
+            - "'router ospf' not in frr_conf_ospf_disabled_content"
+          fail_msg: >-
+            Expected no 'router ospf' config to render when
+            frr_daemons.ospfd is false, but found some in the rendered
+            frr.conf
+    always:
+      - name: Remove staged OSPF-disabled rendering file
+        ansible.builtin.file:
+          path: "{{ frr_conf_ospf_disabled_staged.path }}"
+          state: absent
+        changed_when: false
+        when:
+          - frr_conf_ospf_disabled_staged is defined
+          - frr_conf_ospf_disabled_staged.path is defined
