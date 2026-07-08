@@ -150,3 +150,69 @@
       fail_msg: >-
         Expected exactly one 'router ospf' block for the default VRF but found
         {{ frr_conf_router_ospf_lines | length }}
+
+  - name: Render frr.conf for OSPF VRF-only scenario (frr_ospf empty, frr_ospf_vrf_enabled populated)
+    vars:
+      frr_daemons:
+        bfdd: false
+        bgpd: false
+        isisd: false
+        ldpd: false
+        nhrpd: false
+        ospf6d: false
+        ospfd: true
+        pimd: false
+        ripd: false
+        ripngd: false
+        zebra: true
+      frr_router_id: 1.1.1.1
+      frr_password: zebra
+      frr_logging: syslog
+      frr_ospf: {}
+      frr_ospf_vrf_enabled:
+        blue:
+          areas:
+            0:
+              networks:
+                - 10.10.0.0/24
+    block:
+      - name: Create staging file for OSPF VRF-only rendering check
+        ansible.builtin.tempfile:
+          state: file
+          suffix: .frr-ospf-vrf.conf
+        register: frr_conf_ospf_vrf_staged
+        changed_when: false
+
+      - name: Render frr.conf.j2 with VRF-only OSPF config
+        ansible.builtin.template:
+          src: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/templates/etc/frr/frr.conf.j2"
+          dest: "{{ frr_conf_ospf_vrf_staged.path }}"
+          mode: "0600"
+        changed_when: false
+
+      - name: Slurp the rendered VRF-only frr.conf
+        ansible.builtin.slurp:
+          src: "{{ frr_conf_ospf_vrf_staged.path }}"
+        register: frr_conf_ospf_vrf_slurp
+
+      - name: Assert no bare default-VRF router ospf stanza is rendered
+        vars:
+          frr_conf_ospf_vrf_content: "{{ frr_conf_ospf_vrf_slurp.content | b64decode }}"
+          frr_conf_ospf_vrf_bare_lines: "{{ frr_conf_ospf_vrf_content.splitlines() | select('equalto', 'router ospf') | list }}"
+        ansible.builtin.assert:
+          that:
+            - frr_conf_ospf_vrf_bare_lines | length == 0
+            - "'router ospf vrf blue' in frr_conf_ospf_vrf_content"
+          fail_msg: >-
+            Expected no bare default-VRF 'router ospf' stanza when only
+            frr_ospf_vrf_enabled is set, but found
+            {{ frr_conf_ospf_vrf_bare_lines | length }}
+    always:
+      - name: Remove staged OSPF VRF-only rendering file
+        ansible.builtin.file:
+          path: "{{ frr_conf_ospf_vrf_staged.path }}"
+          state: absent
+        changed_when: false
+        when:
+          - frr_conf_ospf_vrf_staged is defined
+          - frr_conf_ospf_vrf_staged.path is defined
