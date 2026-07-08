@@ -310,3 +310,226 @@
         when:
           - frr_conf_ospf_disabled_staged is defined
           - frr_conf_ospf_disabled_staged.path is defined
+
+  - name: Render frr.conf for BGP address-family consolidation scenario (based on #155's example)
+    vars:
+      _frr_role_defaults: "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') + '/defaults/main.yml') | from_yaml }}"
+      frr_daemons:
+        bfdd: false
+        bgpd: true
+        isisd: false
+        ldpd: false
+        nhrpd: false
+        ospf6d: false
+        ospfd: false
+        pimd: false
+        ripd: false
+        ripngd: false
+        zebra: true
+      frr_router_id: 1.1.1.1
+      frr_password: "{{ _frr_role_defaults.frr_password }}"
+      frr_logging: "{{ _frr_role_defaults.frr_logging }}"
+      frr_no_ebgp_requires_policy: "{{ _frr_role_defaults.frr_no_ebgp_requires_policy }}"
+      frr_bgp:
+        asns:
+          65000:
+            maximum_paths: 64
+            other:
+              - "no bgp default ipv4-unicast"
+            af_evpn:
+              - "advertise-all-vni"
+            neighbors:
+              FABRIC:
+                asn: 65000
+                is_peer_group: true
+                other:
+                  - "capability extended-nexthop"
+                af_v4:
+                  - "activate"
+                af_v6:
+                  - "activate"
+                af_evpn:
+                  - "activate"
+                v4_route_reflector_client: true
+                next_hop_self: true
+              RR:
+                asn: 65000
+                is_peer_group: true
+                af_v4:
+                  - "activate"
+                af_evpn:
+                  - "activate"
+              10.0.0.12:
+                is_peer_group: false
+                peer_group: RR
+              192.168.250.11:
+                asn: 65000
+                af_v4:
+                  - "activate"
+            listen_range:
+              10.0.0.0/24: FABRIC
+            networks:
+              - "10.0.0.0/24"
+            redistribute:
+              - connected
+            networks_v6:
+              - "2001:db8::/64"
+            redistribute_v6:
+              - connected
+    block:
+      - name: Create staging file for BGP address-family consolidation rendering check
+        ansible.builtin.tempfile:
+          state: file
+          suffix: .frr-bgp-af.conf
+        register: frr_conf_bgp_af_staged
+        changed_when: false
+
+      - name: Render frr.conf.j2 with the BGP address-family consolidation scenario
+        ansible.builtin.template:
+          src: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/templates/etc/frr/frr.conf.j2"
+          dest: "{{ frr_conf_bgp_af_staged.path }}"
+          mode: "0600"
+        changed_when: false
+
+      - name: Validate the rendered BGP address-family frr.conf with vtysh
+        ansible.builtin.command:
+          cmd: "vtysh -C -f {{ frr_conf_bgp_af_staged.path }}"
+        register: frr_conf_bgp_af_validation
+        changed_when: false
+
+      - name: Assert the rendered BGP address-family frr.conf is valid
+        ansible.builtin.assert:
+          that:
+            - frr_conf_bgp_af_validation.rc == 0
+          fail_msg: >-
+            Rendered BGP address-family frr.conf failed vtysh validation:
+            {{ frr_conf_bgp_af_validation.stdout }} {{ frr_conf_bgp_af_validation.stderr }}
+
+      - name: Slurp the rendered BGP address-family frr.conf
+        ansible.builtin.slurp:
+          src: "{{ frr_conf_bgp_af_staged.path }}"
+        register: frr_conf_bgp_af_slurp
+
+      - name: Assert exactly one address-family block per address family for the ASN
+        vars:
+          frr_conf_bgp_af_content: "{{ frr_conf_bgp_af_slurp.content | b64decode }}"
+          frr_conf_bgp_af_lines: "{{ frr_conf_bgp_af_content.splitlines() }}"
+          frr_conf_bgp_af_v4_lines: "{{ frr_conf_bgp_af_lines | select('equalto', '  address-family ipv4 unicast') | list }}"
+          frr_conf_bgp_af_v6_lines: "{{ frr_conf_bgp_af_lines | select('equalto', '  address-family ipv6 unicast') | list }}"
+          frr_conf_bgp_af_evpn_lines: "{{ frr_conf_bgp_af_lines | select('equalto', '  address-family l2vpn evpn') | list }}"
+        ansible.builtin.assert:
+          that:
+            - frr_conf_bgp_af_v4_lines | length == 1
+            - frr_conf_bgp_af_v6_lines | length == 1
+            - frr_conf_bgp_af_evpn_lines | length == 1
+          fail_msg: >-
+            Expected exactly one address-family block per family for ASN 65000
+            but found {{ frr_conf_bgp_af_v4_lines | length }} ipv4 unicast,
+            {{ frr_conf_bgp_af_v6_lines | length }} ipv6 unicast, and
+            {{ frr_conf_bgp_af_evpn_lines | length }} l2vpn evpn blocks
+
+      - name: Assert the neighbor without is_peer_group set rendered correctly
+        vars:
+          frr_conf_bgp_af_content: "{{ frr_conf_bgp_af_slurp.content | b64decode }}"
+        ansible.builtin.assert:
+          that:
+            - "'neighbor 192.168.250.11 remote-as 65000' in frr_conf_bgp_af_content"
+            - "'neighbor 192.168.250.11 activate' in frr_conf_bgp_af_content"
+          fail_msg: >-
+            Expected the neighbor with no is_peer_group key set to render
+            without error, but its statements were missing from the rendered
+            frr.conf
+    always:
+      - name: Remove staged BGP address-family rendering file
+        ansible.builtin.file:
+          path: "{{ frr_conf_bgp_af_staged.path }}"
+          state: absent
+        changed_when: false
+        when:
+          - frr_conf_bgp_af_staged is defined
+          - frr_conf_bgp_af_staged.path is defined
+
+  - name: Render frr.conf for BGP single address-family scenario (only af_v4 populated)
+    vars:
+      _frr_role_defaults: "{{ lookup('ansible.builtin.file', lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') + '/defaults/main.yml') | from_yaml }}"
+      frr_daemons:
+        bfdd: false
+        bgpd: true
+        isisd: false
+        ldpd: false
+        nhrpd: false
+        ospf6d: false
+        ospfd: false
+        pimd: false
+        ripd: false
+        ripngd: false
+        zebra: true
+      frr_router_id: 1.1.1.1
+      frr_password: "{{ _frr_role_defaults.frr_password }}"
+      frr_logging: "{{ _frr_role_defaults.frr_logging }}"
+      frr_no_ebgp_requires_policy: "{{ _frr_role_defaults.frr_no_ebgp_requires_policy }}"
+      frr_bgp:
+        asns:
+          65001:
+            neighbors:
+              192.168.250.11:
+                asn: 65001
+                af_v4:
+                  - "activate"
+    block:
+      - name: Create staging file for BGP single-address-family rendering check
+        ansible.builtin.tempfile:
+          state: file
+          suffix: .frr-bgp-single-af.conf
+        register: frr_conf_bgp_single_af_staged
+        changed_when: false
+
+      - name: Render frr.conf.j2 with only af_v4 populated (no af_v6 or af_evpn anywhere)
+        ansible.builtin.template:
+          src: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/templates/etc/frr/frr.conf.j2"
+          dest: "{{ frr_conf_bgp_single_af_staged.path }}"
+          mode: "0600"
+        changed_when: false
+
+      - name: Validate the rendered single-address-family frr.conf with vtysh
+        ansible.builtin.command:
+          cmd: "vtysh -C -f {{ frr_conf_bgp_single_af_staged.path }}"
+        register: frr_conf_bgp_single_af_validation
+        changed_when: false
+
+      - name: Assert the rendered single-address-family frr.conf is valid
+        ansible.builtin.assert:
+          that:
+            - frr_conf_bgp_single_af_validation.rc == 0
+          fail_msg: >-
+            Rendered single-address-family frr.conf failed vtysh validation:
+            {{ frr_conf_bgp_single_af_validation.stdout }}
+            {{ frr_conf_bgp_single_af_validation.stderr }}
+
+      - name: Slurp the rendered single-address-family frr.conf
+        ansible.builtin.slurp:
+          src: "{{ frr_conf_bgp_single_af_staged.path }}"
+        register: frr_conf_bgp_single_af_slurp
+
+      - name: Assert no empty address-family blocks or stray None values rendered
+        vars:
+          frr_conf_bgp_single_af_content: "{{ frr_conf_bgp_single_af_slurp.content | b64decode }}"
+          frr_conf_bgp_single_af_lines: "{{ frr_conf_bgp_single_af_content.splitlines() }}"
+        ansible.builtin.assert:
+          that:
+            - "'None' not in frr_conf_bgp_single_af_content"
+            - (frr_conf_bgp_single_af_lines | select('equalto', '  address-family ipv6 unicast') | list | length) == 0
+            - (frr_conf_bgp_single_af_lines | select('equalto', '  address-family l2vpn evpn') | list | length) == 0
+            - (frr_conf_bgp_single_af_lines | select('equalto', '  address-family ipv4 unicast') | list | length) == 1
+          fail_msg: >-
+            Expected only an ipv4 unicast address-family block with no stray
+            'None' text when af_v6/af_evpn are unused anywhere in the ASN
+    always:
+      - name: Remove staged BGP single-address-family rendering file
+        ansible.builtin.file:
+          path: "{{ frr_conf_bgp_single_af_staged.path }}"
+          state: absent
+        changed_when: false
+        when:
+          - frr_conf_bgp_single_af_staged is defined
+          - frr_conf_bgp_single_af_staged.path is defined

@@ -102,32 +102,10 @@ router bgp {{ asn }}
   {{ option }}
 {%         endfor %}
 {%       endif %}
-{%       if asn_data['af_v4'] | default(False) %}
-  address-family ipv4 unicast
-{%         for option in asn_data['af_v4'] %}
-    {{ option }}
-{%         endfor %}
-  exit-address-family
-!
-{%       endif %}
-{%       if asn_data['af_v6'] | default(False) %}
-  address-family ipv6 unicast
-{%         for option in asn_data['af_v6'] %}
-    {{ option }}
-{%         endfor %}
-  exit-address-family
-{%       endif %}
-{%       if asn_data['af_evpn'] | default(False) %}
-  address-family l2vpn evpn
-{%         for option in asn_data['af_evpn'] %}
-    {{ option }}
-{%         endfor %}
-  exit-address-family
-{%       endif %}
 !
 {%       if asn_data['neighbors'] is defined %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].items() %}
-{%           set x=neighbor_data.__setitem__('is_peer_group', neighbor_data['is_peer_group'] | default(False)) %}
+{%           set x=neighbor_data.update({'is_peer_group': neighbor_data['is_peer_group'] | default(False)}) %}
 {%         endfor %}
 {%         for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
 {%           if neighbor_data['interface'] | default(False) %}
@@ -171,33 +149,31 @@ router bgp {{ asn }}
   neighbor {{ neighbor }} {{ option }}
 {%             endfor %}
 {%           endif %}
+{%         endfor %}
+{%       endif %}
 !
-{%           if neighbor_data['af_v4'] | default(False) %}
-  address-family ipv4 unicast
-{%             for option in neighbor_data['af_v4'] %}
-    neighbor {{ neighbor }} {{ option }}
-{%             endfor %}
-  exit-address-family
+{%       if asn_data['listen_range'] is defined %}
+{%         for listen_range, listen_range_peer_group in asn_data['listen_range'].items() %}
+  bgp listen range {{ listen_range }} peer-group {{ listen_range_peer_group }}
+{%         endfor %}
+{%       endif %}
 !
-{%           endif %}
-{%           if neighbor_data['af_v6'] | default(False) %}
-  address-family ipv6 unicast
-{%             for option in neighbor_data['af_v6'] %}
+{#     Consolidate all ipv4 unicast address-family statements (ASN-level af_v4, per-neighbor af_v4/route-reflector-client/route-map, ASN-level networks/redistribute) into a single block #}
+{%       set _bgp_af_v4_body %}
+{%         if asn_data['af_v4'] | default(False) %}
+{%           for option in asn_data['af_v4'] %}
+    {{ option }}
+{%           endfor %}
+{%         endif %}
+{%         if asn_data['neighbors'] is defined %}
+{%           for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
+{%             if neighbor_data['af_v4'] | default(False) %}
+{%               for option in neighbor_data['af_v4'] %}
     neighbor {{ neighbor }} {{ option }}
-{%             endfor %}
-  exit-address-family
-{%           endif %}
-{%           if neighbor_data['af_evpn'] | default(False) %}
-  address-family l2vpn evpn
-{%             for option in neighbor_data['af_evpn'] %}
-    neighbor {{ neighbor }} {{ option }}
-{%             endfor %}
-  exit-address-family
-{%           endif %}
-!
-{%           if neighbor_data['v4_route_reflector_client'] | default(False) or
-                neighbor_data['v4_route_map'] | default(False) %}
-  address-family ipv4 unicast
+{%               endfor %}
+{%             endif %}
+{%           endfor %}
+{%           for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
 {%             if neighbor_data['v4_route_reflector_client'] | default(False) %}
     neighbor {{ neighbor }} route-reflector-client
 {%             endif %}
@@ -211,21 +187,8 @@ router bgp {{ asn }}
     neighbor {{ neighbor }} route-map {{ _route_map }}
 {%               endfor %}
 {%             endif %}
-  exit-address-family
-!
-{%           endif %}
-{%         endfor %}
-{%       endif %}
-!
-{%       if asn_data['listen_range'] is defined %}
-{%         for listen_range, listen_range_peer_group in asn_data['listen_range'].items() %}
-  bgp listen range {{ listen_range }} peer-group {{ listen_range_peer_group }}
-{%         endfor %}
-{%       endif %}
-!
-{%       if asn_data['networks'] | default(False) or
-            asn_data['redistribute'] | default(False) %}
-  address-family ipv4 unicast
+{%           endfor %}
+{%         endif %}
 {%         if asn_data['networks'] | default(False) %}
 {%           for network in asn_data['networks'] %}
     network {{ network }}
@@ -236,13 +199,29 @@ router bgp {{ asn }}
     redistribute {{ redist_protocol }}
 {%           endfor %}
 {%         endif %}
+{%       endset %}
+{%       if _bgp_af_v4_body | default('', true) | trim | length > 0 %}
+  address-family ipv4 unicast
+{{ _bgp_af_v4_body | default('', true) | trim('\n') }}
   exit-address-family
 !
-!
 {%       endif %}
-{%       if asn_data['networks_v6'] | default(False) or
-            asn_data['redistribute_v6'] | default(False) %}
-  address-family ipv6 unicast
+{#     Consolidate all ipv6 unicast address-family statements (ASN-level af_v6, per-neighbor af_v6, ASN-level networks_v6/redistribute_v6) into a single block #}
+{%       set _bgp_af_v6_body %}
+{%         if asn_data['af_v6'] | default(False) %}
+{%           for option in asn_data['af_v6'] %}
+    {{ option }}
+{%           endfor %}
+{%         endif %}
+{%         if asn_data['neighbors'] is defined %}
+{%           for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
+{%             if neighbor_data['af_v6'] | default(False) %}
+{%               for option in neighbor_data['af_v6'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%               endfor %}
+{%             endif %}
+{%           endfor %}
+{%         endif %}
 {%         if asn_data['networks_v6'] | default(False) %}
 {%           for network in asn_data['networks_v6'] %}
     network {{ network }}
@@ -259,8 +238,34 @@ router bgp {{ asn }}
 {%             endfor %}
 {%           endif %}
 {%         endif %}
+{%       endset %}
+{%       if _bgp_af_v6_body | default('', true) | trim | length > 0 %}
+  address-family ipv6 unicast
+{{ _bgp_af_v6_body | default('', true) | trim('\n') }}
   exit-address-family
 !
+{%       endif %}
+{#     Consolidate all l2vpn evpn address-family statements (ASN-level af_evpn, per-neighbor af_evpn) into a single block #}
+{%       set _bgp_af_evpn_body %}
+{%         if asn_data['af_evpn'] | default(False) %}
+{%           for option in asn_data['af_evpn'] %}
+    {{ option }}
+{%           endfor %}
+{%         endif %}
+{%         if asn_data['neighbors'] is defined %}
+{%           for neighbor, neighbor_data in asn_data['neighbors'].items() | sort(reverse=True, attribute="1.is_peer_group") %}
+{%             if neighbor_data['af_evpn'] | default(False) %}
+{%               for option in neighbor_data['af_evpn'] %}
+    neighbor {{ neighbor }} {{ option }}
+{%               endfor %}
+{%             endif %}
+{%           endfor %}
+{%         endif %}
+{%       endset %}
+{%       if _bgp_af_evpn_body | default('', true) | trim | length > 0 %}
+  address-family l2vpn evpn
+{{ _bgp_af_evpn_body | default('', true) | trim('\n') }}
+  exit-address-family
 !
 {%       endif %}
 {%       if frr_vnc_defaults | default(False) %}
