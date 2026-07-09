@@ -1,6 +1,16 @@
 ---
 name: Molecule Test
-on: push
+on:
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "0 6 * * 0"
+
+concurrency:
+  group: molecule-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
