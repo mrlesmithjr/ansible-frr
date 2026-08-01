@@ -39,7 +39,6 @@ platformdirs==4.9.4
     # via
     #   -c requirements.txt
     #   pylint
-    #   python-discovery
     #   tox
     #   virtualenv
 pluggy==1.6.0
@@ -53,11 +52,11 @@ pycodestyle==2.14.0
     #   flake8
 pyflakes==3.4.0
     # via flake8
-pylint==4.0.5
+pylint==4.0.6
     # via -r requirements-dev.in
 pyproject-api==1.10.0
     # via tox
-python-discovery==1.2.2
+python-discovery==1.5.1
     # via
     #   tox
     #   virtualenv
@@ -65,7 +64,7 @@ tomli-w==1.2.0
     # via tox
 tomlkit==0.14.0
     # via pylint
-tox==4.53.0
+tox==4.58.0
     # via -r requirements-dev.in
 virtualenv==21.2.0
     # via tox
