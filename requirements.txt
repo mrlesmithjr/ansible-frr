@@ -42,7 +42,7 @@ click==8.3.1
     #   mkdocs
     #   molecule
     #   pip-tools
-cryptography==48.0.1
+cryptography==50.0.0
     # via
     #   ansible-core
     #   ansible-lint
