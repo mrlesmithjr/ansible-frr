@@ -22,7 +22,7 @@ filelock==3.25.2
     #   python-discovery
     #   tox
     #   virtualenv
-flake8==7.3.0
+flake8==7.4.1
     # via -r requirements-dev.in
 isort==8.0.1
     # via pylint
@@ -39,25 +39,24 @@ platformdirs==4.9.4
     # via
     #   -c requirements.txt
     #   pylint
-    #   python-discovery
     #   tox
     #   virtualenv
 pluggy==1.6.0
     # via
     #   -c requirements.txt
     #   tox
-pycodestyle==2.14.0
+pycodestyle==2.15.0
     # via
     #   -r requirements-dev.in
     #   autopep8
     #   flake8
-pyflakes==3.4.0
+pyflakes==4.0.1
     # via flake8
-pylint==4.0.5
+pylint==4.0.9
     # via -r requirements-dev.in
 pyproject-api==1.10.0
     # via tox
-python-discovery==1.2.2
+python-discovery==1.6.1
     # via
     #   tox
     #   virtualenv
@@ -65,7 +64,7 @@ tomli-w==1.2.0
     # via tox
 tomlkit==0.14.0
     # via pylint
-tox==4.53.0
+tox==4.64.4
     # via -r requirements-dev.in
 virtualenv==21.2.0
     # via tox
