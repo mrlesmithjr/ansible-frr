@@ -28,7 +28,7 @@ bracex==2.6
     # via wcmatch
 build==1.4.0
     # via pip-tools
-certifi==2026.2.25
+certifi==2026.10.19
     # via requests
 cffi==2.0.0
     # via
